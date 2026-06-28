@@ -1,0 +1,8 @@
+package uk.tsundokus.features.authentication.data.dto.requests
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class EmailRequest(
+    val email: String,
+)

@@ -1,0 +1,18 @@
+package uk.tsundokus.core.presentation.navigation
+
+import uk.tsundokus.core.presentation.util.UiText
+
+/**
+ * NavKey marker for screens that should render a top app bar with a title and a navigation action
+ * (close or back). The host scaffold reads these properties to compose the top bar. Trailing
+ * actions that need live callbacks/state are published at runtime via [TopBarActions].
+ */
+interface ScreenWithTopBar {
+    val topBarTitle: UiText
+    val topBarAction: TopBarAction get() = TopBarAction.Back
+}
+
+enum class TopBarAction {
+    Back,
+    Close,
+}

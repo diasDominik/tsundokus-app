@@ -1,0 +1,13 @@
+## Copy to local.properties and fill in. Not checked into VCS.
+
+# Android SDK location (set automatically by Android Studio).
+sdk.dir=/path/to/Android/sdk
+
+# Must match the server's tsundoku.api-key (dev default: dev-api-key).
+API_KEY=dev-api-key
+
+# Base URL of the Tsundoku server. Android emulator → http://10.0.2.2:8080; desktop/iOS sim → http://localhost:8080.
+BASE_URL_HTTP=http://localhost:8080
+
+# Optional. Defaults to 0.1.0 if unset.
+# APP_VERSION=0.1.0

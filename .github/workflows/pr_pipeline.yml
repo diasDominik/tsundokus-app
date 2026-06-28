@@ -1,0 +1,92 @@
+name: PR Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  API_KEY: ${{ 'dev-api-key' }}
+  BASE_URL_HTTP: ${{ '' }}
+  BASE_URL_WS: ${{ '' }}
+
+jobs:
+  code_formatting:
+    name: Check Code Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Unified Gradle caching: handles ~/.gradle/caches, ~/.gradle/wrapper,
+      # the local build cache, and the configuration cache in one step.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Check Code Format
+        run: ./gradlew ktlintCheck :build-logic:convention:ktlintCheck --no-daemon --stacktrace
+
+  build_android:
+    name: Build Android app and Desktop
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Unified Gradle caching — reads the cache written by the formatting job
+      # on PRs; pushes an updated cache on main.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Run Build, Lint and Tests
+        run: |
+          set -o pipefail
+          ./gradlew \
+            :androidApp:assembleDebug \
+            :androidApp:lintDebug \
+            :androidApp:testDebugUnitTest \
+            :composeApp:desktopJar \
+            :composeApp:wasmJsBrowserDevelopmentExecutableDistribution \
+            allTests \
+            --no-daemon --stacktrace 2>&1 | tee build_log.txt
+
+      - name: Check compiler warnings against baseline
+        run: bash .github/check-compiler-warnings.sh build_log.txt
+
+      - name: Upload Lint SARIF report
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: androidApp/build/reports/lint-results-debug.sarif
+          category: lint

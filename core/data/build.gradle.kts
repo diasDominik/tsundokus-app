@@ -1,0 +1,62 @@
+plugins {
+    alias(libs.plugins.tsundoku.convention.kmp.library)
+    alias(libs.plugins.tsundoku.convention.buildkonfig)
+    alias(libs.plugins.tsundoku.convention.koin)
+}
+
+kotlin {
+    // Source set declarations.
+    // Declaring a target automatically creates a source set with the same name. By default, the
+    // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
+    // common to share sources between related targets.
+    // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation(projects.core.domain)
+
+                implementation(libs.bundles.ktor.common)
+                implementation(libs.kermit)
+                implementation(libs.koin.core)
+                implementation(libs.ksafe)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
+
+        androidMain {
+            dependencies {
+                implementation(libs.ktor.client.okhttp)
+            }
+        }
+
+        getByName("androidDeviceTest") {
+            dependencies {
+            }
+        }
+
+        desktopMain {
+            dependencies {
+                implementation(libs.ktor.client.okhttp)
+            }
+        }
+
+        nativeMain {
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
+        }
+
+        webMain {
+            dependencies {
+                implementation(libs.ktor.client.js)
+                implementation(libs.kotlinx.browser)
+            }
+        }
+    }
+}

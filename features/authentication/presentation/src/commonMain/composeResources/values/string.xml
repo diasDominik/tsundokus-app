@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <!-- Sign in -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_title_desc">Pick up where you left off — every order, every volume.</string>
+    <string name="login">Log in</string>
+    <string name="login_forgot_password">Forgot?</string>
+    <string name="login_create_account">Don\'t have an account? </string>
+    <string name="login_sign_up">Create account</string>
+    <string name="error_invalid_credentials">The email or password is incorrect</string>
+    <string name="error_email_not_verified">Please verify your email address first. Check your inbox for the verification link.</string>
+
+    <!-- Sign up -->
+    <string name="register_title">Create your account</string>
+    <string name="register_title_desc">Track manga from checkout to bookshelf.</string>
+    <string name="register_display_name_hint">Display name</string>
+    <string name="register_email_hint">Email</string>
+    <string name="register_password_hint">Password</string>
+    <string name="register_confirm_password_hint">Confirm password</string>
+    <string name="register_button">Create account</string>
+    <string name="register_already_have_account_prefix">Already have an account? </string>
+    <string name="register_login_action">Log in</string>
+    <string name="register_email_invalid">Please enter a valid email address.</string>
+    <string name="register_password_mismatch">Passwords do not match.</string>
+    <string name="register_password_requirements">Password must be 8–40 characters and include a number or symbol.</string>
+    <string name="error_account_exists">An account with that email already exists</string>
+    <string name="error_display_name_invalid">Please enter a display name.</string>
+
+    <!-- Registration success / verify email -->
+    <string name="register_success_title">Check your inbox</string>
+    <string name="register_success_desc">We sent a verification link to %1$s. Verify your email, then sign in.</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_password">Reset password</string>
+    <string name="forgot_password_desc">Enter your email and we\'ll send a reset link.</string>
+    <string name="forgot_password_submit">Send reset link</string>
+    <string name="forgot_password_email_sent_successfully">If an account exists, a reset link is on its way.</string>
+
+    <!-- Reset password -->
+    <string name="set_new_password">Set a new password</string>
+    <string name="new_password">New password</string>
+    <string name="submit">Submit</string>
+    <string name="error_reset_password_token_invalid">It seems like the reset password link is not valid or has expired. Please request a new email.</string>
+    <string name="reset_password_successfully">Your password has successfully been changed. You can now log in with your new password.</string>
+    <string name="error_same_password">The new password can\'t be equal to the old one</string>
+
+    <!-- Email verification -->
+    <string name="email_verification_verifying">Verifying your email…</string>
+    <string name="email_verification_success_title">Email verified</string>
+    <string name="email_verification_success_desc">Your email address has been confirmed. You\'re all set.</string>
+    <string name="email_verification_failed_title">Verification failed</string>
+    <string name="email_verification_failed_desc">This link is invalid or has expired. Request a new verification email and try again.</string>
+    <string name="email_verification_continue">Continue</string>
+    <string name="email_verification_back_to_sign_in">Back to sign in</string>
+</resources>
