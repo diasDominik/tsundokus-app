@@ -8,15 +8,32 @@ import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
 import uk.tsundokus.core.domain.preferences.ThemeMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.koin.core.annotation.KoinViewModel
+
+/** Whether the persisted session has been resolved yet, and its outcome. */
+enum class SessionState { Loading, Authenticated, Unauthenticated }
 
 @KoinViewModel
 class MainViewModel(
     sessionStorage: SessionStorage,
     appPreferencesRepository: AppPreferencesRepository,
 ) : ViewModel() {
+    // Stays Loading until the cache-aware restore resolves, so the UI never
+    // defaults to sign-in before the persisted session is known.
+    val sessionState: StateFlow<SessionState> =
+        flow {
+            sessionStorage.load()
+            emitAll(
+                sessionStorage.authState.map {
+                    if (it != null) SessionState.Authenticated else SessionState.Unauthenticated
+                },
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, SessionState.Loading)
+
     val isLoggedIn: StateFlow<Boolean> = sessionStorage.authState.map { it != null }
         .stateIn(viewModelScope, SharingStarted.Eagerly, sessionStorage.get() != null)
 

@@ -23,4 +23,14 @@ class SecureStore(
         default: T,
         key: String,
     ) = vault(default, key)
+
+    /**
+     * Cache-aware suspend read for [key]. Unlike the synchronous property delegate,
+     * this awaits KSafe's cache (which warms asynchronously on web) before reading,
+     * so a freshly-launched app reliably sees a previously persisted value.
+     */
+    suspend inline fun <reified T> load(
+        default: T,
+        key: String,
+    ): T = vault.get(key, default)
 }

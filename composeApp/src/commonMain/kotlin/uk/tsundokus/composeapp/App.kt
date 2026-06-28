@@ -2,8 +2,10 @@ package uk.tsundokus.composeapp
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,6 +25,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,11 +100,22 @@ fun App() {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
         TsundokuTheme(darkTheme = darkTheme) {
+            val sessionState by mainViewModel.sessionState.collectAsStateWithLifecycle()
+
+            // Wait for the persisted session to resolve before choosing a start screen,
+            // otherwise a logged-in user briefly lands on (and is stuck at) sign-in.
+            if (sessionState == SessionState.Loading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+                return@TsundokuTheme
+            }
+
             val isLoggedIn by mainViewModel.isLoggedIn.collectAsStateWithLifecycle()
             val accountName by mainViewModel.accountName.collectAsStateWithLifecycle()
             val accountEmail by mainViewModel.accountEmail.collectAsStateWithLifecycle()
 
-            val startDestination: NavKey = if (isLoggedIn) Orders else SignIn
+            val startDestination: NavKey = if (sessionState == SessionState.Authenticated) Orders else SignIn
             val backStack = rememberNavBackStack(configuration = savedStateConfiguration, startDestination)
             val currentKey = backStack.lastOrNull()
 

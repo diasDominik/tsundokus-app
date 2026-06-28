@@ -10,9 +10,9 @@ import uk.tsundokus.core.domain.auth.SessionStorage
 
 @Single(binds = [SessionStorage::class])
 class KSafeSessionStorage(
-    secureStore: SecureStore,
+    private val secureStore: SecureStore,
 ) : SessionStorage {
-    private var authInfo by secureStore<AuthInfo?>(null, key = "authInfo")
+    private var authInfo by secureStore<AuthInfo?>(null, key = KEY)
     private val _authState = MutableStateFlow(authInfo)
 
     override val authState: StateFlow<AuthInfo?> = _authState.asStateFlow()
@@ -22,5 +22,15 @@ class KSafeSessionStorage(
     override fun set(info: AuthInfo?) {
         authInfo = info
         _authState.value = info
+    }
+
+    override suspend fun load(): AuthInfo? {
+        val info = secureStore.load<AuthInfo?>(null, key = KEY)
+        _authState.value = info
+        return info
+    }
+
+    private companion object {
+        const val KEY = "authInfo"
     }
 }
