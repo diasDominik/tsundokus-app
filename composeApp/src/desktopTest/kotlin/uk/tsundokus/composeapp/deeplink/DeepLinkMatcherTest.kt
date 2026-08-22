@@ -6,6 +6,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+/**
+ * Runs on the JVM (desktop) source set rather than commonTest: [buildDeepLinkMatchers] parses URIs
+ * through Nav3's DeepLinkUri, which on Android delegates to `android.net.Uri` — unavailable in plain
+ * Android host (unit) tests, so the same test there throws "not mocked". The matcher logic is
+ * platform-agnostic, so the JVM run gives full coverage.
+ */
 class DeepLinkMatcherTest {
     private val matchers = buildDeepLinkMatchers(devBaseUrl = "http://localhost:8080")
 
