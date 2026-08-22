@@ -11,6 +11,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.header
 import io.ktor.client.statement.request
 import io.ktor.http.ContentType
@@ -21,6 +22,7 @@ import uk.tsundokus.core.data.BuildKonfig
 import uk.tsundokus.core.data.dto.AuthInfoSerializable
 import uk.tsundokus.core.data.dto.requests.RefreshRequest
 import uk.tsundokus.core.data.mappers.toDomain
+import uk.tsundokus.core.domain.auth.SessionInvalidator
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.logging.TsundokuLogger
 import uk.tsundokus.core.domain.util.DataError
@@ -32,6 +34,7 @@ private const val TAG = "HttpClientFactory"
 class HttpClientFactory(
     private val tsundokuLogger: TsundokuLogger,
     private val sessionStorage: SessionStorage,
+    private val sessionInvalidator: SessionInvalidator,
     private val json: Json,
 ) {
     fun create(engine: HttpClientEngine): HttpClient {
@@ -39,6 +42,7 @@ class HttpClientFactory(
             install(ContentNegotiation) {
                 json(json = json)
             }
+            install(WebSockets)
             install(HttpTimeout) {
                 socketTimeoutMillis = 20_000L
                 requestTimeoutMillis = 20_000L
@@ -98,7 +102,10 @@ class HttpClientFactory(
                                     )
                             }.onFailure {
                                 if (it.isAuthRejection()) {
-                                    sessionStorage.set(null)
+                                    // Records who the session belonged to before clearing it, so the
+                                    // sign-in screen can pre-fill their email and the local order
+                                    // cache survives until they (or someone else) signs in.
+                                    sessionInvalidator.invalidate()
                                 }
                             }
 
