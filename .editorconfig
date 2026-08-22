@@ -26,3 +26,6 @@ ktlint_standard_no-unused-imports = enabled
 
 [**/build/**]
 ktlint = disabled
+
+[TsundokuIcons.kt]
+ktlint = disabled

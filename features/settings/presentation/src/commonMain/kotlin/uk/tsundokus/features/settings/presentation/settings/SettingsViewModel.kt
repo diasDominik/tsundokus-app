@@ -79,7 +79,8 @@ class SettingsViewModel(
 
     private fun onSignOut() {
         viewModelScope.launch {
-            // Clear the local session; the app shell observes it and returns to the Welcome flow.
+            // Drop the session; the shell observes it, wipes the local cache (see MainViewModel) and
+            // returns to the Welcome flow.
             sessionStorage.set(null)
             eventChannel.send(SettingsEvent.SignedOut)
         }

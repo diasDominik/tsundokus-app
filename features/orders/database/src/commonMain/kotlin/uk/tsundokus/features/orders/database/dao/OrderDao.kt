@@ -15,6 +15,10 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE id = :id")
     fun getOrderById(id: String): Flow<OrderEntity?>
 
+    /** One-shot read for the sync path, which needs the current row (not a Flow). */
+    @Query("SELECT * FROM orders WHERE id = :id")
+    suspend fun getOrderByIdOnce(id: String): OrderEntity?
+
     @Upsert
     suspend fun upsert(order: OrderEntity)
 

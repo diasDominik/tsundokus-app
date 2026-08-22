@@ -319,5 +319,5 @@
     <string name="migrate_account_error_email_invalid">Enter a valid email address</string>
     <string name="migrate_account_error_password_requirements">Password must be 8–40 characters and include a number or symbol</string>
     <string name="migrate_account_error_password_mismatch">Passwords do not match</string>
-    <string name="migrate_account_error_email_unavailable">This email can\'t be used. Please try a different one.</string>
+    <string name="migrate_account_error_email_unavailable">This email can't be used. Please try a different one.</string>
 </resources>

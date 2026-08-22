@@ -8,7 +8,7 @@ import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.features.authentication.domain.AuthService
 
 open class FakeAuthService(
-    var registerResult: Result<AuthInfo, DataError.Remote> = Result.Failure(DataError.Remote.UNKNOWN),
+    var registerResult: EmptyResult<DataError.Remote> = Result.Failure(DataError.Remote.UNKNOWN),
     var loginResult: Result<AuthInfo, DataError.Remote> = Result.Failure(DataError.Remote.UNKNOWN),
     var loginDelayMillis: Long = 0L,
     var forgotPasswordResult: EmptyResult<DataError.Remote> = Result.Success(Unit),
@@ -37,7 +37,7 @@ open class FakeAuthService(
         name: String,
         email: String,
         password: String,
-    ): Result<AuthInfo, DataError.Remote> {
+    ): EmptyResult<DataError.Remote> {
         registerCalls += 1
         return registerResult
     }

@@ -29,3 +29,5 @@ KLIB resolver: The same 'unique_name=lifecycle-viewmodel-navigation3_commonMain'
 
 Deprecated Gradle Property 'kotlin.mpp.import.enableKgpDependencyResolution' Used
 w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+w: [Koin] compile-safety validation skipped — no Koin entry point in this compilation.
+w: file:///home/runner/work/tsundokus-app/tsundokus-app/androidApp/build.gradle.kts:45:9: 'var sarifReport: Boolean' is deprecated. Lint reports are now always generated. Use SingleArtifact.LINT_SARIF_REPORT or SingleArtifact.AGGREGATED_LINT_SARIF_REPORT to consume lint report artifacts.

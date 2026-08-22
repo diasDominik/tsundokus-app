@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
+import uk.tsundokus.core.domain.sync.LastServerContactStore
+import uk.tsundokus.core.domain.sync.PendingWrites
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.presentation.util.toUiText
 import uk.tsundokus.features.orders.domain.models.Order
@@ -26,6 +28,8 @@ import kotlin.time.Duration.Companion.seconds
 @KoinViewModel
 class OrdersListViewModel(
     private val orderRepository: OrderRepository,
+    pendingWrites: PendingWrites,
+    lastServerContactStore: LastServerContactStore,
 ) : ViewModel() {
     private val searchQuery = MutableStateFlow("")
     private val sort = MutableStateFlow(OrderSort.RECENT)
@@ -34,6 +38,11 @@ class OrdersListViewModel(
 
     private val eventChannel = Channel<OrdersListEvent>()
     val events = eventChannel.receiveAsFlow()
+
+    private val syncStatus =
+        combine(pendingWrites.observeCount(), lastServerContactStore.lastContactAt) { pending, lastContact ->
+            SyncStatus(pendingCount = pending, lastSyncedAt = lastContact)
+        }
 
     val state: StateFlow<OrdersListState> =
         combine(
@@ -44,6 +53,8 @@ class OrdersListViewModel(
             selectedOrderId,
         ) { orders, query, sortOrder, filter, selected ->
             buildState(orders, query, sortOrder, filter, selected)
+        }.combine(syncStatus) { state, sync ->
+            state.copy(pendingSyncCount = sync.pendingCount, lastSyncedAt = sync.lastSyncedAt)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5.seconds),
@@ -67,6 +78,11 @@ class OrdersListViewModel(
         }
     }
 }
+
+private data class SyncStatus(
+    val pendingCount: Int,
+    val lastSyncedAt: Long?,
+)
 
 private fun buildState(
     orders: List<Order>,

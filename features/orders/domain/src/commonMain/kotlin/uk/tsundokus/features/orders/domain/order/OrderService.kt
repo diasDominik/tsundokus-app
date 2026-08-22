@@ -4,31 +4,18 @@ import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.EmptyResult
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.features.orders.domain.models.Order
-import uk.tsundokus.features.orders.domain.models.OrderStatus
-import uk.tsundokus.features.orders.domain.models.ReadState
 
-/** Remote API for orders. Implemented in :features:orders:data by KtorOrderService. */
+/**
+ * Remote API for orders, in offline-outbox terms: writes collapse to a single idempotent
+ * [upsertOrder] (create or edit, keyed on the client-minted id) plus [deleteOrder]; reads come from
+ * [syncOrders] (delta since a cursor). Implemented in :features:orders:data by KtorOrderService.
+ */
 interface OrderService {
-    suspend fun getOrders(): Result<List<Order>, DataError.Remote>
-
-    suspend fun createOrder(order: Order): Result<Order, DataError.Remote>
-
-    suspend fun updateOrder(order: Order): Result<Order, DataError.Remote>
+    /** Idempotent create-or-update on the order's (client-generated) id. */
+    suspend fun upsertOrder(order: Order): Result<Order, DataError.Remote>
 
     suspend fun deleteOrder(id: String): EmptyResult<DataError.Remote>
 
-    suspend fun setStatus(
-        id: String,
-        status: OrderStatus,
-    ): Result<Order, DataError.Remote>
-
-    suspend fun reportDelay(
-        id: String,
-        delayedTo: String,
-    ): Result<Order, DataError.Remote>
-
-    suspend fun setReadState(
-        id: String,
-        readState: ReadState,
-    ): Result<Order, DataError.Remote>
+    /** Delta pull: [since] is the last cursor (null = full snapshot). */
+    suspend fun syncOrders(since: Long?): Result<OrderSync, DataError.Remote>
 }

@@ -21,7 +21,7 @@ android {
     val runsCIReleaseBuild = System.getenv("SIGNING_STORE_PASSWORD") != null
 
     defaultConfig {
-        applicationId = "uk.tsundokus.androidapp"
+        applicationId = "uk.tsundokus"
         versionCode = versionNameToCode(appVersion)
         versionName = appVersion
     }

@@ -1,6 +1,6 @@
 # Tsundoku — Account & Data Deletion
 
-**Android App:** Tsundoku (`uk.tsundokus.androidapp`)
+**Android App:** Tsundoku (`uk.tsundokus`)
 
 This page explains how to request deletion of your Tsundoku account and the data
 associated with it.

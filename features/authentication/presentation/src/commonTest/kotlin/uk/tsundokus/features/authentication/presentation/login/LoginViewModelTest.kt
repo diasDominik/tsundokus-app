@@ -20,6 +20,7 @@ import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.features.authentication.testing.FakeAuthService
+import uk.tsundokus.features.authentication.testing.FakeStaleSessionStore
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -203,8 +204,13 @@ class LoginViewModelTest {
 
     private fun TestScope.createViewModel(
         authService: FakeAuthService = FakeAuthService(loginResult = Result.Success(FAKE_AUTH_INFO)),
+        staleSessionStore: FakeStaleSessionStore = FakeStaleSessionStore(),
     ): LoginViewModel {
-        val viewModel = LoginViewModel(authService = authService)
+        val viewModel =
+            LoginViewModel(
+                authService = authService,
+                staleSessionStore = staleSessionStore,
+            )
         activateState(viewModel)
         return viewModel
     }

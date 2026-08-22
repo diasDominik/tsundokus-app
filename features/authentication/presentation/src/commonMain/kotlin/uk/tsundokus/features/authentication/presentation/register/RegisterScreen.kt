@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,9 @@ import tsundokuapp.features.authentication.presentation.generated.resources.regi
 import tsundokuapp.features.authentication.presentation.generated.resources.register_login_action
 import tsundokuapp.features.authentication.presentation.generated.resources.register_password_hint
 import tsundokuapp.features.authentication.presentation.generated.resources.register_password_requirements
+import tsundokuapp.features.authentication.presentation.generated.resources.register_privacy_notice_prefix
+import tsundokuapp.features.authentication.presentation.generated.resources.register_privacy_notice_suffix
+import tsundokuapp.features.authentication.presentation.generated.resources.register_privacy_policy_link
 import tsundokuapp.features.authentication.presentation.generated.resources.register_title
 import tsundokuapp.features.authentication.presentation.generated.resources.register_title_desc
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
@@ -185,12 +189,35 @@ private fun RegisterScreen(
             isLoading = state.isRegistering,
         )
         VerticalSpacer(16.dp)
+        PrivacyNotice(modifier = Modifier.widthIn(max = 300.dp))
+        VerticalSpacer(16.dp)
         TsundokuInlineLinkText(
             textBeforeLink = stringResource(Res.string.register_already_have_account_prefix),
             linkText = stringResource(Res.string.register_login_action),
             onLinkClick = onLoginClick,
         )
     }
+}
+
+private const val PRIVACY_POLICY_URL = "https://github.com/diasDominik/tsundokus-app/blob/main/PRIVACY.md"
+
+/**
+ * Informational fine print shown where the account is created, so the privacy policy is one tap away
+ * at the moment data is collected. No consent checkbox: sign-up data is processed to perform the
+ * contract, not on the basis of consent.
+ */
+@Composable
+private fun PrivacyNotice(modifier: Modifier = Modifier) {
+    val uriHandler = LocalUriHandler.current
+    TsundokuInlineLinkText(
+        modifier = modifier,
+        textBeforeLink = stringResource(Res.string.register_privacy_notice_prefix),
+        linkText = stringResource(Res.string.register_privacy_policy_link),
+        textAfterLink = stringResource(Res.string.register_privacy_notice_suffix),
+        onLinkClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
+        textStyle = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center),
+        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @PreviewThemes
