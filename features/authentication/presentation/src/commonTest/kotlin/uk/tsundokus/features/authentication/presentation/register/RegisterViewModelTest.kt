@@ -200,7 +200,7 @@ class RegisterViewModelTest {
     @Test
     fun `register with valid inputs emits success event`() =
         runTest(testDispatcher) {
-            val authService = FakeAuthService(registerResult = Result.Success(FAKE_AUTH_INFO))
+            val authService = FakeAuthService(registerResult = Result.Success(Unit))
             val viewModel = RegisterViewModel(authService)
             activateState(viewModel)
             fillValidInputs(viewModel)
@@ -208,7 +208,7 @@ class RegisterViewModelTest {
             viewModel.events.test {
                 viewModel.register()
 
-                assertEquals(RegisterEvent.RegistrationSuccess, awaitItem())
+                assertIs<RegisterEvent.RegistrationSuccess>(awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
 
