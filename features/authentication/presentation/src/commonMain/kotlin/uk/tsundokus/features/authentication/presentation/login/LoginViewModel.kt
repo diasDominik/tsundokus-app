@@ -1,5 +1,6 @@
 package uk.tsundokus.features.authentication.presentation.login
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,7 @@ import org.koin.core.annotation.KoinViewModel
 import tsundokuapp.features.authentication.presentation.generated.resources.Res
 import tsundokuapp.features.authentication.presentation.generated.resources.error_email_not_verified
 import tsundokuapp.features.authentication.presentation.generated.resources.error_invalid_credentials
+import uk.tsundokus.core.domain.auth.StaleSessionStore
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
@@ -32,10 +34,16 @@ import kotlin.time.Duration.Companion.seconds
 @KoinViewModel
 class LoginViewModel(
     private val authService: AuthService,
+    staleSessionStore: StaleSessionStore,
 ) : ViewModel() {
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(LoginState())
+    // Pre-fill the email an expired session belonged to, so the user does not retype it. The
+    // different-account cache wipe is handled by the shell (see MainViewModel.reconcileAfterLogin).
+    private val _state =
+        MutableStateFlow(
+            LoginState(emailTextFieldState = TextFieldState(staleSessionStore.get()?.email.orEmpty())),
+        )
     val state =
         _state
             .onStart {

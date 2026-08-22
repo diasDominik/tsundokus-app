@@ -58,7 +58,8 @@ class DeleteAccountViewModel(
             accountService
                 .deleteAccount()
                 .onSuccess {
-                    // Clear the session so the app returns to the Welcome flow.
+                    // Drop the session; the shell wipes the local cache (see MainViewModel) and
+                    // returns to the Welcome flow.
                     sessionStorage.set(null)
                     _state.update { it.copy(isSubmitting = false) }
                     eventChannel.send(DeleteAccountEvent.Deleted)

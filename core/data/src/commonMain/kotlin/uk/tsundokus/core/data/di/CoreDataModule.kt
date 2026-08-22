@@ -12,6 +12,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import uk.tsundokus.core.data.networking.HttpClientFactory
+import uk.tsundokus.core.domain.auth.SessionInvalidator
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.logging.TsundokuLogger
 
@@ -35,7 +36,8 @@ class CoreDataModule {
     fun provideHttpClient(
         logger: TsundokuLogger,
         sessionStorage: SessionStorage,
+        sessionInvalidator: SessionInvalidator,
         json: Json,
         engine: HttpClientEngine,
-    ): HttpClient = HttpClientFactory(logger, sessionStorage, json).create(engine)
+    ): HttpClient = HttpClientFactory(logger, sessionStorage, sessionInvalidator, json).create(engine)
 }
