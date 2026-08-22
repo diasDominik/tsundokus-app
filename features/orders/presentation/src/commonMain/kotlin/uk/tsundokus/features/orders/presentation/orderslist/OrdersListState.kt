@@ -17,6 +17,10 @@ data class OrdersListState(
     val grouped: Map<OrderStatus, List<Order>> = emptyMap(),
     val selectedOrderId: String? = null,
     val counts: Map<OrderStatus?, Int> = emptyMap(),
+    // Sync status: number of local writes not yet on the server, and the last successful sync
+    // (epoch millis, null = never). Drives the header sync indicator.
+    val pendingSyncCount: Int = 0,
+    val lastSyncedAt: Long? = null,
 ) {
     val selectedOrder: Order?
         get() = allOrders.firstOrNull { it.id == selectedOrderId }

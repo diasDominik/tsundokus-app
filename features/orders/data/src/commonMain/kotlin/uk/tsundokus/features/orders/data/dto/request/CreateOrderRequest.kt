@@ -4,6 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateOrderRequest(
+    // Client-minted UUID: the server treats a create with an existing id as an idempotent upsert,
+    // which is what lets the outbox replay this write safely.
+    val id: String,
     val title: String,
     val author: String,
     val publisher: String,

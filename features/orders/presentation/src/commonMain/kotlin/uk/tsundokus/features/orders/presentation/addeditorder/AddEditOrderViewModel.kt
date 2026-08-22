@@ -22,6 +22,8 @@ import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.domain.validation.OrderValidator
 import uk.tsundokus.features.orders.presentation.components.nowEpochMillis
 import uk.tsundokus.features.orders.presentation.components.todayIso
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @KoinViewModel
 class AddEditOrderViewModel(
@@ -189,11 +191,14 @@ class AddEditOrderViewModel(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private fun AddEditOrderState.toOrder(): Order {
         val resolvedReceivedDate =
             if (status == OrderStatus.RECEIVED && receivedDate.isBlank()) todayIso() else receivedDate.trim()
         return Order(
-            id = id,
+            // A new order gets a client-minted UUID so its create is an idempotent upsert the outbox
+            // can safely replay; an edit keeps the existing id.
+            id = id.ifBlank { Uuid.random().toString() },
             title = title.trim(),
             author = author.trim(),
             publisher = publisher.trim(),

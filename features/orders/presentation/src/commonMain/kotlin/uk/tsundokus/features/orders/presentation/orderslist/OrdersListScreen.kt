@@ -1,4 +1,5 @@
 package uk.tsundokus.features.orders.presentation.orderslist
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -47,6 +50,7 @@ import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
+import uk.tsundokus.features.orders.presentation.components.nowEpochMillis
 import uk.tsundokus.features.orders.presentation.components.todayIso
 import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
 
@@ -158,6 +162,7 @@ private fun ListHeader(
                 Text("Sort · ${state.sort.label}")
             }
         }
+        SyncStatusLine(state = state)
         VerticalSpacer(8.dp)
         OutlinedTextField(
             value = state.searchQuery,
@@ -170,6 +175,45 @@ private fun ListHeader(
         )
         VerticalSpacer(8.dp)
         FilterChipsRow(state = state, onAction = onAction)
+    }
+}
+
+@Composable
+private fun SyncStatusLine(state: OrdersListState) {
+    // Pending writes take priority (the actionable state); otherwise show freshness. Nothing to
+    // show before the first sync.
+    val (color, label) =
+        when {
+            state.pendingSyncCount > 0 -> {
+                MaterialTheme.colorScheme.tertiary to
+                    "${state.pendingSyncCount} unsynced ${if (state.pendingSyncCount == 1) "change" else "changes"}"
+            }
+
+            state.lastSyncedAt != null -> {
+                MaterialTheme.colorScheme.onSurfaceVariant to "Synced ${relativeTime(state.lastSyncedAt)}"
+            }
+
+            else -> {
+                return
+            }
+        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Box(modifier = Modifier.size(6.dp).background(color, CircleShape))
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = color)
+    }
+}
+
+/** Coarse relative time for the sync indicator; recomputed on each state emission. */
+private fun relativeTime(millis: Long): String {
+    val diff = nowEpochMillis() - millis
+    return when {
+        diff < 60_000L -> "just now"
+        diff < 3_600_000L -> "${diff / 60_000L}m ago"
+        diff < 86_400_000L -> "${diff / 3_600_000L}h ago"
+        else -> "${diff / 86_400_000L}d ago"
     }
 }
 
@@ -340,5 +384,6 @@ private fun previewState(): OrdersListState {
             ),
         selectedOrderId = "1",
         counts = mapOf(null to 3, OrderStatus.SHIPPED to 1, OrderStatus.DELAYED to 1, OrderStatus.ORDERED to 1),
+        pendingSyncCount = 2,
     )
 }

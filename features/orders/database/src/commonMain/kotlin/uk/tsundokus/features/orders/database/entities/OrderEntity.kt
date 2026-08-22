@@ -22,4 +22,7 @@ data class OrderEntity(
     val receivedDate: String,
     val delayedTo: String,
     val createdAt: Long,
+    // True while a local write for this row hasn't been confirmed by the server. Set by optimistic
+    // writes, cleared when delta sync applies the server's copy. Drives the "not synced" indicator.
+    val pendingSync: Boolean = false,
 )
