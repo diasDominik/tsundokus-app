@@ -20,6 +20,9 @@
     <string name="register_button">Create account</string>
     <string name="register_already_have_account_prefix">Already have an account? </string>
     <string name="register_login_action">Log in</string>
+    <string name="register_privacy_notice_prefix">By creating an account, you agree to our </string>
+    <string name="register_privacy_policy_link">Privacy Policy</string>
+    <string name="register_privacy_notice_suffix">.</string>
     <string name="register_email_invalid">Please enter a valid email address.</string>
     <string name="register_password_mismatch">Passwords do not match.</string>
     <string name="register_password_requirements">Password must be 8–40 characters and include a number or symbol.</string>
