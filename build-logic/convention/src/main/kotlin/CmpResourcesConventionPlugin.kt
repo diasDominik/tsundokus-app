@@ -1,6 +1,9 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import uk.tsundokus.convention.findPluginId
 import uk.tsundokus.convention.libs
 
@@ -10,6 +13,13 @@ class CmpResourcesConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply(libs.findPluginId("compose-compiler"))
                 apply(libs.findPluginId("compose-multiplatform"))
+            }
+
+            extensions.configure<KotlinMultiplatformExtension> {
+                @OptIn(ExperimentalWasmDsl::class)
+                wasmJs {
+                    binaries.executable()
+                }
             }
 
             dependencies {

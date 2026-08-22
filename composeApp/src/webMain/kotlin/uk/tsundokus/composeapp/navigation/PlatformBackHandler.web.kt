@@ -19,6 +19,7 @@ import org.w3c.dom.events.Event
  * Re-pushing truncates any forward history, so the browser Forward button is intentionally inert;
  * in-app navigation does not sync the address bar (back-button integration only).
  */
+@OptIn(ExperimentalWasmJsInterop::class)
 @Composable
 actual fun PlatformBackHandler(
     enabled: Boolean,
