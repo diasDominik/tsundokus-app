@@ -26,20 +26,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.settings_about
+import tsundokuapp.features.settings.presentation.generated.resources.settings_about_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_account_fallback
+import tsundokuapp.features.settings.presentation.generated.resources.settings_appearance
+import tsundokuapp.features.settings.presentation.generated.resources.settings_change_email
+import tsundokuapp.features.settings.presentation.generated.resources.settings_change_email_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_change_password
+import tsundokuapp.features.settings.presentation.generated.resources.settings_change_password_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_currency
+import tsundokuapp.features.settings.presentation.generated.resources.settings_delete_account
+import tsundokuapp.features.settings.presentation.generated.resources.settings_delete_account_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_edit
+import tsundokuapp.features.settings.presentation.generated.resources.settings_footer
+import tsundokuapp.features.settings.presentation.generated.resources.settings_oss_licenses
+import tsundokuapp.features.settings.presentation.generated.resources.settings_oss_licenses_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_privacy_policy
+import tsundokuapp.features.settings.presentation.generated.resources.settings_privacy_policy_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_section_about
+import tsundokuapp.features.settings.presentation.generated.resources.settings_section_account
+import tsundokuapp.features.settings.presentation.generated.resources.settings_section_preferences
+import tsundokuapp.features.settings.presentation.generated.resources.settings_sign_out
+import tsundokuapp.features.settings.presentation.generated.resources.settings_theme_dark
+import tsundokuapp.features.settings.presentation.generated.resources.settings_theme_light
+import tsundokuapp.features.settings.presentation.generated.resources.settings_theme_system
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
+import uk.tsundokus.core.domain.legal.LegalUrls
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.features.settings.presentation.AppInfo
 
 @Composable
 fun SettingsRoot(
@@ -118,44 +147,46 @@ internal fun SettingsScreen(
                 onEdit = onEditProfile,
             )
 
-            SectionLabel("ACCOUNT")
+            SectionLabel(stringResource(Res.string.settings_section_account))
             SettingsRow(
                 icon = TsundokuIcons.Email,
-                title = "Change email",
-                subtitle = state.accountEmail.ifBlank { "Update your email address" },
+                title = stringResource(Res.string.settings_change_email),
+                subtitle =
+                    state.accountEmail.ifBlank { stringResource(Res.string.settings_change_email_caption) },
                 onClick = onChangeEmail,
             )
             SettingsRow(
                 icon = TsundokuIcons.Lock,
-                title = "Change password",
-                subtitle = "Update your password",
+                title = stringResource(Res.string.settings_change_password),
+                subtitle = stringResource(Res.string.settings_change_password_caption),
                 onClick = onChangePassword,
             )
 
-            SectionLabel("PREFERENCES")
+            SectionLabel(stringResource(Res.string.settings_section_preferences))
             AppearanceCard(theme = state.theme, onThemeSelected = { onAction(SettingsAction.ChangeTheme(it)) })
             CurrencyCard(
                 currency = state.currency,
                 onCurrencySelected = { onAction(SettingsAction.ChangeCurrency(it)) },
             )
 
-            SectionLabel("ABOUT")
+            SectionLabel(stringResource(Res.string.settings_section_about))
             SettingsRow(
                 icon = TsundokuIcons.Info,
-                title = "About Tsundoku",
-                subtitle = "Version and acknowledgements",
+                title = stringResource(Res.string.settings_about),
+                subtitle = stringResource(Res.string.settings_about_caption),
                 onClick = onAbout,
             )
+            PrivacyPolicyRow()
             SettingsRow(
                 icon = TsundokuIcons.Info,
-                title = "Open-source licenses",
-                subtitle = "Third-party libraries and their licenses",
+                title = stringResource(Res.string.settings_oss_licenses),
+                subtitle = stringResource(Res.string.settings_oss_licenses_caption),
                 onClick = onLicenses,
             )
             SettingsRow(
                 icon = TsundokuIcons.Delete,
-                title = "Delete account",
-                subtitle = "Permanently remove your account",
+                title = stringResource(Res.string.settings_delete_account),
+                subtitle = stringResource(Res.string.settings_delete_account_caption),
                 onClick = onDeleteAccount,
                 destructive = true,
             )
@@ -164,7 +195,7 @@ internal fun SettingsScreen(
             SignOutButton(onClick = { onAction(SettingsAction.SignOut) })
             VerticalSpacer(8.dp)
             Text(
-                text = "Tsundoku · v1.0",
+                text = stringResource(Res.string.settings_footer, AppInfo.NAME, AppInfo.VERSION),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -195,7 +226,7 @@ private fun AccountHeaderCard(
             HorizontalSpacer(16.dp)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = name.ifBlank { "Your account" },
+                    text = name.ifBlank { stringResource(Res.string.settings_account_fallback) },
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
@@ -212,7 +243,7 @@ private fun AccountHeaderCard(
                 }
             }
             TextButton(onClick = onEdit) {
-                Text(text = "Edit", fontWeight = FontWeight.SemiBold)
+                Text(text = stringResource(Res.string.settings_edit), fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -251,6 +282,22 @@ private fun SectionLabel(text: String) {
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
+    )
+}
+
+/**
+ * The policy is a document hosted outside the app, so this row leaves it — which the chevron alone
+ * cannot say. The subtitle names the destination, so the row still reads like its siblings without
+ * misleading about where it goes.
+ */
+@Composable
+private fun PrivacyPolicyRow() {
+    val uriHandler = LocalUriHandler.current
+    SettingsRow(
+        icon = TsundokuIcons.Shield,
+        title = stringResource(Res.string.settings_privacy_policy),
+        subtitle = stringResource(Res.string.settings_privacy_policy_caption),
+        onClick = { uriHandler.openUri(LegalUrls.PRIVACY_POLICY) },
     )
 }
 
@@ -319,9 +366,14 @@ private fun AppearanceCard(
     onThemeSelected: (ThemeMode) -> Unit,
 ) {
     val options = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK)
-    PreferenceCard(title = "Appearance") {
+    PreferenceCard(title = stringResource(Res.string.settings_appearance)) {
         SegmentedControl(
-            options = listOf("System", "Light", "Dark"),
+            options =
+                listOf(
+                    stringResource(Res.string.settings_theme_system),
+                    stringResource(Res.string.settings_theme_light),
+                    stringResource(Res.string.settings_theme_dark),
+                ),
             selectedIndex = options.indexOf(theme).coerceAtLeast(0),
             onSelect = { index -> onThemeSelected(options[index]) },
         )
@@ -334,7 +386,7 @@ private fun CurrencyCard(
     onCurrencySelected: (AppCurrency) -> Unit,
 ) {
     val currencies = AppCurrency.entries
-    PreferenceCard(title = "Currency") {
+    PreferenceCard(title = stringResource(Res.string.settings_currency)) {
         SegmentedControl(
             options = currencies.map { it.symbol },
             selectedIndex = currencies.indexOf(currency),
@@ -435,7 +487,7 @@ private fun SignOutButton(onClick: () -> Unit) {
             )
             HorizontalSpacer(8.dp)
             Text(
-                text = "Sign out",
+                text = stringResource(Res.string.settings_sign_out),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
