@@ -20,6 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.order_date_field_cancel
+import tsundokuapp.features.orders.presentation.generated.resources.order_date_field_clear_cd
+import tsundokuapp.features.orders.presentation.generated.resources.order_date_field_confirm
+import tsundokuapp.features.orders.presentation.generated.resources.order_date_field_pick_cd
+import tsundokuapp.features.orders.presentation.generated.resources.order_date_field_placeholder
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 
 /**
@@ -33,11 +41,12 @@ import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 fun OrderDateField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
+    label: StringResource,
     modifier: Modifier = Modifier,
 ) {
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
+    val labelText = stringResource(label)
 
     // A read-only text field swallows clicks, so the press interaction is what opens the picker.
     LaunchedEffect(interactionSource) {
@@ -49,8 +58,8 @@ fun OrderDateField(
     OutlinedTextField(
         value = fmtDate(value),
         onValueChange = {},
-        label = { Text(label) },
-        placeholder = { Text("Select date") },
+        label = { Text(labelText) },
+        placeholder = { Text(stringResource(Res.string.order_date_field_placeholder)) },
         readOnly = true,
         singleLine = true,
         interactionSource = interactionSource,
@@ -58,13 +67,13 @@ fun OrderDateField(
             if (value.isBlank()) {
                 Icon(
                     imageVector = TsundokuIcons.CalendarToday,
-                    contentDescription = "Pick $label",
+                    contentDescription = stringResource(Res.string.order_date_field_pick_cd, labelText),
                 )
             } else {
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         imageVector = TsundokuIcons.Close,
-                        contentDescription = "Clear $label",
+                        contentDescription = stringResource(Res.string.order_date_field_clear_cd, labelText),
                     )
                 }
             }
@@ -85,12 +94,12 @@ fun OrderDateField(
                     },
                     enabled = pickerState.selectedDateMillis != null,
                 ) {
-                    Text("OK")
+                    Text(stringResource(Res.string.order_date_field_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(Res.string.order_date_field_cancel))
                 }
             },
         ) {

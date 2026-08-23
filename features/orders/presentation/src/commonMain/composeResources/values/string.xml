@@ -320,4 +320,31 @@
     <string name="migrate_account_error_password_requirements">Password must be 8–40 characters and include a number or symbol</string>
     <string name="migrate_account_error_password_mismatch">Passwords do not match</string>
     <string name="migrate_account_error_email_unavailable">This email can't be used. Please try a different one.</string>
+
+    <string name="order_date_field_placeholder">Select date</string>
+    <string name="order_date_field_confirm">Set</string>
+    <string name="order_date_field_cancel">Cancel</string>
+    <string name="order_date_field_pick_cd">Pick %1$s</string>
+    <string name="order_date_field_clear_cd">Clear %1$s</string>
+
+    <string name="add_edit_order_section_status">Status</string>
+    <string name="add_edit_order_section_currency">Currency</string>
+    <string name="add_edit_order_section_reading">Reading</string>
+    <string name="add_edit_order_title_label">Title</string>
+    <string name="add_edit_order_title_error_required">Title is required</string>
+    <string name="add_edit_order_author_label">Author</string>
+    <string name="add_edit_order_volume_label">Volume</string>
+    <string name="add_edit_order_publisher_label">Publisher</string>
+    <string name="add_edit_order_store_label">Store</string>
+    <string name="add_edit_order_price_label">Price</string>
+    <string name="add_edit_order_order_date_label">Order date</string>
+    <string name="add_edit_order_release_date_label">Release date</string>
+    <string name="add_edit_order_ship_date_label">Ship date</string>
+    <string name="add_edit_order_eta_label">ETA</string>
+    <string name="add_edit_order_delayed_to_label">Delayed to</string>
+    <string name="add_edit_order_received_date_label">Received date</string>
+    <string name="add_edit_order_currency_option">%1$s %2$s</string>
+    <string name="add_edit_order_save_changes">Save changes</string>
+    <string name="add_edit_order_add">Add order</string>
+    <string name="add_edit_order_delete">Delete order</string>
 </resources>

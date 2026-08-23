@@ -27,8 +27,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_add
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_currency_option
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delayed_to_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delete
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_price_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_publisher_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_received_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_release_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_save_changes
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_currency
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_reading
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_status
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_ship_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_store_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_title_error_required
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_title_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_volume_label
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
@@ -92,7 +115,7 @@ private fun AddEditOrderScreen(
                 .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        SectionLabel("Status")
+        SectionLabel(Res.string.add_edit_order_section_status)
         Row(
             modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -109,22 +132,23 @@ private fun AddEditOrderScreen(
         FormField(
             value = state.title,
             onValueChange = { onAction(AddEditOrderAction.OnTitleChange(it)) },
-            label = "Title",
+            label = Res.string.add_edit_order_title_label,
             isError = state.titleError,
-            supportingText = if (state.titleError) "Title is required" else null,
+            supportingText =
+                if (state.titleError) stringResource(Res.string.add_edit_order_title_error_required) else null,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FormField(
                 value = state.author,
                 onValueChange = { onAction(AddEditOrderAction.OnAuthorChange(it)) },
-                label = "Author",
+                label = Res.string.add_edit_order_author_label,
                 modifier = Modifier.weight(1f),
             )
             FormField(
                 value = state.volume,
                 onValueChange = { onAction(AddEditOrderAction.OnVolumeChange(it)) },
-                label = "Volume",
+                label = Res.string.add_edit_order_volume_label,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -132,26 +156,26 @@ private fun AddEditOrderScreen(
         FormField(
             value = state.publisher,
             onValueChange = { onAction(AddEditOrderAction.OnPublisherChange(it)) },
-            label = "Publisher",
+            label = Res.string.add_edit_order_publisher_label,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FormField(
                 value = state.store,
                 onValueChange = { onAction(AddEditOrderAction.OnStoreChange(it)) },
-                label = "Store",
+                label = Res.string.add_edit_order_store_label,
                 modifier = Modifier.weight(1f),
             )
             FormField(
                 value = state.price,
                 onValueChange = { onAction(AddEditOrderAction.OnPriceChange(it)) },
-                label = "Price",
+                label = Res.string.add_edit_order_price_label,
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f),
             )
         }
 
-        SectionLabel("Currency")
+        SectionLabel(Res.string.add_edit_order_section_currency)
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             AppCurrency.entries.forEachIndexed { index, currency ->
                 SegmentedButton(
@@ -159,7 +183,7 @@ private fun AddEditOrderScreen(
                     onClick = { onAction(AddEditOrderAction.OnCurrencySelected(currency)) },
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = AppCurrency.entries.size),
                 ) {
-                    Text("${currency.symbol} ${currency.name}")
+                    Text(stringResource(Res.string.add_edit_order_currency_option, currency.symbol, currency.name))
                 }
             }
         }
@@ -168,13 +192,13 @@ private fun AddEditOrderScreen(
             OrderDateField(
                 value = state.orderDate,
                 onValueChange = { onAction(AddEditOrderAction.OnOrderDateChange(it)) },
-                label = "Order date",
+                label = Res.string.add_edit_order_order_date_label,
                 modifier = Modifier.weight(1f),
             )
             OrderDateField(
                 value = state.releaseDate,
                 onValueChange = { onAction(AddEditOrderAction.OnReleaseDateChange(it)) },
-                label = "Release date",
+                label = Res.string.add_edit_order_release_date_label,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -184,13 +208,13 @@ private fun AddEditOrderScreen(
                 OrderDateField(
                     value = state.shipDate,
                     onValueChange = { onAction(AddEditOrderAction.OnShipDateChange(it)) },
-                    label = "Ship date",
+                    label = Res.string.add_edit_order_ship_date_label,
                     modifier = Modifier.weight(1f),
                 )
                 OrderDateField(
                     value = state.eta,
                     onValueChange = { onAction(AddEditOrderAction.OnEtaChange(it)) },
-                    label = "ETA",
+                    label = Res.string.add_edit_order_eta_label,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -200,7 +224,7 @@ private fun AddEditOrderScreen(
             OrderDateField(
                 value = state.delayedTo,
                 onValueChange = { onAction(AddEditOrderAction.OnDelayedToChange(it)) },
-                label = "Delayed to",
+                label = Res.string.add_edit_order_delayed_to_label,
             )
         }
 
@@ -208,11 +232,11 @@ private fun AddEditOrderScreen(
             OrderDateField(
                 value = state.receivedDate,
                 onValueChange = { onAction(AddEditOrderAction.OnReceivedDateChange(it)) },
-                label = "Received date",
+                label = Res.string.add_edit_order_received_date_label,
             )
         }
 
-        SectionLabel("Reading")
+        SectionLabel(Res.string.add_edit_order_section_reading)
         ReadStateSegmented(
             selected = state.readState,
             onSelect = { onAction(AddEditOrderAction.OnReadStateSelected(it)) },
@@ -220,7 +244,14 @@ private fun AddEditOrderScreen(
 
         VerticalSpacer(8.dp)
         TsundokuButton(
-            text = if (state.isEdit) "Save changes" else "Add order",
+            text =
+                stringResource(
+                    if (state.isEdit) {
+                        Res.string.add_edit_order_save_changes
+                    } else {
+                        Res.string.add_edit_order_add
+                    },
+                ),
             onClick = { onAction(AddEditOrderAction.OnSave) },
             isLoading = state.isSaving,
             modifier = Modifier.fillMaxWidth(),
@@ -228,7 +259,7 @@ private fun AddEditOrderScreen(
         if (state.isEdit) {
             VerticalSpacer(8.dp)
             TsundokuButton(
-                text = "Delete order",
+                text = stringResource(Res.string.add_edit_order_delete),
                 onClick = { onAction(AddEditOrderAction.OnDelete) },
                 style = TsundokuButtonStyle.DestructiveSecondary,
                 modifier = Modifier.fillMaxWidth(),
@@ -241,7 +272,7 @@ private fun AddEditOrderScreen(
 private fun FormField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
+    label: StringResource,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
     supportingText: String? = null,
@@ -250,7 +281,7 @@ private fun FormField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
+        label = { Text(stringResource(label)) },
         isError = isError,
         supportingText = supportingText?.let { message -> { Text(message) } },
         singleLine = true,
@@ -260,9 +291,9 @@ private fun FormField(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
+private fun SectionLabel(text: StringResource) {
     Text(
-        text = text,
+        text = stringResource(text),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
