@@ -50,6 +50,7 @@ import uk.tsundokus.core.designsystem.textfields.TsundokuPasswordTextField
 import uk.tsundokus.core.designsystem.textfields.TsundokuTextField
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.designsystem.theme.headlineLargeBold
+import uk.tsundokus.core.domain.legal.LegalUrls
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.features.authentication.presentation.di.AuthPresentationModule
 import uk.tsundokus.features.authentication.presentation.navigation.SignIn
@@ -199,8 +200,6 @@ private fun RegisterScreen(
     }
 }
 
-private const val PRIVACY_POLICY_URL = "https://github.com/diasDominik/tsundokus-app/blob/main/PRIVACY.md"
-
 /**
  * Informational fine print shown where the account is created, so the privacy policy is one tap away
  * at the moment data is collected. No consent checkbox: sign-up data is processed to perform the
@@ -214,7 +213,7 @@ private fun PrivacyNotice(modifier: Modifier = Modifier) {
         textBeforeLink = stringResource(Res.string.register_privacy_notice_prefix),
         linkText = stringResource(Res.string.register_privacy_policy_link),
         textAfterLink = stringResource(Res.string.register_privacy_notice_suffix),
-        onLinkClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
+        onLinkClick = { uriHandler.openUri(LegalUrls.PRIVACY_POLICY) },
         textStyle = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center),
         textColor = MaterialTheme.colorScheme.onSurfaceVariant,
     )
