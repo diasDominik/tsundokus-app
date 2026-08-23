@@ -24,7 +24,7 @@ class DateFormattingTest {
     }
 
     @Test
-    fun `field order follows the locale, not a hardcoded pattern`() {
+    fun `field order follows the locale rather than a hardcoded pattern`() {
         withLocale(Locale.US) { assertEquals("Mar 7, 2026", fmtDate("2026-03-07")) }
         withLocale(Locale.UK) { assertEquals("7 Mar 2026", fmtDate("2026-03-07")) }
     }
