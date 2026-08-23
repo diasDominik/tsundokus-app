@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
+import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
 import uk.tsundokus.core.domain.preferences.ThemeMode
 
@@ -22,7 +23,17 @@ class KSafeAppPreferencesRepository(
         prefs.put(KEY_THEME_MODE, mode.name, KSafeWriteMode.Plain)
     }
 
+    override fun currency(): Flow<AppCurrency> =
+        prefs.getFlow(KEY_CURRENCY, AppCurrency.EUR.name).map { stored ->
+            AppCurrency.fromName(stored)
+        }
+
+    override suspend fun setCurrency(currency: AppCurrency) {
+        prefs.put(KEY_CURRENCY, currency.name, KSafeWriteMode.Plain)
+    }
+
     private companion object {
         private const val KEY_THEME_MODE = "themeMode"
+        private const val KEY_CURRENCY = "currency"
     }
 }
