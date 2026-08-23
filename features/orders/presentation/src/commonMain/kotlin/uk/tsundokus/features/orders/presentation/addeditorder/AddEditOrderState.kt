@@ -22,6 +22,16 @@ data class AddEditOrderState(
     val receivedDate: String = "",
     val delayedTo: String = "",
     val isEdit: Boolean = false,
-    val titleError: Boolean = false,
+    val errors: Set<OrderFormField> = emptySet(),
     val isSaving: Boolean = false,
 )
+
+/** The fields the form requires. Volume, release date and the status dates stay optional. */
+enum class OrderFormField {
+    TITLE,
+    AUTHOR,
+    PUBLISHER,
+    STORE,
+    PRICE,
+    ORDER_DATE,
+}

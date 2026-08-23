@@ -33,13 +33,17 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_add
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_currency_option
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delayed_to_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delete
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_price_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_price_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_publisher_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_publisher_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_received_date_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_release_date_label
@@ -48,6 +52,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_reading
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_status
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_ship_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_store_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_store_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_title_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_title_label
@@ -134,9 +139,8 @@ private fun AddEditOrderScreen(
             value = state.title,
             onValueChange = { onAction(AddEditOrderAction.OnTitleChange(it)) },
             label = Res.string.add_edit_order_title_label,
-            isError = state.titleError,
-            supportingText =
-                if (state.titleError) stringResource(Res.string.add_edit_order_title_error_required) else null,
+            isError = OrderFormField.TITLE in state.errors,
+            supportingText = state.errorFor(OrderFormField.TITLE),
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -144,6 +148,8 @@ private fun AddEditOrderScreen(
                 value = state.author,
                 onValueChange = { onAction(AddEditOrderAction.OnAuthorChange(it)) },
                 label = Res.string.add_edit_order_author_label,
+                isError = OrderFormField.AUTHOR in state.errors,
+                supportingText = state.errorFor(OrderFormField.AUTHOR),
                 modifier = Modifier.weight(1f),
             )
             FormField(
@@ -158,6 +164,8 @@ private fun AddEditOrderScreen(
             value = state.publisher,
             onValueChange = { onAction(AddEditOrderAction.OnPublisherChange(it)) },
             label = Res.string.add_edit_order_publisher_label,
+            isError = OrderFormField.PUBLISHER in state.errors,
+            supportingText = state.errorFor(OrderFormField.PUBLISHER),
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -165,12 +173,16 @@ private fun AddEditOrderScreen(
                 value = state.store,
                 onValueChange = { onAction(AddEditOrderAction.OnStoreChange(it)) },
                 label = Res.string.add_edit_order_store_label,
+                isError = OrderFormField.STORE in state.errors,
+                supportingText = state.errorFor(OrderFormField.STORE),
                 modifier = Modifier.weight(1f),
             )
             FormField(
                 value = state.price,
                 onValueChange = { onAction(AddEditOrderAction.OnPriceChange(it)) },
                 label = Res.string.add_edit_order_price_label,
+                isError = OrderFormField.PRICE in state.errors,
+                supportingText = state.errorFor(OrderFormField.PRICE),
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f),
             )
@@ -194,6 +206,8 @@ private fun AddEditOrderScreen(
                 value = state.orderDate,
                 onValueChange = { onAction(AddEditOrderAction.OnOrderDateChange(it)) },
                 label = Res.string.add_edit_order_order_date_label,
+                isError = OrderFormField.ORDER_DATE in state.errors,
+                supportingText = state.errorFor(OrderFormField.ORDER_DATE),
                 modifier = Modifier.weight(1f),
             )
             OrderDateField(
@@ -268,6 +282,24 @@ private fun AddEditOrderScreen(
         }
     }
 }
+
+/** The message for a field, or null when it currently has no error. */
+@Composable
+private fun AddEditOrderState.errorFor(field: OrderFormField): String? =
+    if (field !in errors) {
+        null
+    } else {
+        stringResource(
+            when (field) {
+                OrderFormField.TITLE -> Res.string.add_edit_order_title_error_required
+                OrderFormField.AUTHOR -> Res.string.add_edit_order_author_error_required
+                OrderFormField.PUBLISHER -> Res.string.add_edit_order_publisher_error_required
+                OrderFormField.STORE -> Res.string.add_edit_order_store_error_required
+                OrderFormField.PRICE -> Res.string.add_edit_order_price_error_required
+                OrderFormField.ORDER_DATE -> Res.string.add_edit_order_order_date_error_required
+            },
+        )
+    }
 
 @Composable
 private fun FormField(

@@ -43,6 +43,8 @@ fun OrderDateField(
     onValueChange: (String) -> Unit,
     label: StringResource,
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    supportingText: String? = null,
 ) {
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
@@ -62,6 +64,8 @@ fun OrderDateField(
         placeholder = { Text(stringResource(Res.string.order_date_field_placeholder)) },
         readOnly = true,
         singleLine = true,
+        isError = isError,
+        supportingText = supportingText?.let { message -> { Text(message) } },
         interactionSource = interactionSource,
         trailingIcon = {
             if (value.isBlank()) {
