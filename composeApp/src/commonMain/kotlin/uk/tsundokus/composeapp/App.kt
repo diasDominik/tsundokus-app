@@ -39,9 +39,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
+import tsundokuapp.composeapp.generated.resources.Res
+import tsundokuapp.composeapp.generated.resources.back
+import tsundokuapp.composeapp.generated.resources.new_order
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntryDecorator
@@ -66,6 +75,7 @@ import uk.tsundokus.core.presentation.navigation.ScreenWithFab
 import uk.tsundokus.core.presentation.navigation.TopBarActionsController
 import uk.tsundokus.core.presentation.navigation.TopLevelTab
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
 import uk.tsundokus.features.authentication.presentation.navigation.SignIn
 import uk.tsundokus.features.authentication.presentation.navigation.authGraph
 import uk.tsundokus.features.authentication.presentation.navigation.authSerializersModule
@@ -215,10 +225,44 @@ fun App() {
                     } else {
                         NavigationSuiteScaffoldDefaults.navigationSuiteType(currentWindowAdaptiveInfoV2())
                     }
+                // Desktop and web have no back gesture and no hardware back key, so the shell offers
+                // the two shortcuts people reach for: Escape to leave a screen, Ctrl/Cmd+N to start
+                // an order. Escape is routed through the current screen's own close handler when it
+                // has published one, so the add/edit form still gets to ask about unsaved changes
+                // instead of being popped out from under the user.
+                val shellShortcuts =
+                    Modifier.onPreviewKeyEvent { event ->
+                        if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                        when {
+                            event.key == Key.Escape -> {
+                                val close = topBarActions.overrideFor(currentKey)?.onNavigationClick
+                                when {
+                                    close != null -> close()
+                                    backStack.size > 1 -> backStack.removeLastOrNull()
+                                    else -> return@onPreviewKeyEvent false
+                                }
+                                true
+                            }
+
+                            event.isCommandOrControlPressed && event.key == Key.N -> {
+                                // Only where the FAB offers the same thing, so the shortcut never
+                                // stacks a second Add-order screen on top of the first.
+                                val fabScreen = currentKey as? ScreenWithFab
+                                if (fabScreen?.fabAction == FabAction.AddOrder) {
+                                    backStack.add(AddOrder)
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+
+                            else -> false
+                        }
+                    }
                 NavigationSuiteScaffold(
                     // Lifts the whole shell above the keyboard. Applied here, at the node flush with
                     // the window, so the padding equals the keyboard height exactly.
-                    modifier = Modifier.imePadding(),
+                    modifier = Modifier.imePadding().then(shellShortcuts),
                     navigationSuiteType = navigationSuiteType,
                     navigationItems = {
                         // The tab the stack is currently under, not just the top key: a detail entry
@@ -263,7 +307,7 @@ fun App() {
                             ) {
                                 Icon(
                                     imageVector = TsundokuIcons.Add,
-                                    contentDescription = "New order",
+                                    contentDescription = stringResource(Res.string.new_order),
                                 )
                             }
                         } else if (navigationSuiteType != NavigationSuiteType.NavigationBar) {
@@ -323,7 +367,7 @@ fun App() {
                                     IconButton(onClick = { backStack.removeLastOrNull() }) {
                                         Icon(
                                             imageVector = TsundokuIcons.ArrowBack,
-                                            contentDescription = "Back",
+                                            contentDescription = stringResource(Res.string.back),
                                         )
                                     }
                                 },
