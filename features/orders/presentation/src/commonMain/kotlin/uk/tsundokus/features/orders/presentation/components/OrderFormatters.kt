@@ -13,42 +13,30 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_row_or
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_received
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_received_on
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_releases
+import uk.tsundokus.core.presentation.date.formatMediumDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import kotlin.math.abs
 import kotlin.math.round
 import kotlin.time.Clock
 
+// Date / price formatting. Dates are stored and compared as ISO `yyyy-MM-dd` strings, which sort
+// lexicographically in chronological order, so `<` / `>` work directly; only display goes through
+// the platform formatter.
+
 /**
- * Date / price formatting that avoids a datetime dependency. Dates are ISO `yyyy-MM-dd`
- * strings, which compare lexicographically in chronological order, so `<` / `>` work directly.
+ * Formats an ISO `yyyy-MM-dd` string in the viewer's locale (`7 Mar 2026`, `Mar 7, 2026`,
+ * `2026年3月7日`). Blank input gives "", and an unparseable date is passed through as-is.
  */
-
-private val MONTHS =
-    arrayOf(
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    )
-
-/** Formats an ISO `yyyy-MM-dd` string as `d MMM yyyy` (e.g. `7 Mar 2026`). Blank -> "". */
 fun fmtDate(iso: String): String {
     if (iso.isBlank()) return ""
     val parts = iso.split("-")
     if (parts.size != 3) return iso
+    val year = parts[0].toIntOrNull() ?: return iso
     val month = parts[1].toIntOrNull() ?: return iso
     val day = parts[2].toIntOrNull() ?: return iso
-    if (month !in 1..12) return iso
-    return "$day ${MONTHS[month - 1]} ${parts[0]}"
+    if (month !in 1..12 || day !in 1..31) return iso
+    return formatMediumDate(year, month, day)
 }
 
 /** Today as an ISO `yyyy-MM-dd` string (UTC), used for "releases/expected" comparisons. */
