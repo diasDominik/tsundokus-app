@@ -1,8 +1,11 @@
 package uk.tsundokus.features.orders.presentation.orderslist
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,14 +14,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -27,12 +34,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,11 +63,17 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_clear_filters
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_clear_search_cd
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_detail_placeholder_caption
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_detail_placeholder_title
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_empty_caption
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_empty_title
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_filter_all
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_no_matches_filter_caption
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_no_matches_search_caption
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_no_matches_title
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_refresh_cd
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_search_placeholder
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_sort
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_status_filter
@@ -57,14 +84,19 @@ import tsundokuapp.features.orders.presentation.generated.resources.orders_list_
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_time_minutes
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_title
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_unsynced_changes
+import uk.tsundokus.core.designsystem.buttons.TsundokuButton
+import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewScreenSizes
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
@@ -113,17 +145,30 @@ private fun OrdersListScreen(
         currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(
             WIDTH_DP_MEDIUM_LOWER_BOUND,
         )
+    val searchFocusRequester = remember { FocusRequester() }
+    // Ctrl/Cmd+F jumps to search. Handled as a *preview* event so it works even while a text field
+    // holds focus, and only when the modifier is down so ordinary typing is untouched.
+    val shortcuts =
+        Modifier.onPreviewKeyEvent { event ->
+            if (event.type == KeyEventType.KeyDown && event.isCommandOrControlPressed && event.key == Key.F) {
+                searchFocusRequester.requestFocus()
+                true
+            } else {
+                false
+            }
+        }
     if (isExpanded) {
-        Row(modifier = modifier.fillMaxSize()) {
+        Row(modifier = modifier.fillMaxSize().then(shortcuts)) {
             Column(
                 modifier =
                     Modifier
                         .widthIn(min = 320.dp, max = 400.dp)
                         .fillMaxHeight(),
             ) {
-                ListHeader(state = state, onAction = onAction)
+                ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
                 OrdersListBody(
                     state = state,
+                    onAction = onAction,
                     onOrderClick = { id -> onAction(OrdersListAction.OnOrderSelected(id)) },
                 )
             }
@@ -154,10 +199,11 @@ private fun OrdersListScreen(
             }
         }
     } else {
-        Column(modifier = modifier.fillMaxSize()) {
-            ListHeader(state = state, onAction = onAction)
+        Column(modifier = modifier.fillMaxSize().then(shortcuts)) {
+            ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
             OrdersListBody(
                 state = state,
+                onAction = onAction,
                 onOrderClick = onOpenOrder,
             )
         }
@@ -168,6 +214,7 @@ private fun OrdersListScreen(
 private fun ListHeader(
     state: OrdersListState,
     onAction: (OrdersListAction) -> Unit,
+    searchFocusRequester: FocusRequester,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -177,28 +224,103 @@ private fun ListHeader(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f),
             )
-            TextButton(onClick = { onAction(OrdersListAction.OnToggleSort) }) {
-                Text(stringResource(Res.string.orders_list_sort, stringResource(state.sort.labelRes)))
-            }
+            SortMenu(state = state, onAction = onAction)
         }
-        SyncStatusLine(state = state)
+        SyncStatusLine(state = state, onAction = onAction)
         VerticalSpacer(8.dp)
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onAction(OrdersListAction.OnSearchQueryChange(it)) },
             placeholder = { Text(stringResource(Res.string.orders_list_search_placeholder)) },
             leadingIcon = { Icon(TsundokuIcons.Search, contentDescription = null) },
+            trailingIcon = {
+                if (state.searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onAction(OrdersListAction.OnSearchQueryChange("")) }) {
+                        Icon(
+                            TsundokuIcons.Close,
+                            contentDescription = stringResource(Res.string.orders_list_clear_search_cd),
+                        )
+                    }
+                }
+            },
             singleLine = true,
             shape = RoundedCornerShape(20.dp),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().focusRequester(searchFocusRequester),
         )
         VerticalSpacer(8.dp)
         FilterChipsRow(state = state, onAction = onAction)
     }
 }
 
+/**
+ * The sort control. Re-picking the active sort reverses it, which the arrow in the trailing
+ * position reflects — the previous cycle-through-four-modes button gave no way to see the options
+ * or to reverse any of them.
+ */
 @Composable
-private fun SyncStatusLine(state: OrdersListState) {
+private fun SortMenu(
+    state: OrdersListState,
+    onAction: (OrdersListAction) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        TextButton(onClick = { expanded = true }) {
+            Text(stringResource(Res.string.orders_list_sort, stringResource(state.sort.labelRes)))
+            Icon(
+                imageVector =
+                    if (state.sortDirection == SortDirection.ASCENDING) {
+                        TsundokuIcons.ArrowUpward
+                    } else {
+                        TsundokuIcons.ArrowDownward
+                    },
+                contentDescription = stringResource(state.sortDirection.labelRes),
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            OrderSort.entries.forEach { sort ->
+                val isSelected = sort == state.sort
+                DropdownMenuItem(
+                    text = { Text(stringResource(sort.labelRes)) },
+                    onClick = {
+                        onAction(OrdersListAction.OnSortSelected(sort))
+                        // Kept open on the active entry: reversing is a repeat tap, and closing the
+                        // menu on every flip would make that a two-click round trip each time.
+                        if (!isSelected) expanded = false
+                    },
+                    leadingIcon = {
+                        if (isSelected) {
+                            Icon(TsundokuIcons.Check, contentDescription = null)
+                        }
+                    },
+                    trailingIcon = {
+                        if (isSelected) {
+                            Icon(
+                                imageVector =
+                                    if (state.sortDirection == SortDirection.ASCENDING) {
+                                        TsundokuIcons.ArrowUpward
+                                    } else {
+                                        TsundokuIcons.ArrowDownward
+                                    },
+                                contentDescription = stringResource(state.sortDirection.labelRes),
+                            )
+                        }
+                    },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Sync freshness, and the only sync affordance that exists on every platform: pull-to-refresh is a
+ * touch gesture, so desktop and web need something clickable.
+ */
+@Composable
+private fun SyncStatusLine(
+    state: OrdersListState,
+    onAction: (OrdersListAction) -> Unit,
+) {
     // Pending writes take priority (the actionable state); otherwise show freshness. Nothing to
     // show before the first sync.
     val (color, label) =
@@ -221,9 +343,16 @@ private fun SyncStatusLine(state: OrdersListState) {
                 return
             }
         }
+    val refreshLabel = stringResource(Res.string.orders_list_refresh_cd)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .clickable(enabled = !state.isRefreshing, onClickLabel = refreshLabel) {
+                    onAction(OrdersListAction.OnRefresh)
+                }.padding(horizontal = 4.dp, vertical = 2.dp),
     ) {
         Box(modifier = Modifier.size(6.dp).background(color, CircleShape))
         Text(text = label, style = MaterialTheme.typography.labelSmall, color = color)
@@ -247,53 +376,158 @@ private fun FilterChipsRow(
     state: OrdersListState,
     onAction: (OrdersListAction) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        FilterChip(
-            selected = state.statusFilter == null,
-            onClick = { onAction(OrdersListAction.OnStatusFilterSelected(null)) },
-            label = { Text(stringResource(Res.string.orders_list_filter_all, state.counts[null] ?: 0)) },
-            shape = RoundedCornerShape(20.dp),
-        )
-        OrderStatus.entries.forEach { status ->
+    val scrollState = rememberScrollState()
+    // The row scrolls but gave no sign of it: chips simply ran off the edge, and the last two were
+    // invisible in a narrow pane. A fade on whichever side has more chips shows there is more to
+    // reach, and clearing the filters returns the row to the start so it never reads as truncated.
+    val fadeColor = MaterialTheme.colorScheme.background
+    LaunchedEffect(state.isFiltered) {
+        if (!state.isFiltered) scrollState.animateScrollTo(0)
+    }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             FilterChip(
-                selected = state.statusFilter == status,
-                onClick = { onAction(OrdersListAction.OnStatusFilterSelected(status)) },
-                label = {
-                    Text(
-                        stringResource(
-                            Res.string.orders_list_status_filter,
-                            stringResource(status.labelRes),
-                            state.counts[status] ?: 0,
-                        ),
-                    )
-                },
+                selected = state.statusFilter == null,
+                onClick = { onAction(OrdersListAction.OnStatusFilterSelected(null)) },
+                label = { Text(stringResource(Res.string.orders_list_filter_all, state.counts[null] ?: 0)) },
                 shape = RoundedCornerShape(20.dp),
+            )
+            OrderStatus.entries.forEach { status ->
+                FilterChip(
+                    selected = state.statusFilter == status,
+                    onClick = { onAction(OrdersListAction.OnStatusFilterSelected(status)) },
+                    label = {
+                        Text(
+                            stringResource(
+                                Res.string.orders_list_status_filter,
+                                stringResource(status.labelRes),
+                                state.counts[status] ?: 0,
+                            ),
+                        )
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                )
+            }
+        }
+        // matchParentSize, not fillMaxHeight: the fades must take their height *from* the chip row
+        // without contributing to layout. Filling height made this Box claim the whole column and
+        // left the list itself zero pixels tall.
+        Box(modifier = Modifier.matchParentSize()) {
+            EdgeFade(Alignment.CenterStart, fadeColor, visible = scrollState.value > 0)
+            EdgeFade(
+                Alignment.CenterEnd,
+                fadeColor,
+                visible = scrollState.value < scrollState.maxValue,
             )
         }
     }
 }
 
+/** A short gradient over the scrolling edge, purely a hint that the row continues. */
+@Composable
+private fun BoxScope.EdgeFade(
+    alignment: Alignment,
+    color: Color,
+    visible: Boolean,
+) {
+    if (!visible) return
+    val colors =
+        if (alignment == Alignment.CenterStart) {
+            listOf(color, Color.Transparent)
+        } else {
+            listOf(Color.Transparent, color)
+        }
+    Box(
+        modifier =
+            Modifier
+                .align(alignment)
+                .width(24.dp)
+                .fillMaxHeight()
+                .background(Brush.horizontalGradient(colors)),
+    )
+}
+
 @Composable
 private fun OrdersListBody(
     state: OrdersListState,
+    onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state.displayed.isEmpty()) {
-        EmptyState(
-            title = stringResource(Res.string.orders_list_empty_title),
-            caption = stringResource(Res.string.orders_list_empty_caption),
-            modifier = modifier.fillMaxSize(),
-        )
+        if (state.isFiltered) {
+            NoMatchesState(state = state, onAction = onAction, modifier = modifier.fillMaxSize())
+        } else {
+            EmptyState(
+                title = stringResource(Res.string.orders_list_empty_title),
+                caption = stringResource(Res.string.orders_list_empty_caption),
+                modifier = modifier.fillMaxSize(),
+            )
+        }
         return
     }
     val today = remember { todayIso() }
-    LazyColumn(
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = { onAction(OrdersListAction.OnRefresh) },
         modifier = modifier.fillMaxSize(),
+    ) {
+        OrdersLazyColumn(state = state, today = today, onOrderClick = onOrderClick)
+    }
+}
+
+/**
+ * Arrow keys walk the list and Enter opens the highlighted row — but only while the list itself
+ * holds focus, so arrows still move the caret when the user is in the search field.
+ */
+@Composable
+private fun Modifier.listKeyboardNavigation(
+    state: OrdersListState,
+    onOrderClick: (String) -> Unit,
+): Modifier {
+    val focusRequester = remember { FocusRequester() }
+    return this
+        .focusRequester(focusRequester)
+        .focusable()
+        .onPreviewKeyEvent { event ->
+            if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+            val displayed = state.displayed
+            if (displayed.isEmpty()) return@onPreviewKeyEvent false
+            val index = displayed.indexOfFirst { it.id == state.selectedOrderId }
+            when (event.key) {
+                Key.DirectionDown -> {
+                    onOrderClick(displayed[(index + 1).coerceAtMost(displayed.lastIndex)].id)
+                    true
+                }
+
+                Key.DirectionUp -> {
+                    onOrderClick(displayed[(index - 1).coerceAtLeast(0)].id)
+                    true
+                }
+
+                Key.Enter, Key.NumPadEnter -> {
+                    displayed.getOrNull(index)?.let { onOrderClick(it.id) } != null
+                }
+
+                else -> {
+                    false
+                }
+            }
+        }
+}
+
+@Composable
+private fun OrdersLazyColumn(
+    state: OrdersListState,
+    today: String,
+    onOrderClick: (String) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().listKeyboardNavigation(state, onOrderClick),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -323,11 +557,43 @@ private fun OrdersListBody(
     }
 }
 
+/**
+ * Shown when the user's own search or status filter hides everything — a different situation from
+ * having no orders at all, and one they can undo right here rather than hunting for what to reset.
+ */
+@Composable
+private fun NoMatchesState(
+    state: OrdersListState,
+    onAction: (OrdersListAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    EmptyState(
+        title = stringResource(Res.string.orders_list_no_matches_title),
+        caption =
+            if (state.searchQuery.isNotBlank()) {
+                stringResource(Res.string.orders_list_no_matches_search_caption, state.searchQuery)
+            } else {
+                stringResource(Res.string.orders_list_no_matches_filter_caption)
+            },
+        modifier = modifier,
+    ) {
+        TsundokuButton(
+            text = stringResource(Res.string.orders_list_clear_filters),
+            onClick = {
+                onAction(OrdersListAction.OnSearchQueryChange(""))
+                onAction(OrdersListAction.OnStatusFilterSelected(null))
+            },
+            style = TsundokuButtonStyle.Secondary,
+        )
+    }
+}
+
 @Composable
 private fun EmptyState(
     title: String,
     caption: String,
     modifier: Modifier = Modifier,
+    action: @Composable (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier.padding(32.dp),
@@ -346,6 +612,10 @@ private fun EmptyState(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        action?.let {
+            VerticalSpacer(16.dp)
+            it()
+        }
     }
 }
 

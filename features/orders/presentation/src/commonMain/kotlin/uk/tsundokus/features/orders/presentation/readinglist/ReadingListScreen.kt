@@ -1,16 +1,22 @@
 package uk.tsundokus.features.orders.presentation.readinglist
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,8 +34,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_clear_search_cd
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_no_matches_title
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_search_placeholder
 import tsundokuapp.features.orders.presentation.generated.resources.reading_list_empty
 import tsundokuapp.features.orders.presentation.generated.resources.reading_list_title
+import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
@@ -61,48 +71,84 @@ fun ReadingListRoot(
     ReadingListScreen(
         state = state,
         onCycleReadState = viewModel::onCycleReadState,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
         onOpenOrder = onOpenOrder,
     )
 }
+
+private val SHELF_MAX_WIDTH = 600.dp
 
 @Composable
 private fun ReadingListScreen(
     state: ReadingListState,
     onCycleReadState: (String) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
     onOpenOrder: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(Res.string.reading_list_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        )
-        if (state.grouped.isEmpty()) {
-            EmptyShelf(modifier = Modifier.fillMaxSize())
-            return@Column
+    // Capped and centred rather than stretched: at desktop width a shelf row would otherwise put
+    // its title and its reading chip at opposite edges of the window.
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        Column(modifier = Modifier.widthIn(max = SHELF_MAX_WIDTH).fillMaxWidth()) {
+            Text(
+                text = stringResource(Res.string.reading_list_title),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            )
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = onSearchQueryChange,
+                placeholder = { Text(stringResource(Res.string.orders_list_search_placeholder)) },
+                leadingIcon = { Icon(TsundokuIcons.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (state.searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { onSearchQueryChange("") }) {
+                            Icon(
+                                TsundokuIcons.Close,
+                                contentDescription = stringResource(Res.string.orders_list_clear_search_cd),
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            )
+            if (state.grouped.isEmpty()) {
+                EmptyShelf(isFiltered = state.isFiltered, modifier = Modifier.fillMaxSize())
+                return@Column
+            }
+            ShelfList(state = state, onCycleReadState = onCycleReadState, onOpenOrder = onOpenOrder)
         }
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            state.grouped.forEach { (readState, orders) ->
-                item(key = "header_${readState.name}") {
-                    SectionHeader(
-                        label = stringResource(readState.fullLabelRes),
-                        count = orders.size,
-                        dotColor = readState.dotColor(),
-                    )
-                }
-                items(items = orders, key = { it.id }) { order ->
-                    ReadingRow(
-                        order = order,
-                        onClick = { onOpenOrder(order.id) },
-                        onReadStateClick = { onCycleReadState(order.id) },
-                    )
-                }
+    }
+}
+
+@Composable
+private fun ShelfList(
+    state: ReadingListState,
+    onCycleReadState: (String) -> Unit,
+    onOpenOrder: (String) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        state.grouped.forEach { (readState, orders) ->
+            item(key = "header_${readState.name}") {
+                SectionHeader(
+                    label = stringResource(readState.fullLabelRes),
+                    count = orders.size,
+                    dotColor = readState.dotColor(),
+                )
+            }
+            items(items = orders, key = { it.id }) { order ->
+                ReadingRow(
+                    order = order,
+                    onClick = { onOpenOrder(order.id) },
+                    onReadStateClick = { onCycleReadState(order.id) },
+                )
             }
         }
     }
@@ -170,14 +216,24 @@ private fun ReadStateChip(
 }
 
 @Composable
-private fun EmptyShelf(modifier: Modifier = Modifier) {
+private fun EmptyShelf(
+    isFiltered: Boolean,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = stringResource(Res.string.reading_list_empty),
+            text =
+                stringResource(
+                    if (isFiltered) {
+                        Res.string.orders_list_no_matches_title
+                    } else {
+                        Res.string.reading_list_empty
+                    },
+                ),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
         )
@@ -229,6 +285,7 @@ private fun ReadingListScreenPreview() {
                             ),
                     ),
                 onCycleReadState = {},
+                onSearchQueryChange = {},
                 onOpenOrder = {},
             )
         }

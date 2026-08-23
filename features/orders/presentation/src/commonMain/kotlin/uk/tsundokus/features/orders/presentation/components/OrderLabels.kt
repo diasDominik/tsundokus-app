@@ -2,6 +2,8 @@ package uk.tsundokus.features.orders.presentation.components
 
 import org.jetbrains.compose.resources.StringResource
 import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.order_sort_ascending
+import tsundokuapp.features.orders.presentation.generated.resources.order_sort_descending
 import tsundokuapp.features.orders.presentation.generated.resources.order_sort_price
 import tsundokuapp.features.orders.presentation.generated.resources.order_sort_recent
 import tsundokuapp.features.orders.presentation.generated.resources.order_sort_release
@@ -20,6 +22,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.read_state_w
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.domain.models.SortDirection
 
 /**
  * Display copy for the domain enums. The enums themselves carry no user-facing text, so this is
@@ -62,4 +65,12 @@ val OrderSort.labelRes: StringResource
             OrderSort.RELEASE -> Res.string.order_sort_release
             OrderSort.TITLE -> Res.string.order_sort_title
             OrderSort.PRICE -> Res.string.order_sort_price
+        }
+
+/** Used as the sort arrow's content description — the arrow alone says nothing to a screen reader. */
+val SortDirection.labelRes: StringResource
+    get() =
+        when (this) {
+            SortDirection.ASCENDING -> Res.string.order_sort_ascending
+            SortDirection.DESCENDING -> Res.string.order_sort_descending
         }
