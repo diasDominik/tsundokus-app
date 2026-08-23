@@ -14,7 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.delete_account_button
+import tsundokuapp.features.settings.presentation.generated.resources.delete_account_confirm_hint
+import tsundokuapp.features.settings.presentation.generated.resources.delete_account_warning
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
@@ -44,22 +49,20 @@ fun DeleteAccountRoot(
         Column(modifier = Modifier.widthIn(max = 600.dp).fillMaxWidth()) {
             VerticalSpacer(8.dp)
             Text(
-                text =
-                    "This permanently deletes your account and all of your tracked orders. " +
-                        "This action cannot be undone.",
+                text = stringResource(Res.string.delete_account_warning),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             VerticalSpacer(16.dp)
             TsundokuTextField(
                 state = viewModel.confirmationState,
-                title = "Type DELETE to confirm",
+                title = stringResource(Res.string.delete_account_confirm_hint, DELETE_ACCOUNT_CONFIRM_KEYWORD),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             VerticalSpacer(24.dp)
             TsundokuButton(
-                text = "Delete account",
+                text = stringResource(Res.string.delete_account_button),
                 onClick = viewModel::onDelete,
                 style = TsundokuButtonStyle.DestructivePrimary,
                 enabled = state.confirmationValid && !state.isSubmitting,

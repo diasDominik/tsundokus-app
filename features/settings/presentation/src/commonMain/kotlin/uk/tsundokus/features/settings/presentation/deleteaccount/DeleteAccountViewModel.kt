@@ -72,13 +72,9 @@ class DeleteAccountViewModel(
 
     private fun observeConfirmation() {
         snapshotFlow { confirmationState.text.toString() }
-            .map { it == CONFIRM_KEYWORD }
+            .map { it == DELETE_ACCOUNT_CONFIRM_KEYWORD }
             .distinctUntilChanged()
             .onEach { valid -> _state.update { it.copy(confirmationValid = valid) } }
             .launchIn(viewModelScope)
-    }
-
-    private companion object {
-        private const val CONFIRM_KEYWORD = "DELETE"
     }
 }

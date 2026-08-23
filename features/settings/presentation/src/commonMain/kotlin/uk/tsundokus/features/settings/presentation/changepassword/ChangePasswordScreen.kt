@@ -12,7 +12,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_changed
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_confirm
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_current
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_new
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_save
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.textfields.TsundokuTextField
 import uk.tsundokus.core.presentation.navigation.TopBarActions
@@ -32,7 +40,7 @@ fun ChangePasswordRoot(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             ChangePasswordEvent.Saved -> {
-                snackbarHostState.showSnackbar("Password changed")
+                snackbarHostState.showSnackbar(getString(Res.string.change_password_changed))
                 onSaved()
             }
 
@@ -44,14 +52,14 @@ fun ChangePasswordRoot(
 
     TopBarActions(navKey) {
         TextButton(onClick = viewModel::onSave, enabled = !state.isSubmitting) {
-            Text(text = "Save", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(Res.string.change_password_save), fontWeight = FontWeight.SemiBold)
         }
     }
 
     AccountFieldColumn(modifier = modifier) {
         TsundokuTextField(
             state = viewModel.currentPasswordState,
-            title = "Current password",
+            title = stringResource(Res.string.change_password_current),
             singleLine = true,
             keyboardType = KeyboardType.Password,
             modifier = Modifier.fillMaxWidth(),
@@ -59,7 +67,7 @@ fun ChangePasswordRoot(
         VerticalSpacer(16.dp)
         TsundokuTextField(
             state = viewModel.newPasswordState,
-            title = "New password",
+            title = stringResource(Res.string.change_password_new),
             singleLine = true,
             keyboardType = KeyboardType.Password,
             modifier = Modifier.fillMaxWidth(),
@@ -67,7 +75,7 @@ fun ChangePasswordRoot(
         VerticalSpacer(16.dp)
         TsundokuTextField(
             state = viewModel.confirmPasswordState,
-            title = "Confirm new password",
+            title = stringResource(Res.string.change_password_confirm),
             singleLine = true,
             keyboardType = KeyboardType.Password,
             modifier = Modifier.fillMaxWidth(),

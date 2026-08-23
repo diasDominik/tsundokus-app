@@ -16,9 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.about_app_name
+import tsundokuapp.features.settings.presentation.generated.resources.about_description
+import tsundokuapp.features.settings.presentation.generated.resources.about_footer
+import tsundokuapp.features.settings.presentation.generated.resources.about_version
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
+import uk.tsundokus.features.settings.presentation.AppInfo
 
 @Composable
 fun AboutRoot(modifier: Modifier = Modifier) {
@@ -41,19 +48,17 @@ internal fun AboutScreen(modifier: Modifier = Modifier) {
         ) {
             VerticalSpacer(8.dp)
             Text(
-                text = "Tsundoku",
+                text = stringResource(Res.string.about_app_name),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "Version 1.0",
+                text = stringResource(Res.string.about_version, AppInfo.VERSION),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text =
-                    "Track every manga order from checkout to bookshelf — shipping, " +
-                        "delays, and what you're reading next, all in one place.",
+                text = stringResource(Res.string.about_description),
                 style = MaterialTheme.typography.bodyMedium,
             )
             VerticalSpacer(4.dp)
@@ -63,7 +68,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "Made with care for manga readers.",
+                    text = stringResource(Res.string.about_footer),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp),

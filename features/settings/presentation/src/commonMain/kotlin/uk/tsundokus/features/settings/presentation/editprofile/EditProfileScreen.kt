@@ -16,7 +16,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.edit_profile_display_name
+import tsundokuapp.features.settings.presentation.generated.resources.edit_profile_save
+import tsundokuapp.features.settings.presentation.generated.resources.edit_profile_updated
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.textfields.TsundokuTextField
 import uk.tsundokus.core.presentation.navigation.TopBarActions
@@ -35,7 +41,7 @@ fun EditProfileRoot(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             EditProfileEvent.Saved -> {
-                snackbarHostState.showSnackbar("Profile updated")
+                snackbarHostState.showSnackbar(getString(Res.string.edit_profile_updated))
                 onSaved()
             }
 
@@ -47,14 +53,14 @@ fun EditProfileRoot(
 
     TopBarActions(navKey) {
         TextButton(onClick = viewModel::onSave, enabled = !state.isSubmitting) {
-            Text(text = "Save", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(Res.string.edit_profile_save), fontWeight = FontWeight.SemiBold)
         }
     }
 
     AccountFieldColumn(modifier = modifier) {
         TsundokuTextField(
             state = viewModel.nameState,
-            title = "Display name",
+            title = stringResource(Res.string.edit_profile_display_name),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )

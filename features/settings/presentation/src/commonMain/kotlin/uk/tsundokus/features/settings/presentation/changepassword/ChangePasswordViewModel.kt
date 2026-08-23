@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_fields_required
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_mismatch
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_too_short
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -37,15 +41,15 @@ class ChangePasswordViewModel(
         val new = newPasswordState.text.toString()
         val confirm = confirmPasswordState.text.toString()
         if (current.isBlank() || new.isBlank()) {
-            send(ChangePasswordEvent.Error(UiText.DynamicString("Please fill in all fields")))
+            send(ChangePasswordEvent.Error(UiText.Resource(Res.string.change_password_error_fields_required)))
             return
         }
         if (new.length < MIN_PASSWORD_LENGTH) {
-            send(ChangePasswordEvent.Error(UiText.DynamicString("Password must be at least 6 characters")))
+            send(ChangePasswordEvent.Error(UiText.Resource(Res.string.change_password_error_too_short)))
             return
         }
         if (new != confirm) {
-            send(ChangePasswordEvent.Error(UiText.DynamicString("Passwords do not match")))
+            send(ChangePasswordEvent.Error(UiText.Resource(Res.string.change_password_error_mismatch)))
             return
         }
         viewModelScope.launch {
