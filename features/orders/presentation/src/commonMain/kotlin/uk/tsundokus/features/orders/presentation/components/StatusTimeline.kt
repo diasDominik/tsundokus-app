@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 
 /** Visual state of a single timeline node. */
@@ -31,7 +33,7 @@ enum class TimelineNodeState {
 
 /** One step in the order detail timeline. [date] is already display-formatted ("—" when unset). */
 data class TimelineNode(
-    val label: String,
+    val label: StringResource,
     val date: String,
     val state: TimelineNodeState,
 )
@@ -65,7 +67,7 @@ fun StatusTimeline(
                 HorizontalSpacer(12.dp)
                 Column(modifier = Modifier.padding(bottom = if (index == nodes.lastIndex) 0.dp else 16.dp)) {
                     Text(
-                        text = node.label,
+                        text = stringResource(node.label),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight =
                             if (node.state ==
