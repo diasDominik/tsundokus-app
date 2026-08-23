@@ -16,6 +16,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_deleted
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_added
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_updated
+import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -29,10 +30,20 @@ import uk.tsundokus.features.orders.presentation.components.todayIso
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+private val DATE_FIELDS =
+    setOf(
+        OrderFormField.ORDER_DATE,
+        OrderFormField.SHIP_DATE,
+        OrderFormField.ETA,
+        OrderFormField.RECEIVED_DATE,
+        OrderFormField.DELAYED_TO,
+    )
+
 @KoinViewModel
 class AddEditOrderViewModel(
     @InjectedParam private val orderId: String?,
     private val orderRepository: OrderRepository,
+    private val appPreferencesRepository: AppPreferencesRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AddEditOrderState(isEdit = orderId != null))
     val state = _state.asStateFlow()
@@ -42,10 +53,23 @@ class AddEditOrderViewModel(
 
     private var originalCreatedAt = 0L
 
+    /**
+     * The form as it was last handed to the user — on open, and again after a successful save.
+     * Everything that follows is compared against it to decide whether there is anything to lose.
+     */
+    private var pristine = _state.value
+
     init {
         if (orderId != null) {
             viewModelScope.launch {
                 populate(orderRepository.getOrderById(orderId).filterNotNull().first())
+            }
+        } else {
+            // A new order starts in the currency the user picked in settings, not a hardcoded one.
+            viewModelScope.launch {
+                val currency = appPreferencesRepository.currency().first()
+                _state.update { it.copy(currency = currency) }
+                markPristine()
             }
         }
     }
@@ -53,65 +77,65 @@ class AddEditOrderViewModel(
     fun onAction(action: AddEditOrderAction) {
         when (action) {
             is AddEditOrderAction.OnTitleChange -> {
-                _state.update { it.copy(title = action.value).clearing(OrderFormField.TITLE) }
+                updateForm { it.copy(title = action.value).clearing(OrderFormField.TITLE) }
             }
 
             is AddEditOrderAction.OnAuthorChange -> {
-                _state.update { it.copy(author = action.value).clearing(OrderFormField.AUTHOR) }
+                updateForm { it.copy(author = action.value).clearing(OrderFormField.AUTHOR) }
             }
 
             is AddEditOrderAction.OnPublisherChange -> {
-                _state.update { it.copy(publisher = action.value).clearing(OrderFormField.PUBLISHER) }
+                updateForm { it.copy(publisher = action.value).clearing(OrderFormField.PUBLISHER) }
             }
 
             is AddEditOrderAction.OnVolumeChange -> {
-                _state.update { it.copy(volume = action.value) }
+                updateForm { it.copy(volume = action.value) }
             }
 
             is AddEditOrderAction.OnStoreChange -> {
-                _state.update { it.copy(store = action.value).clearing(OrderFormField.STORE) }
+                updateForm { it.copy(store = action.value).clearing(OrderFormField.STORE) }
             }
 
             is AddEditOrderAction.OnPriceChange -> {
-                _state.update {
+                updateForm {
                     it.copy(price = OrderValidator.sanitizePrice(action.value)).clearing(OrderFormField.PRICE)
                 }
             }
 
             is AddEditOrderAction.OnOrderDateChange -> {
-                _state.update { it.copy(orderDate = action.value).clearing(OrderFormField.ORDER_DATE) }
+                updateForm { it.copy(orderDate = action.value).clearingDates() }
             }
 
             is AddEditOrderAction.OnReleaseDateChange -> {
-                _state.update { it.copy(releaseDate = action.value) }
+                updateForm { it.copy(releaseDate = action.value) }
             }
 
             is AddEditOrderAction.OnShipDateChange -> {
-                _state.update { it.copy(shipDate = action.value) }
+                updateForm { it.copy(shipDate = action.value).clearingDates() }
             }
 
             is AddEditOrderAction.OnEtaChange -> {
-                _state.update { it.copy(eta = action.value) }
+                updateForm { it.copy(eta = action.value).clearingDates() }
             }
 
             is AddEditOrderAction.OnReceivedDateChange -> {
-                _state.update { it.copy(receivedDate = action.value) }
+                updateForm { it.copy(receivedDate = action.value).clearingDates() }
             }
 
             is AddEditOrderAction.OnDelayedToChange -> {
-                _state.update { it.copy(delayedTo = action.value) }
+                updateForm { it.copy(delayedTo = action.value).clearingDates() }
             }
 
             is AddEditOrderAction.OnCurrencySelected -> {
-                _state.update { it.copy(currency = action.currency) }
+                updateForm { it.copy(currency = action.currency) }
             }
 
             is AddEditOrderAction.OnStatusSelected -> {
-                _state.update { it.copy(status = action.status) }
+                updateForm { it.copy(status = action.status) }
             }
 
             is AddEditOrderAction.OnReadStateSelected -> {
-                _state.update { it.copy(readState = action.readState) }
+                updateForm { it.copy(readState = action.readState) }
             }
 
             AddEditOrderAction.OnSave -> {
@@ -127,6 +151,31 @@ class AddEditOrderViewModel(
     private fun AddEditOrderState.clearing(field: OrderFormField): AddEditOrderState =
         if (field in errors) copy(errors = errors - field) else this
 
+    /**
+     * Clears every date error, not just the edited field's. The date rules are relations between
+     * fields, so moving the order date can resolve an error flagged on the received date; leaving
+     * the others standing would show an error the form no longer has.
+     */
+    private fun AddEditOrderState.clearingDates(): AddEditOrderState = copy(errors = errors - DATE_FIELDS)
+
+    /**
+     * Applies a user edit and re-derives [AddEditOrderState.isDirty] from it. Comparing against
+     * [pristine] rather than latching a flag means undoing an edit by hand — retyping the original
+     * title, re-picking the original status — correctly leaves nothing to discard.
+     */
+    private fun updateForm(transform: (AddEditOrderState) -> AddEditOrderState) {
+        _state.update { current ->
+            val next = transform(current)
+            next.copy(isDirty = next.formOnly() != pristine.formOnly())
+        }
+    }
+
+    /** Adopts the current form as the new baseline: nothing here counts as unsaved any more. */
+    private fun markPristine() {
+        pristine = _state.value
+        _state.update { it.copy(isDirty = false) }
+    }
+
     /** Every required field, checked together so the user sees all that is missing at once. */
     private fun AddEditOrderState.validate(): Set<OrderFormField> =
         buildSet {
@@ -136,6 +185,24 @@ class AddEditOrderViewModel(
             if (!OrderValidator.isRequiredTextValid(store)) add(OrderFormField.STORE)
             if (!OrderValidator.isPriceValid(price)) add(OrderFormField.PRICE)
             if (!OrderValidator.isRequiredDateValid(orderDate)) add(OrderFormField.ORDER_DATE)
+            addAll(impossibleDates())
+        }
+
+    /**
+     * Dates that describe a sequence that cannot have happened: nothing about an order can precede
+     * the day it was ordered, and it cannot arrive before it shipped. Each offending field is
+     * flagged rather than the order date, so the error sits on the value the user should change.
+     */
+    private fun AddEditOrderState.impossibleDates(): Set<OrderFormField> =
+        buildSet {
+            if (OrderValidator.isBefore(shipDate, orderDate)) add(OrderFormField.SHIP_DATE)
+            if (OrderValidator.isBefore(eta, orderDate)) add(OrderFormField.ETA)
+            if (OrderValidator.isBefore(delayedTo, orderDate)) add(OrderFormField.DELAYED_TO)
+            if (OrderValidator.isBefore(receivedDate, orderDate) ||
+                OrderValidator.isBefore(receivedDate, shipDate)
+            ) {
+                add(OrderFormField.RECEIVED_DATE)
+            }
         }
 
     private fun populate(order: Order) {
@@ -161,6 +228,8 @@ class AddEditOrderViewModel(
                 isEdit = true,
             )
         }
+        // The loaded order is the baseline an edit is measured against, not the blank form.
+        markPristine()
     }
 
     private fun save() {
@@ -184,6 +253,8 @@ class AddEditOrderViewModel(
             result
                 .onSuccess {
                     _state.update { it.copy(isSaving = false) }
+                    // Saved: there is nothing left to warn about on the way out.
+                    markPristine()
                     val message =
                         if (current.isEdit) {
                             Res.string.add_edit_order_saved_updated

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,7 +21,10 @@ import uk.tsundokus.core.presentation.util.toUiText
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.domain.order.OrderRepository
+import uk.tsundokus.features.orders.domain.preferences.OrderSortPreference
+import uk.tsundokus.features.orders.domain.preferences.OrdersPreferences
 import uk.tsundokus.features.orders.presentation.components.arrivalDate
 import uk.tsundokus.features.orders.presentation.components.todayIso
 import kotlin.time.Duration.Companion.seconds
@@ -28,13 +32,16 @@ import kotlin.time.Duration.Companion.seconds
 @KoinViewModel
 class OrdersListViewModel(
     private val orderRepository: OrderRepository,
+    private val ordersPreferences: OrdersPreferences,
     pendingWrites: PendingWrites,
     lastServerContactStore: LastServerContactStore,
 ) : ViewModel() {
+    // Search and the status filter are transient narrowings: they live and die with the screen.
+    // Sort is a durable preference and is read from (and written back to) OrdersPreferences.
     private val searchQuery = MutableStateFlow("")
-    private val sort = MutableStateFlow(OrderSort.RECENT)
     private val statusFilter = MutableStateFlow<OrderStatus?>(null)
     private val selectedOrderId = MutableStateFlow<String?>(null)
+    private val isRefreshing = MutableStateFlow(false)
 
     private val eventChannel = Channel<OrdersListEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -44,15 +51,18 @@ class OrdersListViewModel(
             SyncStatus(pendingCount = pending, lastSyncedAt = lastContact)
         }
 
+    private val narrowing =
+        combine(searchQuery, statusFilter, selectedOrderId, isRefreshing) { query, filter, selected, refreshing ->
+            Narrowing(query = query, filter = filter, selectedOrderId = selected, isRefreshing = refreshing)
+        }
+
     val state: StateFlow<OrdersListState> =
         combine(
             orderRepository.getOrders().onStart { emit(emptyList()) },
-            searchQuery,
-            sort,
-            statusFilter,
-            selectedOrderId,
-        ) { orders, query, sortOrder, filter, selected ->
-            buildState(orders, query, sortOrder, filter, selected)
+            ordersPreferences.sort(),
+            narrowing,
+        ) { orders, sortPreference, current ->
+            buildState(orders, sortPreference, current)
         }.combine(syncStatus) { state, sync ->
             state.copy(pendingSyncCount = sync.pendingCount, lastSyncedAt = sync.lastSyncedAt)
         }.stateIn(
@@ -62,22 +72,50 @@ class OrdersListViewModel(
         )
 
     init {
-        viewModelScope.launch {
-            orderRepository.fetchOrders().onFailure { error ->
-                eventChannel.send(OrdersListEvent.ShowMessage(error.toUiText()))
-            }
-        }
+        refresh()
     }
 
     fun onAction(action: OrdersListAction) {
         when (action) {
             is OrdersListAction.OnSearchQueryChange -> searchQuery.value = action.query
-            OrdersListAction.OnToggleSort -> sort.value = sort.value.next()
+            is OrdersListAction.OnSortSelected -> onSortSelected(action.sort)
+            OrdersListAction.OnRefresh -> refresh()
             is OrdersListAction.OnStatusFilterSelected -> statusFilter.value = action.status
             is OrdersListAction.OnOrderSelected -> selectedOrderId.value = action.orderId
         }
     }
+
+    /** Re-picking the current sort reverses it; picking a different one starts at its default. */
+    private fun onSortSelected(sort: OrderSort) {
+        viewModelScope.launch {
+            val current = ordersPreferences.sort().first()
+            val next =
+                if (current.sort == sort) {
+                    current.copy(direction = current.direction.flipped())
+                } else {
+                    OrderSortPreference(sort = sort, direction = sort.defaultDirection)
+                }
+            ordersPreferences.setSort(next)
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            isRefreshing.value = true
+            orderRepository.fetchOrders().onFailure { error ->
+                eventChannel.send(OrdersListEvent.ShowMessage(error.toUiText()))
+            }
+            isRefreshing.value = false
+        }
+    }
 }
+
+private data class Narrowing(
+    val query: String,
+    val filter: OrderStatus?,
+    val selectedOrderId: String?,
+    val isRefreshing: Boolean,
+)
 
 private data class SyncStatus(
     val pendingCount: Int,
@@ -86,20 +124,19 @@ private data class SyncStatus(
 
 private fun buildState(
     orders: List<Order>,
-    query: String,
-    sortOrder: OrderSort,
-    filter: OrderStatus?,
-    selected: String?,
+    sortPreference: OrderSortPreference,
+    current: Narrowing,
 ): OrdersListState {
     val today = todayIso()
-    val searched = orders.filter { it.matchesQuery(query) }
+    val searched = orders.filter { it.matchesQuery(current.query) }
     val counts: Map<OrderStatus?, Int> =
         buildMap {
             put(null, searched.size)
             OrderStatus.entries.forEach { status -> put(status, searched.count { it.status == status }) }
         }
+    val filter = current.filter
     val filtered = if (filter == null) searched else searched.filter { it.status == filter }
-    val sorted = filtered.sortedWith(sortOrder.comparator())
+    val sorted = filtered.sortedWith(comparatorFor(sortPreference))
     val grouped: Map<OrderStatus, List<Order>> =
         if (filter == null) {
             OrderStatus.groupOrder
@@ -110,14 +147,16 @@ private fun buildState(
         }
     return OrdersListState(
         isLoading = false,
+        isRefreshing = current.isRefreshing,
         allOrders = orders,
         displayed = sorted,
-        searchQuery = query,
-        sort = sortOrder,
+        searchQuery = current.query,
+        sort = sortPreference.sort,
+        sortDirection = sortPreference.direction,
         statusFilter = filter,
         nextArrival = orders.nextArrival(today),
         grouped = grouped,
-        selectedOrderId = selected ?: sorted.firstOrNull()?.id,
+        selectedOrderId = current.selectedOrderId ?: sorted.firstOrNull()?.id,
         counts = counts,
     )
 }
@@ -130,12 +169,27 @@ private fun Order.matchesQuery(query: String): Boolean {
         publisher.contains(needle, ignoreCase = true)
 }
 
-private fun OrderSort.comparator(): Comparator<Order> =
+private fun comparatorFor(preference: OrderSortPreference): Comparator<Order> {
+    val ascending: Comparator<Order> =
+        when (preference.sort) {
+            OrderSort.RECENT -> compareBy { it.createdAt }
+            OrderSort.RELEASE -> compareBy { it.releaseDate }
+            OrderSort.TITLE -> compareBy { it.title.lowercase() }
+            OrderSort.PRICE -> compareBy { it.price }
+        }
+    val byValue =
+        if (preference.direction == SortDirection.ASCENDING) ascending else ascending.reversed()
+    // Orders with no value for the key sink to the bottom in *both* directions: an unknown release
+    // date is not the earliest or the latest, it is simply unknown. Reversing the whole comparator
+    // instead would float those to the top.
+    val unsetLast = compareBy<Order> { preference.sort.isUnsetFor(it) }
+    return unsetLast.then(byValue)
+}
+
+private fun OrderSort.isUnsetFor(order: Order): Boolean =
     when (this) {
-        OrderSort.RECENT -> compareByDescending<Order> { it.createdAt }
-        OrderSort.RELEASE -> compareBy<Order>({ it.releaseDate.isBlank() }, { it.releaseDate })
-        OrderSort.TITLE -> compareBy<Order> { it.title.lowercase() }
-        OrderSort.PRICE -> compareByDescending<Order> { it.price }
+        OrderSort.RELEASE -> order.releaseDate.isBlank()
+        OrderSort.RECENT, OrderSort.TITLE, OrderSort.PRICE -> false
     }
 
 private fun List<Order>.nextArrival(today: String): Order? =

@@ -2,10 +2,12 @@ package uk.tsundokus.features.orders.presentation.orderdetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -15,6 +17,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +57,7 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.presentation.components.FactRow
+import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
 import uk.tsundokus.features.orders.presentation.components.StatusChip
 import uk.tsundokus.features.orders.presentation.components.StatusTimeline
@@ -119,81 +125,117 @@ private fun OrderDetailScreen(
         return
     }
 
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+    // Capped and centred: in the expanded list-detail layout this pane takes whatever width is
+    // left over, and unbounded fact rows put the label and its value at opposite ends of a very
+    // wide screen.
+    Box(
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        contentAlignment = Alignment.TopCenter,
     ) {
+        Column(modifier = Modifier.widthIn(max = DETAIL_MAX_WIDTH).fillMaxWidth().padding(16.dp)) {
+            OrderDetailContent(
+                state = state,
+                order = order,
+                onPrimaryAction = onPrimaryAction,
+                onSetReadState = onSetReadState,
+                onEdit = onEdit,
+                onReportDelay = onReportDelay,
+                onDelete = onDelete,
+            )
+        }
+    }
+}
+
+private val DETAIL_MAX_WIDTH = 600.dp
+
+@Composable
+private fun ColumnScope.OrderDetailContent(
+    state: OrderDetailState,
+    order: Order,
+    onPrimaryAction: () -> Unit,
+    onSetReadState: (ReadState) -> Unit,
+    onEdit: () -> Unit,
+    onReportDelay: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    Text(
+        text = listOf(order.title, order.volume).filter { it.isNotBlank() }.joinToString(" "),
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.SemiBold,
+    )
+    if (order.byline.isNotBlank()) {
         Text(
-            text = listOf(order.title, order.volume).filter { it.isNotBlank() }.joinToString(" "),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
+            text = order.byline,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        if (order.byline.isNotBlank()) {
-            Text(
-                text = order.byline,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        VerticalSpacer(12.dp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            StatusChip(status = order.status)
-            Text(
-                text = priceLabel(order),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1f).padding(start = 12.dp),
-            )
-        }
+    }
+    VerticalSpacer(12.dp)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        StatusChip(status = order.status)
+        Text(
+            text = priceLabel(order),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f).padding(start = 12.dp),
+        )
+    }
 
-        VerticalSpacer(20.dp)
-        SectionLabel(stringResource(Res.string.order_detail_section_reading))
-        VerticalSpacer(8.dp)
-        ReadStateSegmented(selected = order.readState, onSelect = onSetReadState)
+    VerticalSpacer(20.dp)
+    SectionLabel(stringResource(Res.string.order_detail_section_reading))
+    VerticalSpacer(8.dp)
+    ReadStateSegmented(selected = order.readState, onSelect = onSetReadState)
 
-        VerticalSpacer(20.dp)
-        SectionLabel(stringResource(Res.string.order_detail_section_timeline))
-        VerticalSpacer(8.dp)
-        StatusTimeline(nodes = state.timeline)
+    VerticalSpacer(20.dp)
+    SectionLabel(stringResource(Res.string.order_detail_section_timeline))
+    VerticalSpacer(8.dp)
+    StatusTimeline(nodes = state.timeline)
 
-        VerticalSpacer(20.dp)
-        SectionLabel(stringResource(Res.string.order_detail_section_details))
-        VerticalSpacer(4.dp)
-        OrderFacts(order = order)
+    VerticalSpacer(20.dp)
+    SectionLabel(stringResource(Res.string.order_detail_section_details))
+    VerticalSpacer(4.dp)
+    OrderFacts(order = order)
 
-        VerticalSpacer(20.dp)
-        state.primaryAction?.let { action ->
-            TsundokuButton(
-                text = stringResource(action.labelRes),
-                onClick = onPrimaryAction,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            VerticalSpacer(8.dp)
-        }
+    VerticalSpacer(20.dp)
+    state.primaryAction?.let { action ->
         TsundokuButton(
-            text = stringResource(Res.string.order_detail_edit),
-            onClick = onEdit,
+            text = stringResource(action.labelRes),
+            onClick = onPrimaryAction,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        VerticalSpacer(8.dp)
+    }
+    TsundokuButton(
+        text = stringResource(Res.string.order_detail_edit),
+        onClick = onEdit,
+        style = TsundokuButtonStyle.Secondary,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    if (order.status != OrderStatus.RECEIVED && order.status != OrderStatus.CANCELLED) {
+        VerticalSpacer(8.dp)
+        TsundokuButton(
+            text = stringResource(Res.string.order_detail_report_delay),
+            onClick = onReportDelay,
             style = TsundokuButtonStyle.Secondary,
             modifier = Modifier.fillMaxWidth(),
         )
-        if (order.status != OrderStatus.RECEIVED && order.status != OrderStatus.CANCELLED) {
-            VerticalSpacer(8.dp)
-            TsundokuButton(
-                text = stringResource(Res.string.order_detail_report_delay),
-                onClick = onReportDelay,
-                style = TsundokuButtonStyle.Secondary,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-        VerticalSpacer(8.dp)
-        TsundokuButton(
-            text = stringResource(Res.string.order_detail_delete),
-            onClick = onDelete,
-            style = TsundokuButtonStyle.DestructiveSecondary,
-            modifier = Modifier.fillMaxWidth(),
+    }
+    VerticalSpacer(8.dp)
+    var confirmingDelete by remember { mutableStateOf(false) }
+    TsundokuButton(
+        text = stringResource(Res.string.order_detail_delete),
+        onClick = { confirmingDelete = true },
+        style = TsundokuButtonStyle.DestructiveSecondary,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    if (confirmingDelete) {
+        OrderDeleteConfirmDialog(
+            orderTitle = order.title,
+            onConfirm = {
+                confirmingDelete = false
+                onDelete()
+            },
+            onDismiss = { confirmingDelete = false },
         )
     }
 }

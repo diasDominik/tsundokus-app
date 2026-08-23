@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.edit_profile_error_name_required
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
@@ -42,7 +44,7 @@ class EditProfileViewModel(
         if (_state.value.isSubmitting) return
         val name = nameState.text.toString().trim()
         if (name.isBlank()) {
-            send(EditProfileEvent.Error(UiText.DynamicString("Display name is required")))
+            send(EditProfileEvent.Error(UiText.Resource(Res.string.edit_profile_error_name_required)))
             return
         }
         viewModelScope.launch {

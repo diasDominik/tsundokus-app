@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <!-- Navigation / top bar titles -->
+    <string name="nav_settings">Settings</string>
+    <string name="nav_edit_profile">Edit profile</string>
+    <string name="nav_change_email">Change email</string>
+    <string name="nav_change_password">Change password</string>
+    <string name="nav_delete_account">Delete account</string>
+    <string name="nav_about">About Tsundoku</string>
+    <string name="nav_licenses">Open-source licenses</string>
+
+    <!-- Settings screen -->
+    <string name="settings_section_account">ACCOUNT</string>
+    <string name="settings_section_preferences">PREFERENCES</string>
+    <string name="settings_section_about">ABOUT</string>
+    <string name="settings_change_email">Change email</string>
+    <string name="settings_change_email_caption">Update your email address</string>
+    <string name="settings_change_password">Change password</string>
+    <string name="settings_change_password_caption">Update your password</string>
+    <string name="settings_about">About Tsundoku</string>
+    <string name="settings_about_caption">Version and acknowledgements</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_privacy_policy_caption">Opens GitHub in your browser</string>
+    <string name="settings_oss_licenses">Open-source licenses</string>
+    <string name="settings_oss_licenses_caption">Third-party libraries and their licenses</string>
+    <string name="settings_delete_account">Delete account</string>
+    <string name="settings_delete_account_caption">Permanently remove your account</string>
+    <string name="settings_account_fallback">Your account</string>
+    <string name="settings_edit">Edit</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_currency">Currency</string>
+    <string name="settings_currency_changed">Currency set to %1$s</string>
+    <string name="settings_sign_out">Sign out</string>
+    <!-- %1$s is the app name, %2$s the version -->
+    <string name="settings_footer">%1$s · v%2$s</string>
+
+    <!-- About screen -->
+    <string name="about_app_name">Tsundoku</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_description">Track every manga order from checkout to bookshelf — shipping, delays, and what you\'re reading next, all in one place.</string>
+    <string name="about_footer">Made with care for manga readers.</string>
+
+    <!-- Edit profile -->
+    <string name="edit_profile_updated">Profile updated</string>
+    <string name="edit_profile_save">Save</string>
+    <string name="edit_profile_display_name">Display name</string>
+    <string name="edit_profile_error_name_required">Display name is required</string>
+
+    <!-- Change email -->
+    <string name="change_email_updated">Email updated</string>
+    <string name="change_email_save">Save</string>
+    <string name="change_email_new_email">New email</string>
+    <string name="change_email_current_password">Current password</string>
+    <string name="change_email_error_invalid">Enter a valid email address</string>
+    <string name="change_email_error_password_required">Current password is required</string>
+
+    <!-- Change password -->
+    <string name="change_password_changed">Password changed</string>
+    <string name="change_password_save">Save</string>
+    <string name="change_password_current">Current password</string>
+    <string name="change_password_new">New password</string>
+    <string name="change_password_confirm">Confirm new password</string>
+    <string name="change_password_error_fields_required">Please fill in all fields</string>
+    <string name="change_password_error_too_short">Password must be at least 6 characters</string>
+    <string name="change_password_error_mismatch">Passwords do not match</string>
+
+    <!-- Delete account -->
+    <string name="delete_account_warning">This permanently deletes your account and all of your tracked orders. This action cannot be undone.</string>
+    <!--
+      %1$s is the confirmation keyword, injected from code rather than written into this string.
+      Translating the prompt and the compared keyword independently would make the account
+      impossible to delete, so the keyword is never a translatable value.
+    -->
+    <string name="delete_account_confirm_hint">Type %1$s to confirm</string>
+    <string name="delete_account_button">Delete account</string>
+</resources>

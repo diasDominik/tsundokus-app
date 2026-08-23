@@ -45,6 +45,22 @@ object TsundokuIcons {
     val ArrowBack: ImageVector =
         icon("ArrowBack", "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z")
 
+    val ArrowUpward: ImageVector =
+        icon("ArrowUpward", "M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z")
+
+    val ArrowDownward: ImageVector =
+        icon("ArrowDownward", "M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z")
+
+    val Check: ImageVector =
+        icon("Check", "M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z")
+
+    val Shield: ImageVector =
+        icon(
+            "Shield",
+            "M12 2 4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 " +
+                "17.93c-3.35-1.06-6-4.72-6-8.84V6.39l6-2.25 6 2.25v4.7c0 4.12-2.65 7.78-6 8.84z",
+        )
+
     val KeyboardArrowRight: ImageVector =
         icon("ChevronRight", "M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z")
 

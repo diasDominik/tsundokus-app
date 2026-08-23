@@ -2,11 +2,14 @@ package uk.tsundokus.features.orders.presentation.addeditorder
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -22,11 +25,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -36,8 +44,14 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_currency_option
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delayed_to_error_before_order
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delayed_to_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delete
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_discard_cancel
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_discard_confirm
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_discard_message
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_discard_title
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_error_before_order
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_label
@@ -45,34 +59,45 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_price_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_publisher_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_publisher_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_received_date_error_too_early
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_received_date_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_release_date_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_save_changes
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_currency
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_reading
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_section_status
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_ship_date_error_before_order
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_ship_date_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_store_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_store_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_title_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_title_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_volume_label
+import tsundokuapp.features.orders.presentation.generated.resources.nav_add_order
+import tsundokuapp.features.orders.presentation.generated.resources.nav_edit_order
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
+import uk.tsundokus.core.designsystem.dialog.TsundokuConfirmDialog
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.domain.preferences.AppCurrency
+import uk.tsundokus.core.presentation.navigation.OverrideTopBar
+import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
+import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
 import uk.tsundokus.features.orders.presentation.components.labelRes
 
 @Composable
 fun AddEditOrderRoot(
+    navKey: NavKey,
     orderId: String?,
     onSaved: () -> Unit,
+    onClose: () -> Unit,
     snackbarHostState: SnackbarHostState,
     viewModel: AddEditOrderViewModel =
         koinViewModel(
@@ -100,10 +125,44 @@ fun AddEditOrderRoot(
         }
     }
 
+    var confirmingDiscard by remember { mutableStateOf(false) }
+    val requestClose = { if (state.isDirty) confirmingDiscard = true else onClose() }
+
+    // The declarative top bar's close button pops the back stack directly, which would drop unsaved
+    // work without asking. Overriding the bar routes that same button through the guard instead.
+    OverrideTopBar(
+        key = navKey,
+        title =
+            if (state.isEdit) {
+                UiText.Resource(
+                    Res.string.nav_edit_order,
+                )
+            } else {
+                UiText.Resource(Res.string.nav_add_order)
+            },
+        navigationAction = TopBarAction.Close,
+        onNavigationClick = requestClose,
+    )
+
     AddEditOrderScreen(
         state = state,
         onAction = viewModel::onAction,
     )
+
+    if (confirmingDiscard) {
+        TsundokuConfirmDialog(
+            title = stringResource(Res.string.add_edit_order_discard_title),
+            message = stringResource(Res.string.add_edit_order_discard_message),
+            confirmText = stringResource(Res.string.add_edit_order_discard_confirm),
+            dismissText = stringResource(Res.string.add_edit_order_discard_cancel),
+            onConfirm = {
+                confirmingDiscard = false
+                onClose()
+            },
+            onDismiss = { confirmingDiscard = false },
+            isDestructive = true,
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,14 +172,34 @@ private fun AddEditOrderScreen(
     onAction: (AddEditOrderAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    // Capped and centred like the settings screens: on a desktop window these fields would
+    // otherwise stretch the full width, putting a text input a thousand pixels wide on screen.
+    Box(
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        contentAlignment = Alignment.TopCenter,
     ) {
+        Column(
+            modifier =
+                Modifier
+                    .widthIn(max = FORM_MAX_WIDTH)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            AddEditOrderForm(state = state, onAction = onAction)
+        }
+    }
+}
+
+private val FORM_MAX_WIDTH = 600.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ColumnScope.AddEditOrderForm(
+    state: AddEditOrderState,
+    onAction: (AddEditOrderAction) -> Unit,
+) {
+    run {
         SectionLabel(Res.string.add_edit_order_section_status)
         Row(
             modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -224,12 +303,16 @@ private fun AddEditOrderScreen(
                     value = state.shipDate,
                     onValueChange = { onAction(AddEditOrderAction.OnShipDateChange(it)) },
                     label = Res.string.add_edit_order_ship_date_label,
+                    isError = OrderFormField.SHIP_DATE in state.errors,
+                    supportingText = state.errorFor(OrderFormField.SHIP_DATE),
                     modifier = Modifier.weight(1f),
                 )
                 OrderDateField(
                     value = state.eta,
                     onValueChange = { onAction(AddEditOrderAction.OnEtaChange(it)) },
                     label = Res.string.add_edit_order_eta_label,
+                    isError = OrderFormField.ETA in state.errors,
+                    supportingText = state.errorFor(OrderFormField.ETA),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -240,6 +323,8 @@ private fun AddEditOrderScreen(
                 value = state.delayedTo,
                 onValueChange = { onAction(AddEditOrderAction.OnDelayedToChange(it)) },
                 label = Res.string.add_edit_order_delayed_to_label,
+                isError = OrderFormField.DELAYED_TO in state.errors,
+                supportingText = state.errorFor(OrderFormField.DELAYED_TO),
             )
         }
 
@@ -248,6 +333,8 @@ private fun AddEditOrderScreen(
                 value = state.receivedDate,
                 onValueChange = { onAction(AddEditOrderAction.OnReceivedDateChange(it)) },
                 label = Res.string.add_edit_order_received_date_label,
+                isError = OrderFormField.RECEIVED_DATE in state.errors,
+                supportingText = state.errorFor(OrderFormField.RECEIVED_DATE),
             )
         }
 
@@ -273,12 +360,23 @@ private fun AddEditOrderScreen(
         )
         if (state.isEdit) {
             VerticalSpacer(8.dp)
+            var confirmingDelete by remember { mutableStateOf(false) }
             TsundokuButton(
                 text = stringResource(Res.string.add_edit_order_delete),
-                onClick = { onAction(AddEditOrderAction.OnDelete) },
+                onClick = { confirmingDelete = true },
                 style = TsundokuButtonStyle.DestructiveSecondary,
                 modifier = Modifier.fillMaxWidth(),
             )
+            if (confirmingDelete) {
+                OrderDeleteConfirmDialog(
+                    orderTitle = state.title,
+                    onConfirm = {
+                        confirmingDelete = false
+                        onAction(AddEditOrderAction.OnDelete)
+                    },
+                    onDismiss = { confirmingDelete = false },
+                )
+            }
         }
     }
 }
@@ -297,6 +395,10 @@ private fun AddEditOrderState.errorFor(field: OrderFormField): String? =
                 OrderFormField.STORE -> Res.string.add_edit_order_store_error_required
                 OrderFormField.PRICE -> Res.string.add_edit_order_price_error_required
                 OrderFormField.ORDER_DATE -> Res.string.add_edit_order_order_date_error_required
+                OrderFormField.SHIP_DATE -> Res.string.add_edit_order_ship_date_error_before_order
+                OrderFormField.ETA -> Res.string.add_edit_order_eta_error_before_order
+                OrderFormField.DELAYED_TO -> Res.string.add_edit_order_delayed_to_error_before_order
+                OrderFormField.RECEIVED_DATE -> Res.string.add_edit_order_received_date_error_too_early
             },
         )
     }

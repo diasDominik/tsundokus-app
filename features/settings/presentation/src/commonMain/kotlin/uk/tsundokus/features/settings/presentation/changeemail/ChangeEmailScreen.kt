@@ -12,7 +12,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.change_email_current_password
+import tsundokuapp.features.settings.presentation.generated.resources.change_email_new_email
+import tsundokuapp.features.settings.presentation.generated.resources.change_email_save
+import tsundokuapp.features.settings.presentation.generated.resources.change_email_updated
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.textfields.TsundokuTextField
 import uk.tsundokus.core.presentation.navigation.TopBarActions
@@ -32,7 +39,7 @@ fun ChangeEmailRoot(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             ChangeEmailEvent.Saved -> {
-                snackbarHostState.showSnackbar("Email updated")
+                snackbarHostState.showSnackbar(getString(Res.string.change_email_updated))
                 onSaved()
             }
 
@@ -44,14 +51,14 @@ fun ChangeEmailRoot(
 
     TopBarActions(navKey) {
         TextButton(onClick = viewModel::onSave, enabled = !state.isSubmitting) {
-            Text(text = "Save", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(Res.string.change_email_save), fontWeight = FontWeight.SemiBold)
         }
     }
 
     AccountFieldColumn(modifier = modifier) {
         TsundokuTextField(
             state = viewModel.newEmailState,
-            title = "New email",
+            title = stringResource(Res.string.change_email_new_email),
             singleLine = true,
             keyboardType = KeyboardType.Email,
             modifier = Modifier.fillMaxWidth(),
@@ -59,7 +66,7 @@ fun ChangeEmailRoot(
         VerticalSpacer(16.dp)
         TsundokuTextField(
             state = viewModel.currentPasswordState,
-            title = "Current password",
+            title = stringResource(Res.string.change_email_current_password),
             singleLine = true,
             keyboardType = KeyboardType.Password,
             modifier = Modifier.fillMaxWidth(),

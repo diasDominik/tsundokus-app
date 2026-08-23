@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.change_email_error_invalid
+import tsundokuapp.features.settings.presentation.generated.resources.change_email_error_password_required
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -35,11 +38,11 @@ class ChangeEmailViewModel(
         val email = newEmailState.text.toString().trim()
         val password = currentPasswordState.text.toString()
         if (!email.isValidEmail()) {
-            send(ChangeEmailEvent.Error(UiText.DynamicString("Enter a valid email address")))
+            send(ChangeEmailEvent.Error(UiText.Resource(Res.string.change_email_error_invalid)))
             return
         }
         if (password.isBlank()) {
-            send(ChangeEmailEvent.Error(UiText.DynamicString("Current password is required")))
+            send(ChangeEmailEvent.Error(UiText.Resource(Res.string.change_email_error_password_required)))
             return
         }
         viewModelScope.launch {

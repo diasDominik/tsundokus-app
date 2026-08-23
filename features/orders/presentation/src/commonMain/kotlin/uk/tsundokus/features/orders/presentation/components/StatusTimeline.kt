@@ -1,6 +1,7 @@
 package uk.tsundokus.features.orders.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,11 +32,17 @@ enum class TimelineNodeState {
     DELAY,
 }
 
-/** One step in the order detail timeline. [date] is already display-formatted ("—" when unset). */
+/**
+ * One step in the order detail timeline. [date] is already display-formatted ("—" when unset).
+ *
+ * [isDateKnown] is what the dot is drawn from: a step the order has passed but carries no date for
+ * is drawn hollow, so "shipped on the 3rd" and "shipped, date unknown" don't look identical.
+ */
 data class TimelineNode(
     val label: StringResource,
     val date: String,
     val state: TimelineNodeState,
+    val isDateKnown: Boolean = true,
 )
 
 /** Vertical status timeline shown on the order detail screen. */
@@ -48,11 +55,18 @@ fun StatusTimeline(
         nodes.forEachIndexed { index, node ->
             Row(verticalAlignment = Alignment.Top) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    val dotColor = node.state.color()
                     Box(
                         modifier =
                             Modifier
                                 .size(12.dp)
-                                .background(node.state.color(), CircleShape),
+                                .then(
+                                    if (node.isDateKnown) {
+                                        Modifier.background(dotColor, CircleShape)
+                                    } else {
+                                        Modifier.border(2.dp, dotColor, CircleShape)
+                                    },
+                                ),
                     )
                     if (index != nodes.lastIndex) {
                         Box(

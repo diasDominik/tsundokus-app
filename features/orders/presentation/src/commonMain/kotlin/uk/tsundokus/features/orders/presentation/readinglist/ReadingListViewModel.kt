@@ -3,10 +3,11 @@ package uk.tsundokus.features.orders.presentation.readinglist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -30,16 +31,23 @@ class ReadingListViewModel(
     private val eventChannel = Channel<ReadingListEvent>()
     val events = eventChannel.receiveAsFlow()
 
+    private val searchQuery = MutableStateFlow("")
+
     val state: StateFlow<ReadingListState> =
-        orderRepository
-            .getOrders()
-            .onStart { emit(emptyList()) }
-            .map { orders -> ReadingListState(isLoading = false, grouped = orders.groupForShelf()) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5.seconds),
-                initialValue = ReadingListState(),
+        combine(
+            orderRepository.getOrders().onStart { emit(emptyList()) },
+            searchQuery,
+        ) { orders, query ->
+            ReadingListState(
+                isLoading = false,
+                searchQuery = query,
+                grouped = orders.filter { it.matchesQuery(query) }.groupForShelf(),
             )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = ReadingListState(),
+        )
 
     init {
         viewModelScope.launch {
@@ -47,6 +55,10 @@ class ReadingListViewModel(
                 eventChannel.send(ReadingListEvent.ShowMessage(error.toUiText()))
             }
         }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        searchQuery.value = query
     }
 
     fun onCycleReadState(orderId: String) {
@@ -65,6 +77,15 @@ class ReadingListViewModel(
                 }
         }
     }
+}
+
+/** Same fields the orders list searches, so one habit works on both screens. */
+private fun Order.matchesQuery(query: String): Boolean {
+    if (query.isBlank()) return true
+    val needle = query.trim()
+    return title.contains(needle, ignoreCase = true) ||
+        author.contains(needle, ignoreCase = true) ||
+        publisher.contains(needle, ignoreCase = true)
 }
 
 private fun List<Order>.groupForShelf(): Map<ReadState, List<Order>> =

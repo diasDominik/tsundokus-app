@@ -146,56 +146,54 @@ private fun primaryActionFor(order: Order): PrimaryAction? =
 private const val EM_DASH = "\u2014"
 
 private fun buildTimeline(order: Order): List<TimelineNode> {
-    fun display(value: String): String = if (value.isBlank()) EM_DASH else fmtDate(value)
+    fun node(
+        label: org.jetbrains.compose.resources.StringResource,
+        value: String,
+        state: TimelineNodeState,
+    ): TimelineNode =
+        TimelineNode(
+            label = label,
+            date = if (value.isBlank()) EM_DASH else fmtDate(value),
+            state = state,
+            isDateKnown = value.isNotBlank(),
+        )
     return when (order.status) {
         OrderStatus.CANCELLED -> {
             listOf(
-                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode(Res.string.timeline_cancelled, display(order.orderDate), TimelineNodeState.CANCEL),
+                node(Res.string.timeline_ordered, order.orderDate, TimelineNodeState.DONE),
+                node(Res.string.timeline_cancelled, order.orderDate, TimelineNodeState.CANCEL),
             )
         }
 
         OrderStatus.RECEIVED -> {
             listOf(
-                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode(
-                    Res.string.timeline_shipped,
-                    display(order.shipDate.ifBlank { order.eta }),
-                    TimelineNodeState.DONE,
-                ),
-                TimelineNode(Res.string.timeline_received, display(order.receivedDate), TimelineNodeState.DONE),
+                node(Res.string.timeline_ordered, order.orderDate, TimelineNodeState.DONE),
+                node(Res.string.timeline_shipped, order.shipDate.ifBlank { order.eta }, TimelineNodeState.DONE),
+                node(Res.string.timeline_received, order.receivedDate, TimelineNodeState.DONE),
             )
         }
 
         OrderStatus.SHIPPED -> {
             listOf(
-                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode(
-                    Res.string.timeline_shipped,
-                    display(order.shipDate.ifBlank { order.eta }),
-                    TimelineNodeState.DONE,
-                ),
-                TimelineNode(Res.string.timeline_arriving, display(order.eta), TimelineNodeState.CURRENT),
+                node(Res.string.timeline_ordered, order.orderDate, TimelineNodeState.DONE),
+                node(Res.string.timeline_shipped, order.shipDate.ifBlank { order.eta }, TimelineNodeState.DONE),
+                node(Res.string.timeline_arriving, order.eta, TimelineNodeState.CURRENT),
             )
         }
 
         OrderStatus.DELAYED -> {
             listOf(
-                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode(Res.string.timeline_delayed, display(order.delayedTo), TimelineNodeState.DELAY),
-                TimelineNode(Res.string.timeline_expected, display(order.delayedTo), TimelineNodeState.CURRENT),
+                node(Res.string.timeline_ordered, order.orderDate, TimelineNodeState.DONE),
+                node(Res.string.timeline_delayed, order.delayedTo, TimelineNodeState.DELAY),
+                node(Res.string.timeline_expected, order.delayedTo, TimelineNodeState.CURRENT),
             )
         }
 
         OrderStatus.ORDERED -> {
             listOf(
-                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode(
-                    Res.string.timeline_awaiting_shipment,
-                    display(order.releaseDate),
-                    TimelineNodeState.CURRENT,
-                ),
-                TimelineNode(Res.string.timeline_delivered, EM_DASH, TimelineNodeState.TODO),
+                node(Res.string.timeline_ordered, order.orderDate, TimelineNodeState.DONE),
+                node(Res.string.timeline_awaiting_shipment, order.releaseDate, TimelineNodeState.CURRENT),
+                node(Res.string.timeline_delivered, "", TimelineNodeState.TODO),
             )
         }
     }

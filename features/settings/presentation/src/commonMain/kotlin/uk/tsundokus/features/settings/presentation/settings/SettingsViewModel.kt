@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.settings_currency_changed
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.util.onFailure
@@ -69,7 +71,9 @@ class SettingsViewModel(
                 .updateCurrency(currency)
                 .onSuccess {
                     eventChannel.send(
-                        SettingsEvent.ShowMessage(UiText.DynamicString("Currency set to ${currency.symbol}")),
+                        SettingsEvent.ShowMessage(
+                            UiText.Resource(Res.string.settings_currency_changed, arrayOf(currency.symbol)),
+                        ),
                     )
                 }.onFailure { error ->
                     eventChannel.send(SettingsEvent.ShowMessage(error.toUiText()))
