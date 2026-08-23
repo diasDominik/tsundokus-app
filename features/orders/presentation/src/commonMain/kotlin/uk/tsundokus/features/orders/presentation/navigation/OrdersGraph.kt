@@ -66,16 +66,20 @@ fun EntryProviderScope<NavKey>.ordersGraph(
 
     entry<AddOrder> {
         AddEditOrderRoot(
+            navKey = AddOrder,
             orderId = null,
             onSaved = onBack,
+            onClose = onBack,
             snackbarHostState = snackbarHostState,
         )
     }
 
     entry<EditOrder> { route ->
         AddEditOrderRoot(
+            navKey = route,
             orderId = route.orderId,
             onSaved = onBack,
+            onClose = onBack,
             snackbarHostState = snackbarHostState,
         )
     }

@@ -33,6 +33,10 @@
     <string name="add_edit_order_store_error_required">Store is required</string>
     <string name="add_edit_order_price_error_required">Price is required</string>
     <string name="add_edit_order_order_date_error_required">Order date is required</string>
+    <string name="add_edit_order_ship_date_error_before_order">Cannot be before the order date</string>
+    <string name="add_edit_order_eta_error_before_order">Cannot be before the order date</string>
+    <string name="add_edit_order_delayed_to_error_before_order">Cannot be before the order date</string>
+    <string name="add_edit_order_received_date_error_too_early">Cannot be before the order or ship date</string>
     <string name="add_edit_order_author_label">Author</string>
     <string name="add_edit_order_volume_label">Volume</string>
     <string name="add_edit_order_publisher_label">Publisher</string>
@@ -53,6 +57,8 @@
     <string name="order_sort_release">Release</string>
     <string name="order_sort_title">Title</string>
     <string name="order_sort_price">Price</string>
+    <string name="order_sort_ascending">Ascending</string>
+    <string name="order_sort_descending">Descending</string>
 
     <string name="order_action_mark_shipped">Mark shipped</string>
     <string name="order_action_mark_received">Mark received</string>
@@ -69,7 +75,13 @@
     <string name="orders_list_search_placeholder">Search title, author, publisher</string>
     <string name="orders_list_filter_all">All %1$d</string>
     <string name="orders_list_empty_title">No orders here</string>
-    <string name="orders_list_empty_caption">Tap + to log your first order.</string>
+    <string name="orders_list_empty_caption">Use + to log your first order.</string>
+    <string name="orders_list_no_matches_title">No matches</string>
+    <string name="orders_list_no_matches_search_caption">Nothing here matches “%1$s”.</string>
+    <string name="orders_list_no_matches_filter_caption">No orders have this status.</string>
+    <string name="orders_list_clear_filters">Clear filters</string>
+    <string name="orders_list_clear_search_cd">Clear search</string>
+    <string name="orders_list_refresh_cd">Sync now</string>
     <string name="orders_list_detail_placeholder_title">Select an order</string>
     <string name="orders_list_detail_placeholder_caption">Pick an order on the left to see its details.</string>
     <string name="orders_list_synced">Synced %1$s</string>
@@ -89,6 +101,11 @@
     <string name="order_detail_report_delay">Report delay</string>
     <string name="order_detail_delete">Delete order</string>
     <string name="order_detail_deleted">Order deleted</string>
+    <string name="order_delete_confirm_title">Delete this order?</string>
+    <string name="order_delete_confirm_message">“%1$s” will be removed from your orders. This cannot be undone.</string>
+    <string name="order_delete_confirm_message_untitled">This order will be removed. This cannot be undone.</string>
+    <string name="order_delete_confirm_confirm">Delete</string>
+    <string name="order_delete_confirm_cancel">Keep</string>
     <string name="order_detail_fact_store">Store</string>
     <string name="order_detail_fact_price">Price</string>
     <string name="order_detail_fact_ordered">Ordered</string>
@@ -129,6 +146,11 @@
     <string name="report_delay_date_label">Expected date</string>
     <string name="report_delay_save">Save delay</string>
     <string name="report_delay_saved">Delay saved</string>
+
+    <string name="add_edit_order_discard_title">Discard your changes?</string>
+    <string name="add_edit_order_discard_message">You have unsaved changes. Leaving now loses them.</string>
+    <string name="add_edit_order_discard_confirm">Discard</string>
+    <string name="add_edit_order_discard_cancel">Keep editing</string>
 
     <string name="add_edit_order_saved_added">Order added</string>
     <string name="add_edit_order_saved_updated">Order updated</string>

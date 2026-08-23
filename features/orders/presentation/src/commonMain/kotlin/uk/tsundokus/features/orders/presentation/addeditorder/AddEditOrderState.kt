@@ -24,9 +24,21 @@ data class AddEditOrderState(
     val isEdit: Boolean = false,
     val errors: Set<OrderFormField> = emptySet(),
     val isSaving: Boolean = false,
-)
+    /** Whether the user has changed anything since the form opened. Drives the discard guard. */
+    val isDirty: Boolean = false,
+) {
+    /**
+     * The form's content with the transient bookkeeping stripped, so two states can be compared for
+     * "did the user actually change anything". Copying rather than listing the fields keeps this
+     * correct when a field is added to the form.
+     */
+    internal fun formOnly(): AddEditOrderState = copy(errors = emptySet(), isSaving = false, isDirty = false)
+}
 
-/** The fields the form requires. Volume, release date and the status dates stay optional. */
+/**
+ * The fields the form can report an error on. Volume and release date stay optional and unvalidated;
+ * the status dates are optional but must still describe a possible sequence of events when present.
+ */
 enum class OrderFormField {
     TITLE,
     AUTHOR,
@@ -34,4 +46,8 @@ enum class OrderFormField {
     STORE,
     PRICE,
     ORDER_DATE,
+    SHIP_DATE,
+    ETA,
+    RECEIVED_DATE,
+    DELAYED_TO,
 }
