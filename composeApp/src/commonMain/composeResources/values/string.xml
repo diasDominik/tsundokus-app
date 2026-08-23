@@ -2,7 +2,6 @@
 <resources>
     <string name="back">Back</string>
     <string name="close">Close</string>
-    <string name="create_group">Create Group</string>
     <string name="update_dialog_title">Update available</string>
     <string name="update_dialog_message_optional">A new version of Tsundoku is available. Update now to get the latest features and fixes.</string>
     <string name="update_dialog_message_forced">This version of Tsundoku is no longer supported. Please update to continue.</string>
