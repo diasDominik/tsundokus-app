@@ -21,7 +21,7 @@ class OrderDateValidationTest {
     }
 
     @Test
-    fun `a blank date is unknown, never a violation`() {
+    fun `a blank date is unknown never a violation`() {
         assertFalse(OrderValidator.isBefore("", floor = "2026-06-10"))
         assertFalse(OrderValidator.isBefore("2026-01-01", floor = ""))
     }
