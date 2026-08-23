@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.report_delay_saved
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -40,7 +42,7 @@ class ReportDelayViewModel(
                 .reportDelay(orderId, current.date.trim())
                 .onSuccess {
                     _state.update { it.copy(isSaving = false) }
-                    eventChannel.send(ReportDelayEvent.Saved(UiText.DynamicString("Delay saved")))
+                    eventChannel.send(ReportDelayEvent.Saved(UiText.Resource(Res.string.report_delay_saved)))
                 }.onFailure { error ->
                     _state.update { it.copy(isSaving = false) }
                     eventChannel.send(ReportDelayEvent.ShowError(error.toUiText()))

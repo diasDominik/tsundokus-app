@@ -14,7 +14,17 @@ import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
 import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_deleted
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_marked_status
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_arriving
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_awaiting_shipment
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_cancelled
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_delayed
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_delivered
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_expected
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_ordered
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_received
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_shipped
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.onFailure
@@ -98,7 +108,9 @@ class OrderDetailViewModel(
             orderRepository
                 .deleteOrder(orderId)
                 .onSuccess {
-                    eventChannel.send(OrderDetailEvent.ShowMessage(UiText.DynamicString("Order deleted")))
+                    eventChannel.send(
+                        OrderDetailEvent.ShowMessage(UiText.Resource(Res.string.order_detail_deleted)),
+                    )
                     eventChannel.send(OrderDetailEvent.Deleted)
                 }.onFailure { error ->
                     eventChannel.send(OrderDetailEvent.ShowMessage(error.toUiText()))
@@ -130,45 +142,60 @@ private fun primaryActionFor(order: Order): PrimaryAction? =
         OrderStatus.CANCELLED -> null
     }
 
+/** The timeline shows a dash where a date is not known yet; not translated copy. */
+private const val EM_DASH = "\u2014"
+
 private fun buildTimeline(order: Order): List<TimelineNode> {
-    fun display(value: String): String = if (value.isBlank()) "—" else fmtDate(value)
+    fun display(value: String): String = if (value.isBlank()) EM_DASH else fmtDate(value)
     return when (order.status) {
         OrderStatus.CANCELLED -> {
             listOf(
-                TimelineNode("Ordered", display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode("Cancelled", display(order.orderDate), TimelineNodeState.CANCEL),
+                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
+                TimelineNode(Res.string.timeline_cancelled, display(order.orderDate), TimelineNodeState.CANCEL),
             )
         }
 
         OrderStatus.RECEIVED -> {
             listOf(
-                TimelineNode("Ordered", display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode("Shipped", display(order.shipDate.ifBlank { order.eta }), TimelineNodeState.DONE),
-                TimelineNode("Received", display(order.receivedDate), TimelineNodeState.DONE),
+                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
+                TimelineNode(
+                    Res.string.timeline_shipped,
+                    display(order.shipDate.ifBlank { order.eta }),
+                    TimelineNodeState.DONE,
+                ),
+                TimelineNode(Res.string.timeline_received, display(order.receivedDate), TimelineNodeState.DONE),
             )
         }
 
         OrderStatus.SHIPPED -> {
             listOf(
-                TimelineNode("Ordered", display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode("Shipped", display(order.shipDate.ifBlank { order.eta }), TimelineNodeState.DONE),
-                TimelineNode("Arriving", display(order.eta), TimelineNodeState.CURRENT),
+                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
+                TimelineNode(
+                    Res.string.timeline_shipped,
+                    display(order.shipDate.ifBlank { order.eta }),
+                    TimelineNodeState.DONE,
+                ),
+                TimelineNode(Res.string.timeline_arriving, display(order.eta), TimelineNodeState.CURRENT),
             )
         }
 
         OrderStatus.DELAYED -> {
             listOf(
-                TimelineNode("Ordered", display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode("Delayed", display(order.delayedTo), TimelineNodeState.DELAY),
-                TimelineNode("Expected", display(order.delayedTo), TimelineNodeState.CURRENT),
+                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
+                TimelineNode(Res.string.timeline_delayed, display(order.delayedTo), TimelineNodeState.DELAY),
+                TimelineNode(Res.string.timeline_expected, display(order.delayedTo), TimelineNodeState.CURRENT),
             )
         }
 
         OrderStatus.ORDERED -> {
             listOf(
-                TimelineNode("Ordered", display(order.orderDate), TimelineNodeState.DONE),
-                TimelineNode("Awaiting shipment", display(order.releaseDate), TimelineNodeState.CURRENT),
-                TimelineNode("Delivered", "—", TimelineNodeState.TODO),
+                TimelineNode(Res.string.timeline_ordered, display(order.orderDate), TimelineNodeState.DONE),
+                TimelineNode(
+                    Res.string.timeline_awaiting_shipment,
+                    display(order.releaseDate),
+                    TimelineNodeState.CURRENT,
+                ),
+                TimelineNode(Res.string.timeline_delivered, EM_DASH, TimelineNodeState.TODO),
             )
         }
     }

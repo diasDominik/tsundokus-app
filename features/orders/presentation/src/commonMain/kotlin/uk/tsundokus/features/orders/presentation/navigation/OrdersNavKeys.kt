@@ -2,6 +2,12 @@ package uk.tsundokus.features.orders.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.nav_add_order
+import tsundokuapp.features.orders.presentation.generated.resources.nav_edit_order
+import tsundokuapp.features.orders.presentation.generated.resources.nav_orders
+import tsundokuapp.features.orders.presentation.generated.resources.nav_reading
+import tsundokuapp.features.orders.presentation.generated.resources.nav_report_delay
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.presentation.navigation.FabAction
 import uk.tsundokus.core.presentation.navigation.LoggableNavKey
@@ -20,7 +26,7 @@ data object Orders : LoggableNavKey(), TopLevelTab, ScreenWithFab {
     override val selectedIcon: ImageVector
         @Composable
         get() = TsundokuIcons.ShoppingCart
-    override val label: UiText = UiText.DynamicString("Orders")
+    override val label: UiText = UiText.Resource(Res.string.nav_orders)
 
     override val fabAction: FabAction = FabAction.AddOrder
 }
@@ -33,7 +39,7 @@ data object ReadingList : LoggableNavKey(), TopLevelTab {
     override val selectedIcon: ImageVector
         @Composable
         get() = TsundokuIcons.List
-    override val label: UiText = UiText.DynamicString("Reading")
+    override val label: UiText = UiText.Resource(Res.string.nav_reading)
 }
 
 @Serializable
@@ -44,18 +50,18 @@ data class OrderDetail(val orderId: String) : LoggableNavKey(), LoggedIn, Screen
 
 @Serializable
 data object AddOrder : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
-    override val topBarTitle: UiText get() = UiText.DynamicString("Add order")
+    override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_add_order)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }
 
 @Serializable
 data class EditOrder(val orderId: String) : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
-    override val topBarTitle: UiText get() = UiText.DynamicString("Edit order")
+    override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_edit_order)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }
 
 @Serializable
 data class ReportDelay(val orderId: String) : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
-    override val topBarTitle: UiText get() = UiText.DynamicString("Report delay")
+    override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_report_delay)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }

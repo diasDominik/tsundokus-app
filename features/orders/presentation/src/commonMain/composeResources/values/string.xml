@@ -43,4 +43,94 @@
     <string name="add_edit_order_save_changes">Save changes</string>
     <string name="add_edit_order_add">Add order</string>
     <string name="add_edit_order_delete">Delete order</string>
+
+    <string name="order_sort_recent">Recent</string>
+    <string name="order_sort_release">Release</string>
+    <string name="order_sort_title">Title</string>
+    <string name="order_sort_price">Price</string>
+
+    <string name="order_action_mark_shipped">Mark shipped</string>
+    <string name="order_action_mark_received">Mark received</string>
+    <string name="order_action_mark_as_read">Mark as read</string>
+
+    <string name="nav_orders">Orders</string>
+    <string name="nav_reading">Reading</string>
+    <string name="nav_add_order">Add order</string>
+    <string name="nav_edit_order">Edit order</string>
+    <string name="nav_report_delay">Report delay</string>
+
+    <string name="orders_list_title">Orders</string>
+    <string name="orders_list_sort">Sort · %1$s</string>
+    <string name="orders_list_search_placeholder">Search title, author, publisher</string>
+    <string name="orders_list_filter_all">All %1$d</string>
+    <string name="orders_list_empty_title">No orders here</string>
+    <string name="orders_list_empty_caption">Tap + to log your first order.</string>
+    <string name="orders_list_detail_placeholder_title">Select an order</string>
+    <string name="orders_list_detail_placeholder_caption">Pick an order on the left to see its details.</string>
+    <string name="orders_list_synced">Synced %1$s</string>
+    <string name="orders_list_time_just_now">just now</string>
+    <string name="orders_list_time_minutes">%1$dm ago</string>
+    <string name="orders_list_time_hours">%1$dh ago</string>
+    <string name="orders_list_time_days">%1$dd ago</string>
+
+    <string name="reading_list_title">Reading</string>
+    <string name="reading_list_empty">Nothing on your shelf yet.</string>
+
+    <string name="order_detail_not_found">Order not found</string>
+    <string name="order_detail_section_reading">Reading</string>
+    <string name="order_detail_section_timeline">Timeline</string>
+    <string name="order_detail_section_details">Details</string>
+    <string name="order_detail_edit">Edit</string>
+    <string name="order_detail_report_delay">Report delay</string>
+    <string name="order_detail_delete">Delete order</string>
+    <string name="order_detail_deleted">Order deleted</string>
+    <string name="order_detail_fact_store">Store</string>
+    <string name="order_detail_fact_price">Price</string>
+    <string name="order_detail_fact_ordered">Ordered</string>
+    <string name="order_detail_fact_release">Release</string>
+    <string name="order_detail_fact_shipped">Shipped</string>
+    <string name="order_detail_fact_eta">ETA</string>
+    <string name="order_detail_fact_delayed_to">Delayed to</string>
+    <string name="order_detail_fact_received">Received</string>
+
+    <string name="timeline_ordered">Ordered</string>
+    <string name="timeline_cancelled">Cancelled</string>
+    <string name="timeline_shipped">Shipped</string>
+    <string name="timeline_received">Received</string>
+    <string name="timeline_arriving">Arriving</string>
+    <string name="timeline_delayed">Delayed</string>
+    <string name="timeline_expected">Expected</string>
+    <string name="timeline_awaiting_shipment">Awaiting shipment</string>
+    <string name="timeline_delivered">Delivered</string>
+    <string name="timeline_date_unset">—</string>
+
+    <string name="order_row_eta">ETA %1$s</string>
+    <string name="order_row_in_transit">In transit</string>
+    <string name="order_row_delayed_to">Delayed → %1$s</string>
+    <string name="order_row_delayed">Delayed</string>
+    <string name="order_row_received_on">Got it %1$s</string>
+    <string name="order_row_received">Received</string>
+    <string name="order_row_cancelled">Cancelled</string>
+    <string name="order_row_releases">Releases %1$s</string>
+    <string name="order_row_ordered_on">Ordered %1$s</string>
+    <string name="order_row_ordered">Ordered</string>
+
+    <string name="hero_releases">Releases %1$s</string>
+    <string name="hero_expected">Expected %1$s</string>
+    <string name="hero_subtitle_with_store">%1$s · %2$s</string>
+
+    <string name="report_delay_title">New expected date</string>
+    <string name="report_delay_caption">When do you now expect this order to arrive?</string>
+    <string name="report_delay_date_label">Expected date</string>
+    <string name="report_delay_save">Save delay</string>
+    <string name="report_delay_saved">Delay saved</string>
+
+    <string name="add_edit_order_saved_added">Order added</string>
+    <string name="add_edit_order_saved_updated">Order updated</string>
+    <string name="add_edit_order_deleted">Order deleted</string>
+
+    <plurals name="orders_list_unsynced_changes">
+        <item quantity="one">%1$d unsynced change</item>
+        <item quantity="other">%1$d unsynced changes</item>
+    </plurals>
 </resources>

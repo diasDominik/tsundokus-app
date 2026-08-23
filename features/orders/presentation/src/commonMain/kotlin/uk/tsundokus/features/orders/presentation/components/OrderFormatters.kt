@@ -1,5 +1,18 @@
 package uk.tsundokus.features.orders.presentation.components
 
+import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.stringResource
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_cancelled
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_delayed
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_delayed_to
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_eta
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_in_transit
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_ordered
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_ordered_on
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_received
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_received_on
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_releases
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import kotlin.math.abs
@@ -112,32 +125,47 @@ private fun formatAmount(value: Double): String {
 }
 
 /** Status-aware secondary label for a row (mirrors the design JS). */
+@Composable
 fun dateLabel(
     order: Order,
     today: String,
 ): String =
     when (order.status) {
         OrderStatus.SHIPPED -> {
-            if (order.eta.isNotBlank()) "ETA ${fmtDate(order.eta)}" else "In transit"
+            if (order.eta.isNotBlank()) {
+                stringResource(Res.string.order_row_eta, fmtDate(order.eta))
+            } else {
+                stringResource(Res.string.order_row_in_transit)
+            }
         }
 
         OrderStatus.DELAYED -> {
-            if (order.delayedTo.isNotBlank()) "Delayed → ${fmtDate(order.delayedTo)}" else "Delayed"
+            if (order.delayedTo.isNotBlank()) {
+                stringResource(Res.string.order_row_delayed_to, fmtDate(order.delayedTo))
+            } else {
+                stringResource(Res.string.order_row_delayed)
+            }
         }
 
         OrderStatus.RECEIVED -> {
-            if (order.receivedDate.isNotBlank()) "Got it ${fmtDate(order.receivedDate)}" else "Received"
+            if (order.receivedDate.isNotBlank()) {
+                stringResource(Res.string.order_row_received_on, fmtDate(order.receivedDate))
+            } else {
+                stringResource(Res.string.order_row_received)
+            }
         }
 
         OrderStatus.CANCELLED -> {
-            "Cancelled"
+            stringResource(Res.string.order_row_cancelled)
         }
 
         OrderStatus.ORDERED -> {
             if (order.releaseDate.isNotBlank() && order.releaseDate > today) {
-                "Releases ${fmtDate(order.releaseDate)}"
+                stringResource(Res.string.order_row_releases, fmtDate(order.releaseDate))
+            } else if (order.orderDate.isNotBlank()) {
+                stringResource(Res.string.order_row_ordered_on, fmtDate(order.orderDate))
             } else {
-                "Ordered" + if (order.orderDate.isNotBlank()) " ${fmtDate(order.orderDate)}" else ""
+                stringResource(Res.string.order_row_ordered)
             }
         }
     }

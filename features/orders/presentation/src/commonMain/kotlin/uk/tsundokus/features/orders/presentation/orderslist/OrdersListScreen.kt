@@ -38,10 +38,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_detail_placeholder_caption
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_detail_placeholder_title
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_empty_caption
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_empty_title
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_filter_all
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_search_placeholder
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_sort
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_status_filter
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_synced
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_time_days
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_time_hours
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_time_just_now
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_time_minutes
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_title
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_unsynced_changes
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewScreenSizes
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
@@ -120,8 +135,8 @@ private fun OrdersListScreen(
                 val selectedId = state.selectedOrderId
                 if (selectedId == null) {
                     EmptyState(
-                        title = "Select an order",
-                        caption = "Pick an order on the left to see its details.",
+                        title = stringResource(Res.string.orders_list_detail_placeholder_title),
+                        caption = stringResource(Res.string.orders_list_detail_placeholder_caption),
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
@@ -157,13 +172,13 @@ private fun ListHeader(
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Orders",
+                text = stringResource(Res.string.orders_list_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f),
             )
             TextButton(onClick = { onAction(OrdersListAction.OnToggleSort) }) {
-                Text("Sort · ${state.sort.label}")
+                Text(stringResource(Res.string.orders_list_sort, stringResource(state.sort.labelRes)))
             }
         }
         SyncStatusLine(state = state)
@@ -171,7 +186,7 @@ private fun ListHeader(
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onAction(OrdersListAction.OnSearchQueryChange(it)) },
-            placeholder = { Text("Search title, author, publisher") },
+            placeholder = { Text(stringResource(Res.string.orders_list_search_placeholder)) },
             leadingIcon = { Icon(TsundokuIcons.Search, contentDescription = null) },
             singleLine = true,
             shape = RoundedCornerShape(20.dp),
@@ -190,11 +205,16 @@ private fun SyncStatusLine(state: OrdersListState) {
         when {
             state.pendingSyncCount > 0 -> {
                 MaterialTheme.colorScheme.tertiary to
-                    "${state.pendingSyncCount} unsynced ${if (state.pendingSyncCount == 1) "change" else "changes"}"
+                    pluralStringResource(
+                        Res.plurals.orders_list_unsynced_changes,
+                        state.pendingSyncCount,
+                        state.pendingSyncCount,
+                    )
             }
 
             state.lastSyncedAt != null -> {
-                MaterialTheme.colorScheme.onSurfaceVariant to "Synced ${relativeTime(state.lastSyncedAt)}"
+                MaterialTheme.colorScheme.onSurfaceVariant to
+                    stringResource(Res.string.orders_list_synced, relativeTime(state.lastSyncedAt))
             }
 
             else -> {
@@ -211,13 +231,14 @@ private fun SyncStatusLine(state: OrdersListState) {
 }
 
 /** Coarse relative time for the sync indicator; recomputed on each state emission. */
+@Composable
 private fun relativeTime(millis: Long): String {
     val diff = nowEpochMillis() - millis
     return when {
-        diff < 60_000L -> "just now"
-        diff < 3_600_000L -> "${diff / 60_000L}m ago"
-        diff < 86_400_000L -> "${diff / 3_600_000L}h ago"
-        else -> "${diff / 86_400_000L}d ago"
+        diff < 60_000L -> stringResource(Res.string.orders_list_time_just_now)
+        diff < 3_600_000L -> stringResource(Res.string.orders_list_time_minutes, diff / 60_000L)
+        diff < 86_400_000L -> stringResource(Res.string.orders_list_time_hours, diff / 3_600_000L)
+        else -> stringResource(Res.string.orders_list_time_days, diff / 86_400_000L)
     }
 }
 
@@ -234,7 +255,7 @@ private fun FilterChipsRow(
         FilterChip(
             selected = state.statusFilter == null,
             onClick = { onAction(OrdersListAction.OnStatusFilterSelected(null)) },
-            label = { Text("All ${state.counts[null] ?: 0}") },
+            label = { Text(stringResource(Res.string.orders_list_filter_all, state.counts[null] ?: 0)) },
             shape = RoundedCornerShape(20.dp),
         )
         OrderStatus.entries.forEach { status ->
@@ -264,8 +285,8 @@ private fun OrdersListBody(
 ) {
     if (state.displayed.isEmpty()) {
         EmptyState(
-            title = "No orders here",
-            caption = "Tap + to log your first order.",
+            title = stringResource(Res.string.orders_list_empty_title),
+            caption = stringResource(Res.string.orders_list_empty_caption),
             modifier = modifier.fillMaxSize(),
         )
         return

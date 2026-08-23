@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.reading_list_empty
+import tsundokuapp.features.orders.presentation.generated.resources.reading_list_title
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
@@ -71,7 +74,7 @@ private fun ReadingListScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         Text(
-            text = "Reading",
+            text = stringResource(Res.string.reading_list_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -174,7 +177,7 @@ private fun EmptyShelf(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Nothing on your shelf yet.",
+            text = stringResource(Res.string.reading_list_empty),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
         )
