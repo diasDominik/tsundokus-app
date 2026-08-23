@@ -25,7 +25,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.reading_list_empty
+import tsundokuapp.features.orders.presentation.generated.resources.reading_list_title
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
@@ -36,6 +40,8 @@ import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
 import uk.tsundokus.features.orders.presentation.components.StatusTile
 import uk.tsundokus.features.orders.presentation.components.containerColor
+import uk.tsundokus.features.orders.presentation.components.fullLabelRes
+import uk.tsundokus.features.orders.presentation.components.labelRes
 import uk.tsundokus.features.orders.presentation.components.onContainerColor
 
 @Composable
@@ -68,7 +74,7 @@ private fun ReadingListScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         Text(
-            text = "Reading",
+            text = stringResource(Res.string.reading_list_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -85,7 +91,7 @@ private fun ReadingListScreen(
             state.grouped.forEach { (readState, orders) ->
                 item(key = "header_${readState.name}") {
                     SectionHeader(
-                        label = readState.fullLabel,
+                        label = stringResource(readState.fullLabelRes),
                         count = orders.size,
                         dotColor = readState.dotColor(),
                     )
@@ -156,7 +162,7 @@ private fun ReadStateChip(
         contentColor = readState.onContainerColor(),
     ) {
         Text(
-            text = readState.label,
+            text = stringResource(readState.labelRes),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
         )
@@ -171,7 +177,7 @@ private fun EmptyShelf(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Nothing on your shelf yet.",
+            text = stringResource(Res.string.reading_list_empty),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
         )

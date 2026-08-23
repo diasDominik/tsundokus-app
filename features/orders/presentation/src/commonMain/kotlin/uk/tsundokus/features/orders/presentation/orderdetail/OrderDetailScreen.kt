@@ -20,8 +20,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_delete
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_edit
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_delayed_to
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_eta
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_ordered
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_price
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_received
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_release
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_shipped
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_store
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_not_found
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_report_delay
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_section_details
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_section_reading
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_section_timeline
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_arriving
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_ordered
+import tsundokuapp.features.orders.presentation.generated.resources.timeline_shipped
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
@@ -91,7 +111,7 @@ private fun OrderDetailScreen(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "Order not found",
+                text = stringResource(Res.string.order_detail_not_found),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -130,31 +150,31 @@ private fun OrderDetailScreen(
         }
 
         VerticalSpacer(20.dp)
-        SectionLabel("Reading")
+        SectionLabel(stringResource(Res.string.order_detail_section_reading))
         VerticalSpacer(8.dp)
         ReadStateSegmented(selected = order.readState, onSelect = onSetReadState)
 
         VerticalSpacer(20.dp)
-        SectionLabel("Timeline")
+        SectionLabel(stringResource(Res.string.order_detail_section_timeline))
         VerticalSpacer(8.dp)
         StatusTimeline(nodes = state.timeline)
 
         VerticalSpacer(20.dp)
-        SectionLabel("Details")
+        SectionLabel(stringResource(Res.string.order_detail_section_details))
         VerticalSpacer(4.dp)
         OrderFacts(order = order)
 
         VerticalSpacer(20.dp)
         state.primaryAction?.let { action ->
             TsundokuButton(
-                text = action.label,
+                text = stringResource(action.labelRes),
                 onClick = onPrimaryAction,
                 modifier = Modifier.fillMaxWidth(),
             )
             VerticalSpacer(8.dp)
         }
         TsundokuButton(
-            text = "Edit",
+            text = stringResource(Res.string.order_detail_edit),
             onClick = onEdit,
             style = TsundokuButtonStyle.Secondary,
             modifier = Modifier.fillMaxWidth(),
@@ -162,7 +182,7 @@ private fun OrderDetailScreen(
         if (order.status != OrderStatus.RECEIVED && order.status != OrderStatus.CANCELLED) {
             VerticalSpacer(8.dp)
             TsundokuButton(
-                text = "Report delay",
+                text = stringResource(Res.string.order_detail_report_delay),
                 onClick = onReportDelay,
                 style = TsundokuButtonStyle.Secondary,
                 modifier = Modifier.fillMaxWidth(),
@@ -170,7 +190,7 @@ private fun OrderDetailScreen(
         }
         VerticalSpacer(8.dp)
         TsundokuButton(
-            text = "Delete order",
+            text = stringResource(Res.string.order_detail_delete),
             onClick = onDelete,
             style = TsundokuButtonStyle.DestructiveSecondary,
             modifier = Modifier.fillMaxWidth(),
@@ -182,27 +202,27 @@ private fun OrderDetailScreen(
 private fun OrderFacts(order: Order) {
     Column {
         if (order.store.isNotBlank()) {
-            FactRow("Store", order.store)
+            FactRow(stringResource(Res.string.order_detail_fact_store), order.store)
         }
-        FactRow("Price", priceLabel(order))
+        FactRow(stringResource(Res.string.order_detail_fact_price), priceLabel(order))
         if (order.orderDate.isNotBlank()) {
-            FactRow("Ordered", fmtDate(order.orderDate))
+            FactRow(stringResource(Res.string.order_detail_fact_ordered), fmtDate(order.orderDate))
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
         if (order.releaseDate.isNotBlank()) {
-            FactRow("Release", fmtDate(order.releaseDate))
+            FactRow(stringResource(Res.string.order_detail_fact_release), fmtDate(order.releaseDate))
         }
         if (order.shipDate.isNotBlank()) {
-            FactRow("Shipped", fmtDate(order.shipDate))
+            FactRow(stringResource(Res.string.order_detail_fact_shipped), fmtDate(order.shipDate))
         }
         if (order.eta.isNotBlank()) {
-            FactRow("ETA", fmtDate(order.eta))
+            FactRow(stringResource(Res.string.order_detail_fact_eta), fmtDate(order.eta))
         }
         if (order.delayedTo.isNotBlank()) {
-            FactRow("Delayed to", fmtDate(order.delayedTo))
+            FactRow(stringResource(Res.string.order_detail_fact_delayed_to), fmtDate(order.delayedTo))
         }
         if (order.receivedDate.isNotBlank()) {
-            FactRow("Received", fmtDate(order.receivedDate))
+            FactRow(stringResource(Res.string.order_detail_fact_received), fmtDate(order.receivedDate))
         }
     }
 }
@@ -242,9 +262,13 @@ private fun OrderDetailScreenPreview() {
                             ),
                         timeline =
                             listOf(
-                                TimelineNode("Ordered", "10 Jun 2026", TimelineNodeState.DONE),
-                                TimelineNode("Shipped", "20 Jun 2026", TimelineNodeState.DONE),
-                                TimelineNode("Arriving", "2 Jul 2026", TimelineNodeState.CURRENT),
+                                TimelineNode(Res.string.timeline_ordered, "10 Jun 2026", TimelineNodeState.DONE),
+                                TimelineNode(Res.string.timeline_shipped, "20 Jun 2026", TimelineNodeState.DONE),
+                                TimelineNode(
+                                    Res.string.timeline_arriving,
+                                    "2 Jul 2026",
+                                    TimelineNodeState.CURRENT,
+                                ),
                             ),
                         primaryAction = PrimaryAction.MARK_RECEIVED,
                     ),

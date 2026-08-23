@@ -1,10 +1,10 @@
 package uk.tsundokus.features.orders.domain.models
 
-enum class OrderSort(val label: String) {
-    RECENT("Recent"),
-    RELEASE("Release"),
-    TITLE("Title"),
-    PRICE("Price"),
+enum class OrderSort {
+    RECENT,
+    RELEASE,
+    TITLE,
+    PRICE,
     ;
 
     fun next(): OrderSort = entries[(ordinal + 1) % entries.size]

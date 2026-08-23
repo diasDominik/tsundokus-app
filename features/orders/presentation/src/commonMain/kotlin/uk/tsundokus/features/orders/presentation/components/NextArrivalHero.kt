@@ -14,6 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.hero_expected
+import tsundokuapp.features.orders.presentation.generated.resources.hero_releases
+import tsundokuapp.features.orders.presentation.generated.resources.hero_subtitle_with_store
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
@@ -63,11 +68,21 @@ fun NextArrivalHero(
 private fun heroTitle(order: Order): String =
     listOf(order.title, order.volume).filter { it.isNotBlank() }.joinToString(" ")
 
+@Composable
 private fun heroSubtitle(
     order: Order,
     today: String,
 ): String {
-    val prefix = if (order.status == OrderStatus.ORDERED) "Releases " else "Expected "
     val date = fmtDate(arrivalDate(order, today).orEmpty())
-    return listOf("$prefix$date", order.store).filter { it.isNotBlank() }.joinToString(" · ")
+    val arrival =
+        if (order.status == OrderStatus.ORDERED) {
+            stringResource(Res.string.hero_releases, date)
+        } else {
+            stringResource(Res.string.hero_expected, date)
+        }
+    return if (order.store.isBlank()) {
+        arrival
+    } else {
+        stringResource(Res.string.hero_subtitle_with_store, arrival, order.store)
+    }
 }

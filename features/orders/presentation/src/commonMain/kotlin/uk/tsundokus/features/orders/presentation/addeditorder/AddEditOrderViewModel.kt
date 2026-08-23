@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_deleted
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_added
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_updated
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -168,8 +172,13 @@ class AddEditOrderViewModel(
             result
                 .onSuccess {
                     _state.update { it.copy(isSaving = false) }
-                    val message = if (current.isEdit) "Order updated" else "Order added"
-                    eventChannel.send(AddEditOrderEvent.Saved(UiText.DynamicString(message)))
+                    val message =
+                        if (current.isEdit) {
+                            Res.string.add_edit_order_saved_updated
+                        } else {
+                            Res.string.add_edit_order_saved_added
+                        }
+                    eventChannel.send(AddEditOrderEvent.Saved(UiText.Resource(message)))
                 }.onFailure { error ->
                     _state.update { it.copy(isSaving = false) }
                     eventChannel.send(AddEditOrderEvent.ShowError(error.toUiText()))
@@ -184,7 +193,9 @@ class AddEditOrderViewModel(
             orderRepository
                 .deleteOrder(id)
                 .onSuccess {
-                    eventChannel.send(AddEditOrderEvent.Deleted(UiText.DynamicString("Order deleted")))
+                    eventChannel.send(
+                        AddEditOrderEvent.Deleted(UiText.Resource(Res.string.add_edit_order_deleted)),
+                    )
                 }.onFailure { error ->
                     eventChannel.send(AddEditOrderEvent.ShowError(error.toUiText()))
                 }

@@ -20,6 +20,7 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.domain.order.OrderRepository
+import uk.tsundokus.features.orders.presentation.components.fullLabelRes
 import kotlin.time.Duration.Companion.seconds
 
 @KoinViewModel
@@ -58,7 +59,7 @@ class ReadingListViewModel(
             orderRepository
                 .setReadState(orderId, next)
                 .onSuccess {
-                    eventChannel.send(ReadingListEvent.ShowMessage(UiText.DynamicString(next.fullLabel)))
+                    eventChannel.send(ReadingListEvent.ShowMessage(UiText.Resource(next.fullLabelRes)))
                 }.onFailure { error ->
                     eventChannel.send(ReadingListEvent.ShowMessage(error.toUiText()))
                 }

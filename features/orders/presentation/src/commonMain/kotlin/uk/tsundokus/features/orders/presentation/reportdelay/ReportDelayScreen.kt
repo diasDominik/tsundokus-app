@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -13,13 +12,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.report_delay_caption
+import tsundokuapp.features.orders.presentation.generated.resources.report_delay_date_label
+import tsundokuapp.features.orders.presentation.generated.resources.report_delay_save
+import tsundokuapp.features.orders.presentation.generated.resources.report_delay_title
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.features.orders.presentation.components.OrderDateField
 
 @Composable
 fun ReportDelayRoot(
@@ -63,27 +69,24 @@ private fun ReportDelayScreen(
 ) {
     Column(modifier = modifier.fillMaxWidth().padding(16.dp)) {
         Text(
-            text = "New expected date",
+            text = stringResource(Res.string.report_delay_title),
             style = MaterialTheme.typography.titleMedium,
         )
         VerticalSpacer(4.dp)
         Text(
-            text = "When do you now expect this order to arrive?",
+            text = stringResource(Res.string.report_delay_caption),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         VerticalSpacer(16.dp)
-        OutlinedTextField(
+        OrderDateField(
             value = state.date,
             onValueChange = onDateChange,
-            label = { Text("Expected date") },
-            placeholder = { Text("YYYY-MM-DD") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            label = Res.string.report_delay_date_label,
         )
         VerticalSpacer(16.dp)
         TsundokuButton(
-            text = "Save delay",
+            text = stringResource(Res.string.report_delay_save),
             onClick = onSave,
             enabled = state.canSave,
             isLoading = state.isSaving,
