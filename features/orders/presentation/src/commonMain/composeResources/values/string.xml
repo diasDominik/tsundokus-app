@@ -28,6 +28,11 @@
     <string name="add_edit_order_section_reading">Reading</string>
     <string name="add_edit_order_title_label">Title</string>
     <string name="add_edit_order_title_error_required">Title is required</string>
+    <string name="add_edit_order_author_error_required">Author is required</string>
+    <string name="add_edit_order_publisher_error_required">Publisher is required</string>
+    <string name="add_edit_order_store_error_required">Store is required</string>
+    <string name="add_edit_order_price_error_required">Price is required</string>
+    <string name="add_edit_order_order_date_error_required">Order date is required</string>
     <string name="add_edit_order_author_label">Author</string>
     <string name="add_edit_order_volume_label">Volume</string>
     <string name="add_edit_order_publisher_label">Publisher</string>

@@ -53,20 +53,15 @@ class AddEditOrderViewModel(
     fun onAction(action: AddEditOrderAction) {
         when (action) {
             is AddEditOrderAction.OnTitleChange -> {
-                _state.update {
-                    it.copy(
-                        title = action.value,
-                        titleError = false,
-                    )
-                }
+                _state.update { it.copy(title = action.value).clearing(OrderFormField.TITLE) }
             }
 
             is AddEditOrderAction.OnAuthorChange -> {
-                _state.update { it.copy(author = action.value) }
+                _state.update { it.copy(author = action.value).clearing(OrderFormField.AUTHOR) }
             }
 
             is AddEditOrderAction.OnPublisherChange -> {
-                _state.update { it.copy(publisher = action.value) }
+                _state.update { it.copy(publisher = action.value).clearing(OrderFormField.PUBLISHER) }
             }
 
             is AddEditOrderAction.OnVolumeChange -> {
@@ -74,15 +69,17 @@ class AddEditOrderViewModel(
             }
 
             is AddEditOrderAction.OnStoreChange -> {
-                _state.update { it.copy(store = action.value) }
+                _state.update { it.copy(store = action.value).clearing(OrderFormField.STORE) }
             }
 
             is AddEditOrderAction.OnPriceChange -> {
-                _state.update { it.copy(price = OrderValidator.sanitizePrice(action.value)) }
+                _state.update {
+                    it.copy(price = OrderValidator.sanitizePrice(action.value)).clearing(OrderFormField.PRICE)
+                }
             }
 
             is AddEditOrderAction.OnOrderDateChange -> {
-                _state.update { it.copy(orderDate = action.value) }
+                _state.update { it.copy(orderDate = action.value).clearing(OrderFormField.ORDER_DATE) }
             }
 
             is AddEditOrderAction.OnReleaseDateChange -> {
@@ -127,6 +124,20 @@ class AddEditOrderViewModel(
         }
     }
 
+    private fun AddEditOrderState.clearing(field: OrderFormField): AddEditOrderState =
+        if (field in errors) copy(errors = errors - field) else this
+
+    /** Every required field, checked together so the user sees all that is missing at once. */
+    private fun AddEditOrderState.validate(): Set<OrderFormField> =
+        buildSet {
+            if (!OrderValidator.isTitleValid(title)) add(OrderFormField.TITLE)
+            if (!OrderValidator.isRequiredTextValid(author)) add(OrderFormField.AUTHOR)
+            if (!OrderValidator.isRequiredTextValid(publisher)) add(OrderFormField.PUBLISHER)
+            if (!OrderValidator.isRequiredTextValid(store)) add(OrderFormField.STORE)
+            if (!OrderValidator.isPriceValid(price)) add(OrderFormField.PRICE)
+            if (!OrderValidator.isRequiredDateValid(orderDate)) add(OrderFormField.ORDER_DATE)
+        }
+
     private fun populate(order: Order) {
         originalCreatedAt = order.createdAt
         _state.update {
@@ -154,8 +165,9 @@ class AddEditOrderViewModel(
 
     private fun save() {
         val current = _state.value
-        if (!OrderValidator.isTitleValid(current.title)) {
-            _state.update { it.copy(titleError = true) }
+        val errors = current.validate()
+        if (errors.isNotEmpty()) {
+            _state.update { it.copy(errors = errors) }
             return
         }
         viewModelScope.launch {

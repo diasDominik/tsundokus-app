@@ -5,6 +5,21 @@ object OrderValidator {
 
     fun isTitleValid(title: String): Boolean = title.isNotBlank()
 
+    /** A required free-text field (author, publisher, store) must carry something. */
+    fun isRequiredTextValid(value: String): Boolean = value.isNotBlank()
+
+    /** A required date must be set; the picker guarantees the format, so presence is enough. */
+    fun isRequiredDateValid(isoDate: String): Boolean = isoDate.isNotBlank()
+
+    /**
+     * A required price must parse as a non-negative amount. Zero is allowed — a free or gifted
+     * volume is still a real price — but blank or unparseable is not.
+     */
+    fun isPriceValid(price: String): Boolean {
+        val amount = price.toDoubleOrNull() ?: return false
+        return amount >= 0.0
+    }
+
     /**
      * Reduces raw price input to what can actually parse as an amount: ASCII digits and at most one
      * decimal separator, capped at [MAX_DECIMALS] places. A comma is accepted and normalised to a
