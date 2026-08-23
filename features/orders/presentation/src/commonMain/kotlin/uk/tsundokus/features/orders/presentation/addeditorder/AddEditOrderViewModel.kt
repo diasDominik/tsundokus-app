@@ -78,7 +78,7 @@ class AddEditOrderViewModel(
             }
 
             is AddEditOrderAction.OnPriceChange -> {
-                _state.update { it.copy(price = action.value) }
+                _state.update { it.copy(price = OrderValidator.sanitizePrice(action.value)) }
             }
 
             is AddEditOrderAction.OnOrderDateChange -> {
