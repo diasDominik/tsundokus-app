@@ -12,6 +12,18 @@ object OrderValidator {
     fun isRequiredDateValid(isoDate: String): Boolean = isoDate.isNotBlank()
 
     /**
+     * Whether [isoDate] falls before [floor], for two dates the picker produced.
+     *
+     * ISO `yyyy-MM-dd` is zero-padded and fixed-width, so a plain string comparison orders these
+     * correctly and no date library is needed. A blank on either side is "not known yet", never a
+     * violation — an order can be shipped before its arrival is recorded.
+     */
+    fun isBefore(
+        isoDate: String,
+        floor: String,
+    ): Boolean = isoDate.isNotBlank() && floor.isNotBlank() && isoDate < floor
+
+    /**
      * A required price must parse as a non-negative amount. Zero is allowed — a free or gifted
      * volume is still a real price — but blank or unparseable is not.
      */
