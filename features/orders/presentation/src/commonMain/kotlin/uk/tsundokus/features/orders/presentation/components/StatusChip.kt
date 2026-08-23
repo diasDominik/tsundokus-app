@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
@@ -34,7 +35,7 @@ fun StatusTile(
     ) {
         Icon(
             imageVector = status.icon(),
-            contentDescription = status.label,
+            contentDescription = stringResource(status.labelRes),
             tint = status.onContainerColor(),
             modifier = Modifier.size(size * 0.5f),
         )
@@ -62,7 +63,7 @@ fun StatusChip(
         )
         HorizontalSpacer(6.dp)
         Text(
-            text = status.label,
+            text = stringResource(status.labelRes),
             style = MaterialTheme.typography.labelMedium,
             color = status.onContainerColor(),
         )
@@ -83,7 +84,7 @@ fun ReadStateBadge(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = readState.label,
+            text = stringResource(readState.labelRes),
             style = MaterialTheme.typography.labelSmall,
             color = readState.onContainerColor(),
         )

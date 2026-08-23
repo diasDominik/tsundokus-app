@@ -38,7 +38,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_status_filter
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewScreenSizes
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
@@ -50,6 +53,7 @@ import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
+import uk.tsundokus.features.orders.presentation.components.labelRes
 import uk.tsundokus.features.orders.presentation.components.nowEpochMillis
 import uk.tsundokus.features.orders.presentation.components.todayIso
 import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
@@ -237,7 +241,15 @@ private fun FilterChipsRow(
             FilterChip(
                 selected = state.statusFilter == status,
                 onClick = { onAction(OrdersListAction.OnStatusFilterSelected(status)) },
-                label = { Text("${status.label} ${state.counts[status] ?: 0}") },
+                label = {
+                    Text(
+                        stringResource(
+                            Res.string.orders_list_status_filter,
+                            stringResource(status.labelRes),
+                            state.counts[status] ?: 0,
+                        ),
+                    )
+                },
                 shape = RoundedCornerShape(20.dp),
             )
         }
@@ -276,7 +288,7 @@ private fun OrdersListBody(
         }
         state.grouped.forEach { (status, orders) ->
             item(key = "header_${status.name}") {
-                SectionHeader(label = status.label, count = orders.size)
+                SectionHeader(label = stringResource(status.labelRes), count = orders.size)
             }
             items(items = orders, key = { it.id }) { order ->
                 OrderRow(

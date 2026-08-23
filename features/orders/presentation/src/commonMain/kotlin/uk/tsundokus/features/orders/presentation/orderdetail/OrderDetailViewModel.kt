@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.koin.core.annotation.InjectedParam
 import org.koin.core.annotation.KoinViewModel
+import tsundokuapp.features.orders.presentation.generated.resources.Res
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_marked_status
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.onFailure
@@ -25,6 +28,8 @@ import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.presentation.components.TimelineNode
 import uk.tsundokus.features.orders.presentation.components.TimelineNodeState
 import uk.tsundokus.features.orders.presentation.components.fmtDate
+import uk.tsundokus.features.orders.presentation.components.fullLabelRes
+import uk.tsundokus.features.orders.presentation.components.labelRes
 import kotlin.time.Duration.Companion.seconds
 
 @KoinViewModel
@@ -62,19 +67,19 @@ class OrderDetailViewModel(
                 PrimaryAction.MARK_SHIPPED -> {
                     orderRepository
                         .setStatus(orderId, OrderStatus.SHIPPED)
-                        .handle(UiText.DynamicString("Marked ${OrderStatus.SHIPPED.label}"))
+                        .handle(markedStatus(OrderStatus.SHIPPED))
                 }
 
                 PrimaryAction.MARK_RECEIVED -> {
                     orderRepository
                         .setStatus(orderId, OrderStatus.RECEIVED)
-                        .handle(UiText.DynamicString("Marked ${OrderStatus.RECEIVED.label}"))
+                        .handle(markedStatus(OrderStatus.RECEIVED))
                 }
 
                 PrimaryAction.MARK_AS_READ -> {
                     orderRepository
                         .setReadState(orderId, ReadState.READ)
-                        .handle(UiText.DynamicString(ReadState.READ.fullLabel))
+                        .handle(UiText.Resource(ReadState.READ.fullLabelRes))
                 }
             }
         }
@@ -84,7 +89,7 @@ class OrderDetailViewModel(
         val current = state.value.order ?: return
         if (current.readState == readState) return
         viewModelScope.launch {
-            orderRepository.setReadState(orderId, readState).handle(UiText.DynamicString(readState.fullLabel))
+            orderRepository.setReadState(orderId, readState).handle(UiText.Resource(readState.fullLabelRes))
         }
     }
 
@@ -100,6 +105,13 @@ class OrderDetailViewModel(
                 }
         }
     }
+
+    /** "Marked <status>" — the status name is a nested resource so translators control both. */
+    private suspend fun markedStatus(status: OrderStatus): UiText =
+        UiText.Resource(
+            id = Res.string.order_detail_marked_status,
+            args = arrayOf(getString(status.labelRes)),
+        )
 
     private suspend fun Result<Order, DataError.Remote>.handle(successMessage: UiText) {
         onSuccess {

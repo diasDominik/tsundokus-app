@@ -1,9 +1,9 @@
 package uk.tsundokus.features.orders.domain.models
 
-enum class ReadState(val label: String, val fullLabel: String) {
-    WANT("Want", "Want to read"),
-    READING("Reading", "Reading"),
-    READ("Read", "Read"),
+enum class ReadState {
+    WANT,
+    READING,
+    READ,
     ;
 
     /** Next state in the cycle WANT -> READING -> READ -> WANT. */

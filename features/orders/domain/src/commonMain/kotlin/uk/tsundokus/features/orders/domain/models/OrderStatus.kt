@@ -1,11 +1,11 @@
 package uk.tsundokus.features.orders.domain.models
 
-enum class OrderStatus(val label: String) {
-    ORDERED("Ordered"),
-    SHIPPED("In transit"),
-    DELAYED("Delayed"),
-    RECEIVED("Received"),
-    CANCELLED("Cancelled"),
+enum class OrderStatus {
+    ORDERED,
+    SHIPPED,
+    DELAYED,
+    RECEIVED,
+    CANCELLED,
     ;
 
     companion object {

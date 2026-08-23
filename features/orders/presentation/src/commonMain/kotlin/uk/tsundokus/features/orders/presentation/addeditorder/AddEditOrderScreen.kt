@@ -62,6 +62,7 @@ import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
+import uk.tsundokus.features.orders.presentation.components.labelRes
 
 @Composable
 fun AddEditOrderRoot(
@@ -124,7 +125,7 @@ private fun AddEditOrderScreen(
                 FilterChip(
                     selected = state.status == status,
                     onClick = { onAction(AddEditOrderAction.OnStatusSelected(status)) },
-                    label = { Text(status.label) },
+                    label = { Text(stringResource(status.labelRes)) },
                 )
             }
         }

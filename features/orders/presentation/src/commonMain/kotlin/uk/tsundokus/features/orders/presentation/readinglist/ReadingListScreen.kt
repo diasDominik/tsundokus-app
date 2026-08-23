@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
@@ -36,6 +37,8 @@ import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
 import uk.tsundokus.features.orders.presentation.components.StatusTile
 import uk.tsundokus.features.orders.presentation.components.containerColor
+import uk.tsundokus.features.orders.presentation.components.fullLabelRes
+import uk.tsundokus.features.orders.presentation.components.labelRes
 import uk.tsundokus.features.orders.presentation.components.onContainerColor
 
 @Composable
@@ -85,7 +88,7 @@ private fun ReadingListScreen(
             state.grouped.forEach { (readState, orders) ->
                 item(key = "header_${readState.name}") {
                     SectionHeader(
-                        label = readState.fullLabel,
+                        label = stringResource(readState.fullLabelRes),
                         count = orders.size,
                         dotColor = readState.dotColor(),
                     )
@@ -156,7 +159,7 @@ private fun ReadStateChip(
         contentColor = readState.onContainerColor(),
     ) {
         Text(
-            text = readState.label,
+            text = stringResource(readState.labelRes),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
         )

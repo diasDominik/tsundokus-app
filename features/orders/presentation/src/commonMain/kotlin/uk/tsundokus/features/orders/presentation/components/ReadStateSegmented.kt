@@ -8,6 +8,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.jetbrains.compose.resources.stringResource
 import uk.tsundokus.features.orders.domain.models.ReadState
 
 /** Segmented control over the [ReadState] values (Want / Reading / Read). */
@@ -26,7 +27,7 @@ fun ReadStateSegmented(
                 onClick = { onSelect(readState) },
                 shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
             ) {
-                Text(readState.fullLabel)
+                Text(stringResource(readState.fullLabelRes))
             }
         }
     }
