@@ -37,6 +37,7 @@ import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
 
 @Composable
@@ -164,13 +165,13 @@ private fun AddEditOrderScreen(
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            DateField(
+            OrderDateField(
                 value = state.orderDate,
                 onValueChange = { onAction(AddEditOrderAction.OnOrderDateChange(it)) },
                 label = "Order date",
                 modifier = Modifier.weight(1f),
             )
-            DateField(
+            OrderDateField(
                 value = state.releaseDate,
                 onValueChange = { onAction(AddEditOrderAction.OnReleaseDateChange(it)) },
                 label = "Release date",
@@ -180,13 +181,13 @@ private fun AddEditOrderScreen(
 
         if (state.status == OrderStatus.SHIPPED) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                DateField(
+                OrderDateField(
                     value = state.shipDate,
                     onValueChange = { onAction(AddEditOrderAction.OnShipDateChange(it)) },
                     label = "Ship date",
                     modifier = Modifier.weight(1f),
                 )
-                DateField(
+                OrderDateField(
                     value = state.eta,
                     onValueChange = { onAction(AddEditOrderAction.OnEtaChange(it)) },
                     label = "ETA",
@@ -196,7 +197,7 @@ private fun AddEditOrderScreen(
         }
 
         if (state.status == OrderStatus.DELAYED) {
-            DateField(
+            OrderDateField(
                 value = state.delayedTo,
                 onValueChange = { onAction(AddEditOrderAction.OnDelayedToChange(it)) },
                 label = "Delayed to",
@@ -204,7 +205,7 @@ private fun AddEditOrderScreen(
         }
 
         if (state.status == OrderStatus.RECEIVED) {
-            DateField(
+            OrderDateField(
                 value = state.receivedDate,
                 onValueChange = { onAction(AddEditOrderAction.OnReceivedDateChange(it)) },
                 label = "Received date",
@@ -254,23 +255,6 @@ private fun FormField(
         supportingText = supportingText?.let { message -> { Text(message) } },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = modifier.fillMaxWidth(),
-    )
-}
-
-@Composable
-private fun DateField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    modifier: Modifier = Modifier,
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        placeholder = { Text("YYYY-MM-DD") },
-        singleLine = true,
         modifier = modifier.fillMaxWidth(),
     )
 }
