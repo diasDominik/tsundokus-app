@@ -55,6 +55,13 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
+
+        // Robolectric emulates SDK 37's ApplicationSharedMemory, which pokes at raw
+        // FileDescriptor internals through jdk.internal.access — a package the JDK keeps
+        // closed to unnamed modules unless it is exported explicitly.
+        unitTests.all { test ->
+            test.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+        }
     }
 }
 

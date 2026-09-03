@@ -13,10 +13,10 @@ import uk.tsundokus.features.authentication.presentation.navigation.ResetPasswor
  * Android-host counterpart of the desktop DeepLinkMatcherTest. Runs under Robolectric so
  * [buildDeepLinkMatchers] resolves URIs through the real `android.net.Uri` — the exact path the app
  * uses on Android, which a plain JVM unit test can't exercise. `Config.NONE` (no manifest) keeps it
- * a pure unit test; a Robolectric-supported SDK is pinned since compileSdk is newer than Robolectric.
+ * a pure unit test.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE, sdk = [34])
+@Config(manifest = Config.NONE)
 class DeepLinkMatcherRobolectricTest {
     private val matchers = buildDeepLinkMatchers(devBaseUrl = "http://localhost:8080")
 
