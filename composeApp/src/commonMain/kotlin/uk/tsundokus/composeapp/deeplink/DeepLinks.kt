@@ -1,7 +1,6 @@
 package uk.tsundokus.composeapp.deeplink
 
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.deeplink.DeepLinkMatcher
 import androidx.navigation3.runtime.deeplink.DeepLinkRequest
 import androidx.navigation3.runtime.deeplink.DeepLinkUri
 import androidx.navigation3.runtime.deeplink.UriDeepLinkMatcher
@@ -22,7 +21,7 @@ private const val RESET_PATH = "/api/auth/reset-password"
  * (BuildKonfig.BASE_URL_HTTP) used by local/device email testing. `?token={token}` extracts the
  * token, which the matcher's serializer deserializes straight into the [NavKey].
  */
-fun buildDeepLinkMatchers(devBaseUrl: String): List<DeepLinkMatcher<out NavKey>> {
+fun buildDeepLinkMatchers(devBaseUrl: String): List<UriDeepLinkMatcher<NavKey>> {
     val dev = DeepLinkUri(devBaseUrl)
     val origins =
         buildSet {
@@ -52,7 +51,7 @@ fun buildDeepLinkMatchers(devBaseUrl: String): List<DeepLinkMatcher<out NavKey>>
 }
 
 /** Resolves a raw deep-link URI to its [NavKey] using the registered matchers, or null if none match. */
-fun List<DeepLinkMatcher<out NavKey>>.matchOrNull(uri: String): NavKey? {
-    val request = DeepLinkRequest.fromUriString(uri)
+fun List<UriDeepLinkMatcher<NavKey>>.matchOrNull(uri: String): NavKey? {
+    val request = DeepLinkRequest(uri)
     return firstNotNullOfOrNull { it.match(request)?.key }
 }

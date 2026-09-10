@@ -8,6 +8,7 @@ import uk.tsundokus.core.domain.auth.StaleSessionStore
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
 import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.domain.sync.LocalDataResetter
+import uk.tsundokus.features.orders.data.sync.OrderRealtimeSync
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emitAll
@@ -26,7 +27,14 @@ class MainViewModel(
     private val staleSessionStore: StaleSessionStore,
     private val localDataResetter: LocalDataResetter,
     appPreferencesRepository: AppPreferencesRepository,
+    orderRealtimeSync: OrderRealtimeSync,
 ) : ViewModel() {
+    init {
+        // Hold the realtime order socket for the whole app lifetime; it connects while signed in and
+        // reconnects on drops. Idempotent, so a second start() is a no-op.
+        orderRealtimeSync.start()
+    }
+
     // Stays Loading until the cache-aware restore resolves, so the UI never
     // defaults to sign-in before the persisted session is known.
     val sessionState: StateFlow<SessionState> =
