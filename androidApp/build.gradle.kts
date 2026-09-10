@@ -42,7 +42,6 @@ android {
     }
 
     lint {
-        sarifReport = true
         if (System.getenv("CI") != null) {
             disable +=
                 setOf(
@@ -83,5 +82,4 @@ dependencies {
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.test.ext.junit)
 }
