@@ -34,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -79,7 +78,6 @@ import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
 import uk.tsundokus.features.authentication.presentation.navigation.SignIn
 import uk.tsundokus.features.authentication.presentation.navigation.authGraph
 import uk.tsundokus.features.authentication.presentation.navigation.authSerializersModule
-import uk.tsundokus.features.orders.data.sync.OrderRealtimeSync
 import uk.tsundokus.features.orders.presentation.navigation.AddOrder
 import uk.tsundokus.features.orders.presentation.navigation.EditOrder
 import uk.tsundokus.features.orders.presentation.navigation.OrderDetail
@@ -93,7 +91,6 @@ import uk.tsundokus.features.settings.presentation.navigation.settingsGraph
 import uk.tsundokus.features.settings.presentation.navigation.settingsSerializersModule
 import kotlinx.serialization.modules.plus
 import org.koin.compose.KoinApplication
-import org.koin.compose.getKoin
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.plugin.module.dsl.koinConfiguration
 
@@ -145,11 +142,6 @@ fun App() {
         configuration = koinConfiguration<TsundokuKoinApp>(),
     ) {
         val mainViewModel = koinViewModel<MainViewModel>()
-
-        // Hold the realtime order socket for the whole app lifetime; it connects while signed in and
-        // reconnects on drops. Idempotent, so re-running on recomposition is a no-op.
-        val koin = getKoin()
-        LaunchedEffect(Unit) { koin.get<OrderRealtimeSync>().start() }
 
         val themeMode by mainViewModel.themeMode.collectAsStateWithLifecycle()
         val darkTheme =
