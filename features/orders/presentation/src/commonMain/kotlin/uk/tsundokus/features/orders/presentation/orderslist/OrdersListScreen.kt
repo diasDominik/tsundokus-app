@@ -92,7 +92,9 @@ import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
+import uk.tsundokus.core.presentation.util.rememberSnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
@@ -110,14 +112,14 @@ fun OrdersListRoot(
     onOpenOrder: (String) -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     viewModel: OrdersListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is OrdersListEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message.asStringAsync())
+            is OrdersListEvent.ShowMessage -> snackbar.show(event.message)
         }
     }
 
@@ -127,7 +129,7 @@ fun OrdersListRoot(
         onOpenOrder = onOpenOrder,
         onEditOrder = onEditOrder,
         onReportDelay = onReportDelay,
-        snackbarHostState = snackbarHostState,
+        snackbar = snackbar,
     )
 }
 
@@ -138,7 +140,7 @@ private fun OrdersListScreen(
     onOpenOrder: (String) -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     modifier: Modifier = Modifier,
 ) {
     val isExpanded =
@@ -188,7 +190,7 @@ private fun OrdersListScreen(
                     key(selectedId) {
                         OrderDetailRoot(
                             orderId = selectedId,
-                            snackbarHostState = snackbarHostState,
+                            snackbar = snackbar,
                             onEdit = { onEditOrder(selectedId) },
                             onReportDelay = { onReportDelay(selectedId) },
                             onBack = {},
@@ -631,7 +633,7 @@ private fun OrdersListScreenPreview() {
                 onOpenOrder = {},
                 onEditOrder = {},
                 onReportDelay = {},
-                snackbarHostState = remember { SnackbarHostState() },
+                snackbar = rememberSnackbarController(remember { SnackbarHostState() }),
             )
         }
     }

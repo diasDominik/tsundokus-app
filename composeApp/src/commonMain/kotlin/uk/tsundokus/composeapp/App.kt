@@ -75,6 +75,7 @@ import uk.tsundokus.core.presentation.navigation.TopBarActionsController
 import uk.tsundokus.core.presentation.navigation.TopLevelTab
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
+import uk.tsundokus.core.presentation.util.rememberSnackbarController
 import uk.tsundokus.features.authentication.presentation.navigation.SignIn
 import uk.tsundokus.features.authentication.presentation.navigation.authGraph
 import uk.tsundokus.features.authentication.presentation.navigation.authSerializersModule
@@ -204,6 +205,8 @@ fun App() {
 
             val topLevelTabs = remember { listOf(Orders, ReadingList, Settings) }
             val snackbarHostState = remember { SnackbarHostState() }
+            // Lives with the shell, not with a screen, so a screen can post a message on its way out.
+            val snackbar = rememberSnackbarController(snackbarHostState)
 
             if (currentKey is LoggedIn) {
                 val topBarActions = remember { TopBarActionsController() }
@@ -329,7 +332,7 @@ fun App() {
                                         onEditOrder = { backStack.add(EditOrder(it)) },
                                         onReportDelay = { backStack.add(ReportDelay(it)) },
                                         onBack = { backStack.removeLastOrNull() },
-                                        snackbarHostState = snackbarHostState,
+                                        snackbar = snackbar,
                                     )
                                     settingsGraph(
                                         backStack = backStack,

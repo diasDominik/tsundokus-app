@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,13 +24,14 @@ import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
 
 @Composable
 fun ReportDelayRoot(
     orderId: String,
     onSaved: () -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     viewModel: ReportDelayViewModel =
         koinViewModel(
             key = orderId,
@@ -42,13 +42,15 @@ fun ReportDelayRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
+            // Same as the add/edit form: the write is local and already done, so the screen
+            // closes at once and the shell carries the confirmation.
             is ReportDelayEvent.Saved -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
                 onSaved()
+                snackbar.show(event.message)
             }
 
             is ReportDelayEvent.ShowError -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
+                snackbar.show(event.message)
             }
         }
     }

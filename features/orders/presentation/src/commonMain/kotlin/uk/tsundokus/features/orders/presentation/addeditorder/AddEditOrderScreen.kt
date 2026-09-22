@@ -20,7 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,6 +84,7 @@ import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.presentation.navigation.OverrideTopBar
 import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
@@ -98,7 +98,7 @@ fun AddEditOrderRoot(
     orderId: String?,
     onSaved: () -> Unit,
     onClose: () -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     viewModel: AddEditOrderViewModel =
         koinViewModel(
             key = orderId ?: "add",
@@ -109,18 +109,22 @@ fun AddEditOrderRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
+            // Leave first, then hand the confirmation to the shell: the write already landed
+            // locally and the server sync runs in the background, so there is nothing here to wait
+            // for. Awaiting the snackbar instead would keep the form on screen for its whole
+            // duration.
             is AddEditOrderEvent.Saved -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
                 onSaved()
+                snackbar.show(event.message)
             }
 
             is AddEditOrderEvent.Deleted -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
                 onSaved()
+                snackbar.show(event.message)
             }
 
             is AddEditOrderEvent.ShowError -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
+                snackbar.show(event.message)
             }
         }
     }

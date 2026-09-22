@@ -1,12 +1,12 @@
 package uk.tsundokus.features.orders.presentation.navigation
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.presentation.addeditorder.AddEditOrderRoot
 import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
 import uk.tsundokus.features.orders.presentation.orderslist.OrdersListRoot
@@ -36,28 +36,28 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
     onBack: () -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
 ) {
     entry<Orders> {
         OrdersListRoot(
             onOpenOrder = onOpenOrder,
             onEditOrder = onEditOrder,
             onReportDelay = onReportDelay,
-            snackbarHostState = snackbarHostState,
+            snackbar = snackbar,
         )
     }
 
     entry<ReadingList> {
         ReadingListRoot(
             onOpenOrder = onOpenOrder,
-            snackbarHostState = snackbarHostState,
+            snackbar = snackbar,
         )
     }
 
     entry<OrderDetail> { route ->
         OrderDetailRoot(
             orderId = route.orderId,
-            snackbarHostState = snackbarHostState,
+            snackbar = snackbar,
             onEdit = { onEditOrder(route.orderId) },
             onReportDelay = { onReportDelay(route.orderId) },
             onBack = onBack,
@@ -70,7 +70,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
             orderId = null,
             onSaved = onBack,
             onClose = onBack,
-            snackbarHostState = snackbarHostState,
+            snackbar = snackbar,
         )
     }
 
@@ -80,7 +80,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
             orderId = route.orderId,
             onSaved = onBack,
             onClose = onBack,
-            snackbarHostState = snackbarHostState,
+            snackbar = snackbar,
         )
     }
 
@@ -88,7 +88,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
         ReportDelayRoot(
             orderId = route.orderId,
             onSaved = onBack,
-            snackbarHostState = snackbarHostState,
+            snackbar = snackbar,
         )
     }
 }
