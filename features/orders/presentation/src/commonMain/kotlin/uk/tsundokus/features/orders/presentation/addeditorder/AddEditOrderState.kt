@@ -26,13 +26,24 @@ data class AddEditOrderState(
     val isSaving: Boolean = false,
     /** Whether the user has changed anything since the form opened. Drives the discard guard. */
     val isDirty: Boolean = false,
+    /** The field whose suggestion list is currently offered, or null when none is. */
+    val suggestionField: OrderFormField? = null,
+    /** Values from the user's existing orders that match what they have typed into that field. */
+    val suggestions: List<String> = emptyList(),
 ) {
     /**
      * The form's content with the transient bookkeeping stripped, so two states can be compared for
      * "did the user actually change anything". Copying rather than listing the fields keeps this
      * correct when a field is added to the form.
      */
-    internal fun formOnly(): AddEditOrderState = copy(errors = emptySet(), isSaving = false, isDirty = false)
+    internal fun formOnly(): AddEditOrderState =
+        copy(
+            errors = emptySet(),
+            isSaving = false,
+            isDirty = false,
+            suggestionField = null,
+            suggestions = emptyList(),
+        )
 }
 
 /**

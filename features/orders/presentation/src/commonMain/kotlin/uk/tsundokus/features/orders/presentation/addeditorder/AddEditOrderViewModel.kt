@@ -30,6 +30,12 @@ import uk.tsundokus.features.orders.presentation.components.todayIso
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+/** Keeping the list short enough to scan at a glance, and to sit above the keyboard. */
+private const val MAX_SUGGESTIONS = 5
+
+/** One character is too little to narrow anything down; it would just offer the whole history. */
+private const val MIN_SUGGESTION_QUERY = 2
+
 private val DATE_FIELDS =
     setOf(
         OrderFormField.ORDER_DATE,
@@ -54,12 +60,28 @@ class AddEditOrderViewModel(
     private var originalCreatedAt = 0L
 
     /**
+     * The values the user has already used, most-used first, and the order each title was last
+     * recorded with. Kept out of the state: only the handful that match what is being typed is UI.
+     */
+    private var titles = emptyList<String>()
+    private var authors = emptyList<String>()
+    private var publishers = emptyList<String>()
+    private var stores = emptyList<String>()
+    private var latestByTitle = emptyMap<String, Order>()
+
+    /**
      * The form as it was last handed to the user — on open, and again after a successful save.
      * Everything that follows is compared against it to decide whether there is anything to lose.
      */
     private var pristine = _state.value
 
     init {
+        // The suggestion pools come from the local cache, so they are there offline and refresh
+        // themselves when a sync brings new orders in.
+        viewModelScope.launch {
+            orderRepository.getOrders().collect(::indexSuggestions)
+        }
+
         if (orderId != null) {
             viewModelScope.launch {
                 populate(orderRepository.getOrderById(orderId).filterNotNull().first())
@@ -78,14 +100,17 @@ class AddEditOrderViewModel(
         when (action) {
             is AddEditOrderAction.OnTitleChange -> {
                 updateForm { it.copy(title = action.value).clearing(OrderFormField.TITLE) }
+                offerSuggestions(OrderFormField.TITLE, action.value)
             }
 
             is AddEditOrderAction.OnAuthorChange -> {
                 updateForm { it.copy(author = action.value).clearing(OrderFormField.AUTHOR) }
+                offerSuggestions(OrderFormField.AUTHOR, action.value)
             }
 
             is AddEditOrderAction.OnPublisherChange -> {
                 updateForm { it.copy(publisher = action.value).clearing(OrderFormField.PUBLISHER) }
+                offerSuggestions(OrderFormField.PUBLISHER, action.value)
             }
 
             is AddEditOrderAction.OnVolumeChange -> {
@@ -94,6 +119,7 @@ class AddEditOrderViewModel(
 
             is AddEditOrderAction.OnStoreChange -> {
                 updateForm { it.copy(store = action.value).clearing(OrderFormField.STORE) }
+                offerSuggestions(OrderFormField.STORE, action.value)
             }
 
             is AddEditOrderAction.OnPriceChange -> {
@@ -138,6 +164,14 @@ class AddEditOrderViewModel(
                 updateForm { it.copy(readState = action.readState) }
             }
 
+            is AddEditOrderAction.OnSuggestionSelected -> {
+                applySuggestion(action.value)
+            }
+
+            AddEditOrderAction.OnSuggestionsDismissed -> {
+                _state.update { it.copy(suggestionField = null, suggestions = emptyList()) }
+            }
+
             AddEditOrderAction.OnSave -> {
                 save()
             }
@@ -166,7 +200,131 @@ class AddEditOrderViewModel(
     private fun updateForm(transform: (AddEditOrderState) -> AddEditOrderState) {
         _state.update { current ->
             val next = transform(current)
-            next.copy(isDirty = next.formOnly() != pristine.formOnly())
+            // Any edit closes the open list: what was offered was for the previous keystroke, and
+            // an edit to another field has nothing to do with it. [offerSuggestions] reopens it.
+            next.copy(
+                isDirty = next.formOnly() != pristine.formOnly(),
+                suggestionField = null,
+                suggestions = emptyList(),
+            )
+        }
+    }
+
+    /**
+     * Rebuilds the pools from the cached orders. The order being edited is left out: offering the
+     * user the value they are currently changing is never a useful suggestion.
+     */
+    private fun indexSuggestions(orders: List<Order>) {
+        val others = orders.filter { it.id != orderId }
+        titles = rank(others.map(Order::title))
+        authors = rank(others.map(Order::author))
+        publishers = rank(others.map(Order::publisher))
+        stores = rank(others.map(Order::store))
+        // Ascending by creation, so the newest order for a title wins the key.
+        latestByTitle = others.sortedBy(Order::createdAt).associateBy { it.title.trim().lowercase() }
+
+        // An open list was built from the previous pools; rebuild it so a sync landing mid-typing
+        // neither drops a suggestion the user is reaching for nor keeps a stale one.
+        val state = _state.value
+        state.suggestionField?.let { field -> offerSuggestions(field, state.valueOf(field)) }
+    }
+
+    /** Distinct values, most-used first, keeping the spelling the user typed most often. */
+    private fun rank(values: List<String>): List<String> =
+        values
+            .map(String::trim)
+            .filter(String::isNotBlank)
+            .groupBy { it.lowercase() }
+            .values
+            .sortedByDescending { it.size }
+            .map { spellings ->
+                spellings
+                    .groupingBy { it }
+                    .eachCount()
+                    .maxBy { it.value }
+                    .key
+            }
+
+    private fun offerSuggestions(
+        field: OrderFormField,
+        query: String,
+    ) {
+        val matches = matchesFor(field, query)
+        if (matches.isEmpty()) return
+        _state.update { it.copy(suggestionField = field, suggestions = matches) }
+    }
+
+    /**
+     * Matches anywhere in the value, not only at the start — a series is as often remembered by a
+     * word in the middle of its title as by its first one — but what starts with the query is
+     * offered first. The value already typed in full is dropped: it has nothing left to complete.
+     */
+    private fun matchesFor(
+        field: OrderFormField,
+        query: String,
+    ): List<String> {
+        val trimmed = query.trim()
+        if (trimmed.length < MIN_SUGGESTION_QUERY) return emptyList()
+        val needle = trimmed.lowercase()
+        return poolFor(field)
+            .asSequence()
+            .map { it to it.lowercase() }
+            .filter { (_, lower) -> lower != needle && lower.contains(needle) }
+            .sortedByDescending { (_, lower) -> lower.startsWith(needle) }
+            .take(MAX_SUGGESTIONS)
+            .map { (value, _) -> value }
+            .toList()
+    }
+
+    private fun poolFor(field: OrderFormField): List<String> =
+        when (field) {
+            OrderFormField.TITLE -> titles
+            OrderFormField.AUTHOR -> authors
+            OrderFormField.PUBLISHER -> publishers
+            OrderFormField.STORE -> stores
+            else -> emptyList()
+        }
+
+    private fun AddEditOrderState.valueOf(field: OrderFormField): String =
+        when (field) {
+            OrderFormField.TITLE -> title
+            OrderFormField.AUTHOR -> author
+            OrderFormField.PUBLISHER -> publisher
+            OrderFormField.STORE -> store
+            else -> ""
+        }
+
+    private fun applySuggestion(value: String) {
+        val field = _state.value.suggestionField ?: return
+        updateForm { current ->
+            when (field) {
+                OrderFormField.TITLE -> current.copy(title = value).clearing(field).withDetailsOf(value)
+                OrderFormField.AUTHOR -> current.copy(author = value).clearing(field)
+                OrderFormField.PUBLISHER -> current.copy(publisher = value).clearing(field)
+                OrderFormField.STORE -> current.copy(store = value).clearing(field)
+                else -> current
+            }
+        }
+    }
+
+    /**
+     * A new volume of a series is usually the same author, publisher and shop as the last one, so
+     * picking a title fills those in from that order — but only where the user has left them empty,
+     * since what they typed themselves is the better answer.
+     */
+    private fun AddEditOrderState.withDetailsOf(title: String): AddEditOrderState {
+        val previous = latestByTitle[title.trim().lowercase()] ?: return this
+        return copy(
+            author = author.ifBlank { previous.author },
+            publisher = publisher.ifBlank { previous.publisher },
+            store = store.ifBlank { previous.store },
+        ).let { filled ->
+            filled.copy(
+                errors =
+                    filled.errors
+                        .filterNot { field -> filled.valueOf(field).isNotBlank() }
+                        .toSet(),
+            )
         }
     }
 
