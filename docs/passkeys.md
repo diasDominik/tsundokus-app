@@ -13,7 +13,7 @@ third-party managers such as 1Password eligible:
 | --- | --- | --- |
 | `authenticatorAttachment` | *unset* | Setting it to `platform` would limit the ceremony to the device's own authenticator and hide 1Password, Bitwarden and security keys. |
 | `residentKey` | `required` | The credential is discoverable, so signing in needs no email — the manager offers the right passkey on its own. |
-| `userVerification` | `preferred` in the request, **required** by the server | The passkey is the whole sign-in here, not a second factor, so the server checks the User Verified flag itself (WebAuthn L2 §7.2 step 17) and refuses an assertion without it. Managers that unlock with biometrics or a PIN — 1Password among them — set that flag. |
+| `userVerification` | `required`, and checked again on the way back | The passkey is the whole sign-in here, not a second factor, so the request asks the authenticator to verify the user, and the server checks the User Verified flag itself on the response (WebAuthn L2 §7.2 step 17). Asking matters: a manager that is already unlocked otherwise answers without verifying anyone — 1Password returns `UV=0` in that case and the sign-in is refused. |
 
 Where each provider can serve a passkey:
 
@@ -52,5 +52,25 @@ Both live in the server repository and are served by Caddy from `/srv/static`.
    there should stop it working (the credential stays in 1Password's vault; the server no longer
    trusts it).
 
-If the provider sheet skips 1Password, the usual cause is the domain association rather than the
-app: check that `assetlinks.json` carries the fingerprint of the exact build being run.
+1Password asks to unlock the vault during sign-in even when it is already unlocked. That prompt *is*
+the user verification the server requires; without it there is nothing to tell the account's owner
+from whoever is holding the phone.
+
+## When it does not work
+
+- **The provider sheet skips 1Password**, or it refuses to save with *"the URL for this passkey does
+  not match the selected application"*: the domain does not vouch for this build. `assetlinks.json`
+  must carry the SHA-256 of the certificate the installed app is actually signed with — for a Play
+  install that is Google's app signing key, not the upload key. Read it off the device rather than
+  the console:
+
+  ```
+  adb shell pm path uk.tsundokus
+  adb pull <base.apk> && apksigner verify --print-certs base.apk
+  ```
+
+  Google caches the file for about an hour (`maxAge` on `digitalassetlinks.googleapis.com`).
+
+- **Sign-in is refused with a 401** after the provider happily signed: the server said no. It logs
+  the reason — the authenticator flags, the counter, the origin and whether a user handle came
+  back — on one line beginning `Passkey sign-in refused:`.
