@@ -58,7 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -143,9 +143,13 @@ private fun OrdersListScreen(
     snackbar: SnackbarController,
     modifier: Modifier = Modifier,
 ) {
+    // Two panes only once the window is wide enough for both to be worth reading. At medium width
+    // — an unfolded Z Fold is 752dp — the navigation rail plus the list pane leave the detail
+    // narrower than a phone screen, so the list gets the window to itself and an order opens on
+    // its own screen instead.
     val isExpanded =
         currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(
-            WIDTH_DP_MEDIUM_LOWER_BOUND,
+            WIDTH_DP_EXPANDED_LOWER_BOUND,
         )
     val searchFocusRequester = remember { FocusRequester() }
     // Ctrl/Cmd+F jumps to search. Handled as a *preview* event so it works even while a text field
@@ -201,16 +205,26 @@ private fun OrdersListScreen(
             }
         }
     } else {
-        Column(modifier = modifier.fillMaxSize().then(shortcuts)) {
-            ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
-            OrdersListBody(
-                state = state,
-                onAction = onAction,
-                onOrderClick = onOpenOrder,
-            )
+        // Capped and centred rather than stretched: on a window this wide a row would otherwise
+        // put its price the better part of a foot away from the title it belongs to.
+        Box(
+            modifier = modifier.fillMaxSize().then(shortcuts),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Column(modifier = Modifier.widthIn(max = LIST_MAX_WIDTH).fillMaxSize()) {
+                ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
+                OrdersListBody(
+                    state = state,
+                    onAction = onAction,
+                    onOrderClick = onOpenOrder,
+                )
+            }
         }
     }
 }
+
+/** The same cap the reading shelf and the order form use, so the tabs line up. */
+private val LIST_MAX_WIDTH = 600.dp
 
 @Composable
 private fun ListHeader(
