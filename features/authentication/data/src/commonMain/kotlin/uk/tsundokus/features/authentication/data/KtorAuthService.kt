@@ -10,12 +10,15 @@ import uk.tsundokus.core.data.mappers.toDomain
 import uk.tsundokus.core.data.networking.get
 import uk.tsundokus.core.data.networking.post
 import uk.tsundokus.core.domain.auth.AuthInfo
+import uk.tsundokus.core.domain.auth.PasskeyCeremony
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.EmptyResult
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.map
 import uk.tsundokus.core.domain.util.onSuccess
+import uk.tsundokus.features.authentication.data.dto.PasskeyCeremonySerializable
+import uk.tsundokus.features.authentication.data.dto.PasskeyFinishRequest
 import uk.tsundokus.features.authentication.data.dto.requests.EmailRequest
 import uk.tsundokus.features.authentication.data.dto.requests.LoginRequest
 import uk.tsundokus.features.authentication.data.dto.requests.RegisterRequest
@@ -60,6 +63,39 @@ class KtorAuthService(
             ).map { authInfoSerializable ->
                 authInfoSerializable.toDomain()
             }.onSuccess { authInfo ->
+                sessionStorage.set(authInfo)
+            }
+    }
+
+    override suspend fun beginPasskeyLogin(): Result<PasskeyCeremony, DataError.Remote> {
+        return httpClient
+            .post<Unit, PasskeyCeremonySerializable>(
+                route = "/api/auth/passkeys/login/begin",
+                body = Unit,
+            ).map { ceremony ->
+                PasskeyCeremony(
+                    ceremonyId = ceremony.ceremonyId,
+                    optionsJson = ceremony.optionsJson,
+                )
+            }
+    }
+
+    override suspend fun finishPasskeyLogin(
+        ceremonyId: String,
+        responseJson: String,
+    ): Result<AuthInfo, DataError.Remote> {
+        return httpClient
+            .post<PasskeyFinishRequest, AuthInfoSerializable>(
+                route = "/api/auth/passkeys/login/finish",
+                body =
+                    PasskeyFinishRequest(
+                        ceremonyId = ceremonyId,
+                        responseJson = responseJson,
+                    ),
+            ).map { authInfoSerializable ->
+                authInfoSerializable.toDomain()
+            }.onSuccess { authInfo ->
+                // The same session a password login produces, so everything downstream is unchanged.
                 sessionStorage.set(authInfo)
             }
     }
