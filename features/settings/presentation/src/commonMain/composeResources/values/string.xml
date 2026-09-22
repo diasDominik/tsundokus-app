@@ -76,4 +76,25 @@
     -->
     <string name="delete_account_confirm_hint">Type %1$s to confirm</string>
     <string name="delete_account_button">Delete account</string>
+
+    <!-- Passkeys -->
+    <string name="nav_passkeys">Passkeys</string>
+    <string name="settings_passkeys">Passkeys</string>
+    <string name="settings_passkeys_caption">Sign in with your fingerprint, face or screen lock</string>
+    <string name="passkeys_explainer">A passkey signs you in with the same fingerprint, face or screen lock you already use on this device. Your password keeps working.</string>
+    <string name="passkeys_add">Add a passkey</string>
+    <string name="passkeys_empty">No passkeys yet</string>
+    <string name="passkeys_added">Passkey added</string>
+    <string name="passkeys_removed">Passkey removed</string>
+    <string name="passkeys_remove">Remove</string>
+    <string name="passkeys_remove_title">Remove this passkey?</string>
+    <string name="passkeys_remove_message">You will no longer be able to sign in with it on that device. Your password still works.</string>
+    <string name="passkeys_remove_confirm">Remove</string>
+    <string name="passkeys_remove_cancel">Keep</string>
+    <string name="passkeys_unnamed">Passkey</string>
+    <string name="passkeys_added_on">Added %1$s</string>
+    <string name="passkeys_last_used">Last used %1$s</string>
+    <string name="passkeys_never_used">Not used yet</string>
+    <string name="error_passkey_enrolment_failed">That passkey could not be added. Try again.</string>
+    <string name="error_passkey_unsupported">This device cannot create passkeys.</string>
 </resources>

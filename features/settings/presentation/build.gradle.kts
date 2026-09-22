@@ -19,6 +19,10 @@ kotlin {
                 implementation(projects.core.designsystem)
                 implementation(projects.core.domain)
                 implementation(projects.core.presentation)
+
+                // Platform passkey ceremonies (Credential Manager / ASAuthorization / WebAuthn).
+                implementation(libs.passkeys)
+                implementation(libs.passkeys.compose)
                 implementation(projects.features.settings.data)
                 implementation(projects.features.settings.domain)
                 implementation(libs.jetbrains.material3.adaptive)

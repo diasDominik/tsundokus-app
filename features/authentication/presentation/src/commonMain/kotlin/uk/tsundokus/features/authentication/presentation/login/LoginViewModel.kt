@@ -21,6 +21,7 @@ import org.koin.core.annotation.KoinViewModel
 import tsundokuapp.features.authentication.presentation.generated.resources.Res
 import tsundokuapp.features.authentication.presentation.generated.resources.error_email_not_verified
 import tsundokuapp.features.authentication.presentation.generated.resources.error_invalid_credentials
+import tsundokuapp.features.authentication.presentation.generated.resources.error_passkey_rejected
 import uk.tsundokus.core.domain.auth.StaleSessionStore
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.onFailure
@@ -57,6 +58,9 @@ class LoginViewModel(
                 initialValue = _state.value,
             )
 
+    /** The ceremony the authenticator is answering; the server pairs the response back to it. */
+    private var pendingCeremonyId: String? = null
+
     private val eventChannel = Channel<LoginEvent>()
     val events = eventChannel.receiveAsFlow()
 
@@ -92,6 +96,67 @@ class LoginViewModel(
 
     fun onTogglePasswordVisibility() {
         _state.value = _state.value.copy(isPasswordVisible = !_state.value.isPasswordVisible)
+    }
+
+    fun onPasskeyLogin() {
+        // Guarded on the backing state, not the exposed one: `state` only tracks it while something
+        // collects, so a second press would otherwise start a second ceremony.
+        if (_state.value.isSigningInWithPasskey) return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isSigningInWithPasskey = true) }
+            authService
+                .beginPasskeyLogin()
+                .onSuccess { ceremony ->
+                    pendingCeremonyId = ceremony.ceremonyId
+                    eventChannel.send(LoginEvent.RunPasskeyCeremony(ceremony.optionsJson))
+                }.onFailure { error ->
+                    failPasskeyLogin(error.toUiText())
+                }
+        }
+    }
+
+    /** What the authenticator signed, on its way to the server for verification. */
+    fun onPasskeyResponse(responseJson: String) {
+        val ceremonyId = pendingCeremonyId ?: return
+
+        viewModelScope.launch {
+            authService
+                .finishPasskeyLogin(ceremonyId = ceremonyId, responseJson = responseJson)
+                .onSuccess {
+                    pendingCeremonyId = null
+                    _state.update { it.copy(isSigningInWithPasskey = false) }
+                    eventChannel.send(LoginEvent.LoginSuccess)
+                }.onFailure { error ->
+                    val message =
+                        when (error) {
+                            DataError.Remote.UNAUTHORIZED -> UiText.Resource(Res.string.error_passkey_rejected)
+                            else -> error.toUiText()
+                        }
+                    failPasskeyLogin(message)
+                }
+        }
+    }
+
+    /**
+     * The ceremony ended at the authenticator — cancelled, unsupported, or no passkey for this site.
+     * A cancellation is the user's own doing, so it passes without a message.
+     */
+    fun onPasskeyCeremonyFailed(message: UiText?) {
+        viewModelScope.launch {
+            if (message == null) {
+                pendingCeremonyId = null
+                _state.update { it.copy(isSigningInWithPasskey = false) }
+            } else {
+                failPasskeyLogin(message)
+            }
+        }
+    }
+
+    private suspend fun failPasskeyLogin(message: UiText) {
+        pendingCeremonyId = null
+        _state.update { it.copy(isSigningInWithPasskey = false) }
+        eventChannel.send(LoginEvent.LoginFailure(message))
     }
 
     fun onLogin() {

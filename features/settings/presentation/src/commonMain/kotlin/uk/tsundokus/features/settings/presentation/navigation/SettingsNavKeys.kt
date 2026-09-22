@@ -9,6 +9,7 @@ import tsundokuapp.features.settings.presentation.generated.resources.nav_change
 import tsundokuapp.features.settings.presentation.generated.resources.nav_delete_account
 import tsundokuapp.features.settings.presentation.generated.resources.nav_edit_profile
 import tsundokuapp.features.settings.presentation.generated.resources.nav_licenses
+import tsundokuapp.features.settings.presentation.generated.resources.nav_passkeys
 import tsundokuapp.features.settings.presentation.generated.resources.nav_settings
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.presentation.navigation.LoggableNavKey
@@ -32,6 +33,12 @@ data object Settings : LoggableNavKey(), TopLevelTab {
 @Serializable
 data object EditProfile : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_edit_profile)
+    override val topBarAction: TopBarAction get() = TopBarAction.Close
+}
+
+@Serializable
+data object Passkeys : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
+    override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_passkeys)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }
 

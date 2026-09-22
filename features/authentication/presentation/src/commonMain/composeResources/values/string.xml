@@ -55,4 +55,10 @@
     <string name="email_verification_failed_desc">This link is invalid or has expired. Request a new verification email and try again.</string>
     <string name="email_verification_continue">Continue</string>
     <string name="email_verification_back_to_sign_in">Back to sign in</string>
+
+    <!-- Passkeys -->
+    <string name="login_with_passkey">Sign in with a passkey</string>
+    <string name="error_passkey_rejected">That passkey was not accepted. Sign in with your password instead.</string>
+    <string name="error_passkey_unsupported">This device cannot use passkeys. Sign in with your password instead.</string>
+    <string name="error_passkey_none_available">No passkey for Tsundoku is saved on this device.</string>
 </resources>
