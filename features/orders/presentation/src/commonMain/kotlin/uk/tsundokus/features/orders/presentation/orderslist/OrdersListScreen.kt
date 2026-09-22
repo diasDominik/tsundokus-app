@@ -58,7 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -92,7 +92,9 @@ import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
+import uk.tsundokus.core.presentation.util.rememberSnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
@@ -110,14 +112,14 @@ fun OrdersListRoot(
     onOpenOrder: (String) -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     viewModel: OrdersListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is OrdersListEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message.asStringAsync())
+            is OrdersListEvent.ShowMessage -> snackbar.show(event.message)
         }
     }
 
@@ -127,7 +129,7 @@ fun OrdersListRoot(
         onOpenOrder = onOpenOrder,
         onEditOrder = onEditOrder,
         onReportDelay = onReportDelay,
-        snackbarHostState = snackbarHostState,
+        snackbar = snackbar,
     )
 }
 
@@ -138,12 +140,16 @@ private fun OrdersListScreen(
     onOpenOrder: (String) -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     modifier: Modifier = Modifier,
 ) {
+    // Two panes only once the window is wide enough for both to be worth reading. At medium width
+    // — an unfolded Z Fold is 752dp — the navigation rail plus the list pane leave the detail
+    // narrower than a phone screen, so the list gets the window to itself and an order opens on
+    // its own screen instead.
     val isExpanded =
         currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastBreakpoint(
-            WIDTH_DP_MEDIUM_LOWER_BOUND,
+            WIDTH_DP_EXPANDED_LOWER_BOUND,
         )
     val searchFocusRequester = remember { FocusRequester() }
     // Ctrl/Cmd+F jumps to search. Handled as a *preview* event so it works even while a text field
@@ -188,7 +194,7 @@ private fun OrdersListScreen(
                     key(selectedId) {
                         OrderDetailRoot(
                             orderId = selectedId,
-                            snackbarHostState = snackbarHostState,
+                            snackbar = snackbar,
                             onEdit = { onEditOrder(selectedId) },
                             onReportDelay = { onReportDelay(selectedId) },
                             onBack = {},
@@ -199,16 +205,26 @@ private fun OrdersListScreen(
             }
         }
     } else {
-        Column(modifier = modifier.fillMaxSize().then(shortcuts)) {
-            ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
-            OrdersListBody(
-                state = state,
-                onAction = onAction,
-                onOrderClick = onOpenOrder,
-            )
+        // Capped and centred rather than stretched: on a window this wide a row would otherwise
+        // put its price the better part of a foot away from the title it belongs to.
+        Box(
+            modifier = modifier.fillMaxSize().then(shortcuts),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Column(modifier = Modifier.widthIn(max = LIST_MAX_WIDTH).fillMaxSize()) {
+                ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
+                OrdersListBody(
+                    state = state,
+                    onAction = onAction,
+                    onOrderClick = onOpenOrder,
+                )
+            }
         }
     }
 }
+
+/** The same cap the reading shelf and the order form use, so the tabs line up. */
+private val LIST_MAX_WIDTH = 600.dp
 
 @Composable
 private fun ListHeader(
@@ -631,7 +647,7 @@ private fun OrdersListScreenPreview() {
                 onOpenOrder = {},
                 onEditOrder = {},
                 onReportDelay = {},
-                snackbarHostState = remember { SnackbarHostState() },
+                snackbar = rememberSnackbarController(remember { SnackbarHostState() }),
             )
         }
     }

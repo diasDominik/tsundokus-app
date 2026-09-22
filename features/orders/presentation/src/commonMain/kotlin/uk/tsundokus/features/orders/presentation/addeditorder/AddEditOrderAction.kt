@@ -35,6 +35,11 @@ sealed interface AddEditOrderAction {
 
     data class OnReadStateSelected(val readState: ReadState) : AddEditOrderAction
 
+    /** The user picked one of the offered values for the field being edited. */
+    data class OnSuggestionSelected(val value: String) : AddEditOrderAction
+
+    data object OnSuggestionsDismissed : AddEditOrderAction
+
     data object OnSave : AddEditOrderAction
 
     data object OnDelete : AddEditOrderAction

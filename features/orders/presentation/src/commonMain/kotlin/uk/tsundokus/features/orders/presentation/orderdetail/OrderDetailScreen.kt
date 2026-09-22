@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,6 +52,7 @@ import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
@@ -69,7 +69,7 @@ import uk.tsundokus.features.orders.presentation.components.priceLabel
 @Composable
 fun OrderDetailRoot(
     orderId: String,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     onEdit: () -> Unit,
     onReportDelay: () -> Unit,
     onBack: () -> Unit,
@@ -84,7 +84,7 @@ fun OrderDetailRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is OrderDetailEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message.asStringAsync())
+            is OrderDetailEvent.ShowMessage -> snackbar.show(event.message)
             OrderDetailEvent.Deleted -> onBack()
         }
     }

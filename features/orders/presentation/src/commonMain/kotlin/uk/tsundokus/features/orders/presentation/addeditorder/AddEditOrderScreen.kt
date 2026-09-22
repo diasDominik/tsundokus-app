@@ -13,14 +13,16 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,6 +87,7 @@ import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.presentation.navigation.OverrideTopBar
 import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
@@ -98,7 +101,7 @@ fun AddEditOrderRoot(
     orderId: String?,
     onSaved: () -> Unit,
     onClose: () -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     viewModel: AddEditOrderViewModel =
         koinViewModel(
             key = orderId ?: "add",
@@ -109,18 +112,22 @@ fun AddEditOrderRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
+            // Leave first, then hand the confirmation to the shell: the write already landed
+            // locally and the server sync runs in the background, so there is nothing here to wait
+            // for. Awaiting the snackbar instead would keep the form on screen for its whole
+            // duration.
             is AddEditOrderEvent.Saved -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
                 onSaved()
+                snackbar.show(event.message)
             }
 
             is AddEditOrderEvent.Deleted -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
                 onSaved()
+                snackbar.show(event.message)
             }
 
             is AddEditOrderEvent.ShowError -> {
-                snackbarHostState.showSnackbar(event.message.asStringAsync())
+                snackbar.show(event.message)
             }
         }
     }
@@ -214,21 +221,23 @@ private fun ColumnScope.AddEditOrderForm(
             }
         }
 
-        FormField(
+        SuggestingFormField(
             value = state.title,
             onValueChange = { onAction(AddEditOrderAction.OnTitleChange(it)) },
             label = Res.string.add_edit_order_title_label,
-            isError = OrderFormField.TITLE in state.errors,
-            supportingText = state.errorFor(OrderFormField.TITLE),
+            field = OrderFormField.TITLE,
+            state = state,
+            onAction = onAction,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FormField(
+            SuggestingFormField(
                 value = state.author,
                 onValueChange = { onAction(AddEditOrderAction.OnAuthorChange(it)) },
                 label = Res.string.add_edit_order_author_label,
-                isError = OrderFormField.AUTHOR in state.errors,
-                supportingText = state.errorFor(OrderFormField.AUTHOR),
+                field = OrderFormField.AUTHOR,
+                state = state,
+                onAction = onAction,
                 modifier = Modifier.weight(1f),
             )
             FormField(
@@ -239,21 +248,23 @@ private fun ColumnScope.AddEditOrderForm(
             )
         }
 
-        FormField(
+        SuggestingFormField(
             value = state.publisher,
             onValueChange = { onAction(AddEditOrderAction.OnPublisherChange(it)) },
             label = Res.string.add_edit_order_publisher_label,
-            isError = OrderFormField.PUBLISHER in state.errors,
-            supportingText = state.errorFor(OrderFormField.PUBLISHER),
+            field = OrderFormField.PUBLISHER,
+            state = state,
+            onAction = onAction,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FormField(
+            SuggestingFormField(
                 value = state.store,
                 onValueChange = { onAction(AddEditOrderAction.OnStoreChange(it)) },
                 label = Res.string.add_edit_order_store_label,
-                isError = OrderFormField.STORE in state.errors,
-                supportingText = state.errorFor(OrderFormField.STORE),
+                field = OrderFormField.STORE,
+                state = state,
+                onAction = onAction,
                 modifier = Modifier.weight(1f),
             )
             FormField(
@@ -423,6 +434,54 @@ private fun FormField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         modifier = modifier.fillMaxWidth(),
     )
+}
+
+/**
+ * A [FormField] that offers what the user has typed into this field before, drawn from their own
+ * orders. The list is opened by the ViewModel as they type rather than by focus, so it never
+ * reappears over a field they have already answered.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SuggestingFormField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: StringResource,
+    field: OrderFormField,
+    state: AddEditOrderState,
+    onAction: (AddEditOrderAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val suggestions = if (state.suggestionField == field) state.suggestions else emptyList()
+    val expanded = suggestions.isNotEmpty()
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { open -> if (!open) onAction(AddEditOrderAction.OnSuggestionsDismissed) },
+        modifier = modifier,
+    ) {
+        FormField(
+            value = value,
+            onValueChange = onValueChange,
+            label = label,
+            isError = field in state.errors,
+            supportingText = state.errorFor(field),
+            // PrimaryEditable keeps the keyboard up and the caret in the field while the list is
+            // open, so the user can keep typing to narrow it instead of having to dismiss it.
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { onAction(AddEditOrderAction.OnSuggestionsDismissed) },
+        ) {
+            suggestions.forEach { suggestion ->
+                DropdownMenuItem(
+                    text = { Text(suggestion) },
+                    onClick = { onAction(AddEditOrderAction.OnSuggestionSelected(suggestion)) },
+                )
+            }
+        }
+    }
 }
 
 @Composable

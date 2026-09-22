@@ -17,7 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +43,7 @@ import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
@@ -57,14 +57,14 @@ import uk.tsundokus.features.orders.presentation.components.onContainerColor
 @Composable
 fun ReadingListRoot(
     onOpenOrder: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbar: SnackbarController,
     viewModel: ReadingListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is ReadingListEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message.asStringAsync())
+            is ReadingListEvent.ShowMessage -> snackbar.show(event.message)
         }
     }
 
