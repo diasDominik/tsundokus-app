@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      The passkey libraries declare minSdk 28, the app supports 26. Android 8 keeps the app and
+      keeps signing in with a password: nothing in those libraries is loaded below API 28, because
+      every entry point sits behind isPasskeySupported(), and the passkey UI is not shown there.
+    -->
+    <uses-sdk
+        tools:overrideLibrary="io.github.androidpoet.passkeys, io.github.androidpoet.passkeys.compose" />
 
     <application
         android:name=".TsundokuApplication"
