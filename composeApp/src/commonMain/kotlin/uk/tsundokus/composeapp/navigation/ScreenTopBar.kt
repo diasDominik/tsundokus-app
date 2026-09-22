@@ -1,5 +1,6 @@
 package uk.tsundokus.composeapp.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +28,10 @@ fun ScreenTopBar(
     actions: @Composable () -> Unit = {},
 ) {
     TopAppBar(
+        // The shell's Scaffold already pads its content by the status bar inset, and this bar is
+        // drawn inside that content (so it can animate with the screen). Letting the bar apply the
+        // same inset again would push the title and close button a status bar's height too low.
+        windowInsets = WindowInsets(0, 0, 0, 0),
         title = { Text(title.asString()) },
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
