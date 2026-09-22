@@ -2,6 +2,7 @@ package uk.tsundokus.features.authentication.testing
 
 import kotlinx.coroutines.delay
 import uk.tsundokus.core.domain.auth.AuthInfo
+import uk.tsundokus.core.domain.auth.PasskeyCeremony
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.EmptyResult
 import uk.tsundokus.core.domain.util.Result
@@ -16,8 +17,18 @@ open class FakeAuthService(
     var verifyEmailResult: EmptyResult<DataError.Remote> = Result.Success(Unit),
     var resendVerificationEmailResult: EmptyResult<DataError.Remote> = Result.Success(Unit),
     var logoutResult: EmptyResult<DataError.Remote> = Result.Success(Unit),
+    var beginPasskeyLoginResult: Result<PasskeyCeremony, DataError.Remote> =
+        Result.Success(PasskeyCeremony(ceremonyId = "ceremony", optionsJson = "{}")),
+    var finishPasskeyLoginResult: Result<AuthInfo, DataError.Remote> = Result.Failure(DataError.Remote.UNKNOWN),
 ) : AuthService {
     val logoutCalls: MutableList<String> = mutableListOf()
+
+    /** The (ceremonyId, responseJson) pairs handed to [finishPasskeyLogin]. */
+    val finishPasskeyLoginCalls: MutableList<Pair<String, String>> = mutableListOf()
+
+    var beginPasskeyLoginCalls: Int = 0
+        private set
+
     val verifyEmailCalls: MutableList<String> = mutableListOf()
     val resendVerificationEmailCalls: MutableList<String> = mutableListOf()
 
@@ -32,6 +43,19 @@ open class FakeAuthService(
 
     var resetPasswordCalls: Int = 0
         private set
+
+    override suspend fun beginPasskeyLogin(): Result<PasskeyCeremony, DataError.Remote> {
+        beginPasskeyLoginCalls++
+        return beginPasskeyLoginResult
+    }
+
+    override suspend fun finishPasskeyLogin(
+        ceremonyId: String,
+        responseJson: String,
+    ): Result<AuthInfo, DataError.Remote> {
+        finishPasskeyLoginCalls += ceremonyId to responseJson
+        return finishPasskeyLoginResult
+    }
 
     override suspend fun register(
         name: String,

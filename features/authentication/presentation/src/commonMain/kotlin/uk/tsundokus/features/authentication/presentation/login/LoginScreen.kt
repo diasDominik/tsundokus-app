@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -25,18 +26,26 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import io.github.androidpoet.passkeys.PasskeyException
+import io.github.androidpoet.passkeys.PasskeyResult
+import io.github.androidpoet.passkeys.compose.rememberPasskeyClient
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.authentication.presentation.generated.resources.Res
+import tsundokuapp.features.authentication.presentation.generated.resources.error_passkey_none_available
+import tsundokuapp.features.authentication.presentation.generated.resources.error_passkey_rejected
+import tsundokuapp.features.authentication.presentation.generated.resources.error_passkey_unsupported
 import tsundokuapp.features.authentication.presentation.generated.resources.login
 import tsundokuapp.features.authentication.presentation.generated.resources.login_create_account
 import tsundokuapp.features.authentication.presentation.generated.resources.login_forgot_password
 import tsundokuapp.features.authentication.presentation.generated.resources.login_sign_up
 import tsundokuapp.features.authentication.presentation.generated.resources.login_title
 import tsundokuapp.features.authentication.presentation.generated.resources.login_title_desc
+import tsundokuapp.features.authentication.presentation.generated.resources.login_with_passkey
 import tsundokuapp.features.authentication.presentation.generated.resources.register_email_hint
 import tsundokuapp.features.authentication.presentation.generated.resources.register_password_hint
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
+import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.text.TsundokuInlineLinkText
@@ -44,6 +53,8 @@ import uk.tsundokus.core.designsystem.textfields.TsundokuPasswordTextField
 import uk.tsundokus.core.designsystem.textfields.TsundokuTextField
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
+import uk.tsundokus.core.presentation.util.UiText
+import uk.tsundokus.core.presentation.util.isPasskeySupported
 import uk.tsundokus.features.authentication.presentation.navigation.ForgotPassword
 import uk.tsundokus.features.authentication.presentation.navigation.SignUp
 
@@ -55,6 +66,10 @@ fun LoginRoot(
     loginViewModel: LoginViewModel = koinViewModel(),
 ) {
     val state by loginViewModel.state.collectAsStateWithLifecycle()
+    // Nothing from the passkey libraries is touched where the platform cannot run a ceremony: they
+    // require Android 9, and the app supports Android 8.
+    val passkeysSupported = remember { isPasskeySupported() }
+    val passkeyClient = if (passkeysSupported) rememberPasskeyClient() else null
 
     ObserveAsEvents(loginViewModel.events) {
         when (it) {
@@ -66,6 +81,16 @@ fun LoginRoot(
 
             LoginEvent.LoginSuccess -> {
                 onLoginSuccess()
+            }
+
+            // The options are passed to the authenticator exactly as the server minted them, and
+            // what it signs goes back untouched: everything in between is the platform's business.
+            is LoginEvent.RunPasskeyCeremony -> {
+                when (val result = passkeyClient?.authenticate(it.optionsJson)) {
+                    null -> Unit
+                    is PasskeyResult.Success -> loginViewModel.onPasskeyResponse(result.value.rawJson)
+                    is PasskeyResult.Failure -> loginViewModel.onPasskeyCeremonyFailed(result.error.toUiText())
+                }
             }
         }
     }
@@ -81,11 +106,26 @@ fun LoginRoot(
             backStack.add(ForgotPassword)
         },
         onLoginClick = loginViewModel::onLogin,
+        onPasskeyClick = loginViewModel::onPasskeyLogin,
+        canUsePasskey = passkeysSupported,
+        isSigningInWithPasskey = state.isSigningInWithPasskey,
         onCreateAccountClick = {
             backStack.add(SignUp)
         },
     )
 }
+
+/**
+ * Maps a failed ceremony to something worth showing. A cancellation is the user's own decision and
+ * says nothing they do not already know, so it shows nothing at all.
+ */
+private fun PasskeyException.toUiText(): UiText? =
+    when (this) {
+        is PasskeyException.UserCanceled -> null
+        is PasskeyException.Unsupported -> UiText.Resource(Res.string.error_passkey_unsupported)
+        is PasskeyException.NoCredential -> UiText.Resource(Res.string.error_passkey_none_available)
+        else -> UiText.Resource(Res.string.error_passkey_rejected)
+    }
 
 @Composable
 private fun LoginScreen(
@@ -97,6 +137,9 @@ private fun LoginScreen(
     onTogglePasswordVisibility: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onLoginClick: () -> Unit,
+    onPasskeyClick: () -> Unit,
+    canUsePasskey: Boolean,
+    isSigningInWithPasskey: Boolean,
     onCreateAccountClick: () -> Unit,
 ) {
     Column(
@@ -146,6 +189,16 @@ private fun LoginScreen(
             enabled = canLogin,
             isLoading = isLoggingIn,
         )
+        if (canUsePasskey) {
+            TsundokuButton(
+                modifier = Modifier.widthIn(max = 200.dp).fillMaxWidth(),
+                text = stringResource(Res.string.login_with_passkey),
+                style = TsundokuButtonStyle.Secondary,
+                onClick = onPasskeyClick,
+                enabled = !isLoggingIn,
+                isLoading = isSigningInWithPasskey,
+            )
+        }
         HorizontalDivider()
         VerticalSpacer(4.dp)
         TsundokuInlineLinkText(
@@ -171,6 +224,9 @@ private fun LoginScreenPreview() {
                 onTogglePasswordVisibility = { },
                 onForgotPasswordClick = { },
                 onLoginClick = { },
+                onPasskeyClick = { },
+                canUsePasskey = true,
+                isSigningInWithPasskey = false,
                 onCreateAccountClick = { },
             )
         }

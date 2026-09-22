@@ -50,6 +50,8 @@ import tsundokuapp.features.settings.presentation.generated.resources.settings_e
 import tsundokuapp.features.settings.presentation.generated.resources.settings_footer
 import tsundokuapp.features.settings.presentation.generated.resources.settings_oss_licenses
 import tsundokuapp.features.settings.presentation.generated.resources.settings_oss_licenses_caption
+import tsundokuapp.features.settings.presentation.generated.resources.settings_passkeys
+import tsundokuapp.features.settings.presentation.generated.resources.settings_passkeys_caption
 import tsundokuapp.features.settings.presentation.generated.resources.settings_privacy_policy
 import tsundokuapp.features.settings.presentation.generated.resources.settings_privacy_policy_caption
 import tsundokuapp.features.settings.presentation.generated.resources.settings_section_about
@@ -78,6 +80,7 @@ fun SettingsRoot(
     onEditProfile: () -> Unit,
     onChangeEmail: () -> Unit,
     onChangePassword: () -> Unit,
+    onPasskeys: () -> Unit,
     onDeleteAccount: () -> Unit,
     onAbout: () -> Unit,
     onLicenses: () -> Unit,
@@ -106,6 +109,7 @@ fun SettingsRoot(
         onEditProfile = onEditProfile,
         onChangeEmail = onChangeEmail,
         onChangePassword = onChangePassword,
+        onPasskeys = onPasskeys,
         onDeleteAccount = onDeleteAccount,
         onAbout = onAbout,
         onLicenses = onLicenses,
@@ -120,6 +124,7 @@ internal fun SettingsScreen(
     onEditProfile: () -> Unit,
     onChangeEmail: () -> Unit,
     onChangePassword: () -> Unit,
+    onPasskeys: () -> Unit,
     onDeleteAccount: () -> Unit,
     onAbout: () -> Unit,
     onLicenses: () -> Unit,
@@ -160,6 +165,12 @@ internal fun SettingsScreen(
                 title = stringResource(Res.string.settings_change_password),
                 subtitle = stringResource(Res.string.settings_change_password_caption),
                 onClick = onChangePassword,
+            )
+            SettingsRow(
+                icon = TsundokuIcons.Lock,
+                title = stringResource(Res.string.settings_passkeys),
+                subtitle = stringResource(Res.string.settings_passkeys_caption),
+                onClick = onPasskeys,
             )
 
             SectionLabel(stringResource(Res.string.settings_section_preferences))
@@ -521,6 +532,7 @@ private fun SettingsScreenPreview() {
                 onEditProfile = {},
                 onChangeEmail = {},
                 onChangePassword = {},
+                onPasskeys = {},
                 onDeleteAccount = {},
                 onAbout = {},
                 onLicenses = {},

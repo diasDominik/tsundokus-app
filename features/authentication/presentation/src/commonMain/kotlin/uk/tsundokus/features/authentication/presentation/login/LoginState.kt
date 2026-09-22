@@ -8,4 +8,6 @@ data class LoginState(
     val isPasswordVisible: Boolean = false,
     val canLogin: Boolean = false,
     val isLoggingIn: Boolean = false,
+    /** Set from the moment the passkey button is pressed until the ceremony resolves either way. */
+    val isSigningInWithPasskey: Boolean = false,
 )

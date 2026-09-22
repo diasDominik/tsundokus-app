@@ -32,6 +32,7 @@ ksp = "2.3.12"
 ktlint = "14.2.0"
 ktlint-version = "1.8.0"
 ktor = "3.5.2"
+passkeys = "0.2.0"
 lifecycle-runtime = "2.11.0"
 material = "1.14.0"
 material-icons = "1.7.3"
@@ -101,6 +102,8 @@ compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin"
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 koin-compiler-gradle-plugin = { module = "io.insert-koin:koin-compiler-gradle-plugin", version.ref = "koin-compiler-plugin" }
+passkeys = { module = "io.github.androidpoet:passkeys", version.ref = "passkeys" }
+passkeys-compose = { module = "io.github.androidpoet:passkeys-compose", version.ref = "passkeys" }
 
 # Coil.
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }

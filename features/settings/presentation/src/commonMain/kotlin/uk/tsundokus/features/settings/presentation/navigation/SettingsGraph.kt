@@ -13,6 +13,7 @@ import uk.tsundokus.features.settings.presentation.changepassword.ChangePassword
 import uk.tsundokus.features.settings.presentation.deleteaccount.DeleteAccountRoot
 import uk.tsundokus.features.settings.presentation.editprofile.EditProfileRoot
 import uk.tsundokus.features.settings.presentation.licenses.LicensesRoot
+import uk.tsundokus.features.settings.presentation.passkeys.PasskeysRoot
 import uk.tsundokus.features.settings.presentation.settings.SettingsRoot
 
 val settingsSerializersModule =
@@ -22,6 +23,7 @@ val settingsSerializersModule =
             subclass(EditProfile::class)
             subclass(ChangeEmail::class)
             subclass(ChangePassword::class)
+            subclass(Passkeys::class)
             subclass(DeleteAccount::class)
             subclass(About::class)
             subclass(Licenses::class)
@@ -44,11 +46,16 @@ fun EntryProviderScope<NavKey>.settingsGraph(
             onEditProfile = { backStack.add(EditProfile) },
             onChangeEmail = { backStack.add(ChangeEmail) },
             onChangePassword = { backStack.add(ChangePassword) },
+            onPasskeys = { backStack.add(Passkeys) },
             onDeleteAccount = { backStack.add(DeleteAccount) },
             onAbout = { backStack.add(About) },
             onLicenses = { backStack.add(Licenses) },
             snackbarHostState = snackbarHostState,
         )
+    }
+
+    entry<Passkeys> {
+        PasskeysRoot(snackbarHostState = snackbarHostState)
     }
 
     entry<EditProfile> { route ->

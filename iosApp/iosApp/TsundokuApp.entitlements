@@ -6,6 +6,10 @@
 	<array>
 		<string>applinks:tsundokus.uk</string>
 		<string>applinks:dev.tsundokus.uk</string>
+		<!-- Passkeys: iOS only offers a passkey for a domain that names this app in its
+		     apple-app-site-association. Served from tsundokus.uk once APPLE_TEAM_ID is set
+		     in the server repo's deploy secrets. -->
+		<string>webcredentials:tsundokus.uk</string>
 	</array>
 </dict>
 </plist>
