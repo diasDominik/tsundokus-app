@@ -108,7 +108,7 @@ fun TsundokuPasswordTextField(
                         if (enabled) {
                             MaterialTheme.colorScheme.onSurface
                         } else {
-                            Color.Unspecified // MaterialTheme.colorScheme.extended.textPlaceholder
+                            Color.Unspecified
                         },
                 ),
             interactionSource = interactionSource,
@@ -117,7 +117,6 @@ fun TsundokuPasswordTextField(
                     {
                         Text(
                             text = placeholder,
-                            // color = MaterialTheme.colorScheme.extended.textPlaceholder,
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
@@ -138,7 +137,6 @@ fun TsundokuPasswordTextField(
                         } else {
                             stringResource(Res.string.show_password)
                         },
-                    // tint = MaterialTheme.colorScheme.extended.textDisabled,
                     modifier =
                         Modifier
                             .size(24.dp)
