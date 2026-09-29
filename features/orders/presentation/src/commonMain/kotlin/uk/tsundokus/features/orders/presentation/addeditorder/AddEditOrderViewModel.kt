@@ -2,7 +2,9 @@ package uk.tsundokus.features.orders.presentation.addeditorder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -17,10 +19,13 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_added
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_updated
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
+import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.core.presentation.util.toUiText
+import uk.tsundokus.features.orders.domain.book.BookInfo
+import uk.tsundokus.features.orders.domain.book.BookRepository
 import uk.tsundokus.features.orders.domain.models.Isbn
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
@@ -36,6 +41,9 @@ private const val MAX_SUGGESTIONS = 5
 
 /** One character is too little to narrow anything down; it would just offer the whole history. */
 private const val MIN_SUGGESTION_QUERY = 2
+
+/** How long typing has to pause before a typed ISBN is looked up. */
+private const val TYPED_ISBN_PAUSE_MILLIS = 400L
 
 private val DATE_FIELDS =
     setOf(
@@ -61,6 +69,7 @@ class AddEditOrderViewModel(
     @InjectedParam private val args: AddEditOrderArgs,
     private val orderRepository: OrderRepository,
     private val appPreferencesRepository: AppPreferencesRepository,
+    private val bookRepository: BookRepository,
 ) : ViewModel() {
     private val orderId = args.orderId
 
@@ -73,6 +82,9 @@ class AddEditOrderViewModel(
     val events = eventChannel.receiveAsFlow()
 
     private var originalCreatedAt = 0L
+
+    /** The book lookup for the current ISBN; replaced, cancelling the old one, on every change. */
+    private var lookupJob: Job? = null
 
     /**
      * The values the user has already used, most-used first, and the order each title was last
@@ -108,6 +120,8 @@ class AddEditOrderViewModel(
                 _state.update { it.copy(currency = currency) }
                 markPristine()
             }
+            // Opened from a scan: the ISBN is already here, so fill in the rest straight away.
+            if (args.initialIsbn.isNotBlank()) lookUpBook(delayMillis = 0)
         }
     }
 
@@ -134,6 +148,14 @@ class AddEditOrderViewModel(
 
             is AddEditOrderAction.OnIsbnChange -> {
                 updateForm { it.copy(isbn = Isbn.sanitize(action.value)).clearing(OrderFormField.ISBN) }
+                // Typed digit by digit: wait for a pause, since the first ten digits of an ISBN-13
+                // can pass as an ISBN-10 of some other book.
+                lookUpBook(delayMillis = TYPED_ISBN_PAUSE_MILLIS)
+            }
+
+            is AddEditOrderAction.OnIsbnScanned -> {
+                updateForm { it.copy(isbn = Isbn.sanitize(action.isbn)).clearing(OrderFormField.ISBN) }
+                lookUpBook(delayMillis = 0)
             }
 
             is AddEditOrderAction.OnStoreChange -> {
@@ -347,6 +369,49 @@ class AddEditOrderViewModel(
         }
     }
 
+    /**
+     * Looks the current ISBN up and fills in what the user has left blank. Never blocks the form:
+     * typing carries on while it runs, and a newer ISBN cancels it. When it fails, nothing happens —
+     * the fields are still there to fill by hand.
+     */
+    private fun lookUpBook(delayMillis: Long) {
+        lookupJob?.cancel()
+        val isbn = Isbn.normalize(_state.value.isbn)
+        if (isbn == null) {
+            _state.update { it.copy(isLookingUpBook = false) }
+            return
+        }
+        lookupJob =
+            viewModelScope.launch {
+                delay(delayMillis)
+                _state.update { it.copy(isLookingUpBook = true) }
+                val book = (bookRepository.lookup(isbn) as? Result.Success)?.data
+                _state.update { it.copy(isLookingUpBook = false) }
+                if (book != null) fillFrom(book)
+            }
+    }
+
+    /**
+     * Fills only the blank fields: whatever the user typed — before or while the lookup ran — is the
+     * better answer. Goes through [updateForm] so it counts as an edit like any other.
+     */
+    private fun fillFrom(book: BookInfo) {
+        // The ISBN changed while this was on its way; its answer no longer applies.
+        if (Isbn.normalize(_state.value.isbn) != book.isbn) return
+        updateForm { current ->
+            val filled =
+                current.copy(
+                    title = current.title.ifBlank { book.title.orEmpty() },
+                    author = current.author.ifBlank { book.author.orEmpty() },
+                    publisher = current.publisher.ifBlank { book.publisher.orEmpty() },
+                    volume = current.volume.ifBlank { book.volume.orEmpty() },
+                    releaseDate = current.releaseDate.ifBlank { book.releaseDate.orEmpty() },
+                    coverIsbn = if (book.hasCover) book.isbn else current.coverIsbn,
+                )
+            filled.copy(errors = filled.errors.filterNot { field -> filled.valueOf(field).isNotBlank() }.toSet())
+        }
+    }
+
     /** Adopts the current form as the new baseline: nothing here counts as unsaved any more. */
     private fun markPristine() {
         pristine = _state.value
@@ -393,6 +458,7 @@ class AddEditOrderViewModel(
                 publisher = order.publisher,
                 volume = order.volume,
                 isbn = order.isbn,
+                coverIsbn = order.isbn.takeIf { order.hasCover },
                 store = order.store,
                 price = if (order.price == 0.0) "" else order.price.toString(),
                 currency = order.currency,
@@ -478,6 +544,9 @@ class AddEditOrderViewModel(
             volume = volume.trim(),
             // Validated before this runs, so it always normalises.
             isbn = Isbn.normalize(isbn).orEmpty(),
+            // Kept, not reset, so the cover stays on screen after an edit made offline; the server's
+            // answer replaces it on the next sync either way.
+            hasCover = coverIsbn != null && coverIsbn == Isbn.normalize(isbn),
             store = store.trim(),
             price = price.toDoubleOrNull() ?: 0.0,
             currency = currency,

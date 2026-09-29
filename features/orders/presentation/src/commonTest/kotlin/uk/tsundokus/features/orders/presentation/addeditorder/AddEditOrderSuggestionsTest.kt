@@ -117,6 +117,7 @@ class AddEditOrderSuggestionsTest {
         args = AddEditOrderArgs(orderId = orderId),
         orderRepository = StoredOrdersRepository(orders),
         appPreferencesRepository = StaticPreferencesRepository(),
+        bookRepository = FakeBookRepository(),
     )
 
     @Test

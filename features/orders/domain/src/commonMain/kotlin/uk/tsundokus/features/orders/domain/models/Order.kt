@@ -25,6 +25,8 @@ data class Order(
     val receivedDate: String = "",
     val delayedTo: String = "",
     val isbn: String = "",
+    /** The server found a cover for [isbn]; see the cover endpoint. Set by the server only. */
+    val hasCover: Boolean = false,
     val createdAt: Long = 0L,
 ) {
     val subtitle: String

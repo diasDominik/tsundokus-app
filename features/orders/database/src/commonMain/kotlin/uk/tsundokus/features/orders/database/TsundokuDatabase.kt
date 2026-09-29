@@ -11,11 +11,11 @@ import uk.tsundokus.features.orders.database.entities.PendingOrderOpEntity
 
 @Database(
     entities = [OrderEntity::class, PendingOrderOpEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = true,
     // A real migration rather than the destructive fallback: dropping the tables would also drop
     // the outbox, losing any write made offline that has not reached the server yet.
-    autoMigrations = [AutoMigration(from = 2, to = 3)],
+    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
 )
 @ConstructedBy(TsundokuDatabaseConstructor::class)
 abstract class TsundokuDatabase : RoomDatabase() {

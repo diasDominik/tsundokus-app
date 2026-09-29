@@ -45,7 +45,7 @@ fun OrderRow(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            StatusTile(status = order.status)
+            OrderThumbnail(isbn = order.isbn, hasCover = order.hasCover, status = order.status)
             HorizontalSpacer(12.dp)
             Column(modifier = Modifier.weight(1f)) {
                 Text(

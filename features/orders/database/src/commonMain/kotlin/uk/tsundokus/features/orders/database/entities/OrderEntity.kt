@@ -26,6 +26,9 @@ data class OrderEntity(
     // lets the 2 -> 3 auto-migration add it to existing rows.
     @ColumnInfo(defaultValue = "")
     val isbn: String = "",
+    // Whether the server has a cover for the ISBN. Only the server sets it; see the cover endpoint.
+    @ColumnInfo(defaultValue = "0")
+    val hasCover: Boolean = false,
     val createdAt: Long,
     // True while a local write for this row hasn't been confirmed by the server. Set by optimistic
     // writes, cleared when delta sync applies the server's copy. Drives the "not synced" indicator.

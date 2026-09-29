@@ -44,6 +44,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ksafe)
             implementation(libs.jetbrains.material3.adaptive)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)

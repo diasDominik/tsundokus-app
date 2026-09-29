@@ -101,6 +101,7 @@ class AddEditOrderValidationTest {
         args = args,
         orderRepository = repository,
         appPreferencesRepository = preferences,
+        bookRepository = FakeBookRepository(),
     )
 
     private fun AddEditOrderViewModel.fillValidForm() {
