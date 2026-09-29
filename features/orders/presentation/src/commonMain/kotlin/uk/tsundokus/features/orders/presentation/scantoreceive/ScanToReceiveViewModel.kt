@@ -54,7 +54,8 @@ class ScanToReceiveViewModel(
             is ScanToReceiveAction.OnOrderPicked -> {
                 val pick = _state.value.picking ?: return
                 val order = pick.orders.firstOrNull { it.id == action.orderId } ?: return
-                receive(order, pick.isbn)
+                _state.update { it.copy(isBusy = true) }
+                viewModelScope.launch { receive(order, pick.isbn) }
             }
 
             ScanToReceiveAction.OnPickDismissed -> {
@@ -123,33 +124,30 @@ class ScanToReceiveViewModel(
      * Marks [order] received, recording [isbn] on it — which is how an order from before ISBNs gets
      * one. The received date is filled in here rather than left to the server, so it shows at once.
      */
-    private fun receive(
+    private suspend fun receive(
         order: Order,
         isbn: String,
     ) {
-        _state.update { it.copy(isBusy = true) }
-        viewModelScope.launch {
-            val received =
-                order.copy(
-                    isbn = isbn,
-                    status = OrderStatus.RECEIVED,
-                    receivedDate = order.receivedDate.ifBlank { todayIso() },
-                )
-            orderRepository
-                .updateOrder(received)
-                .onSuccess { saved ->
-                    _state.update {
-                        it.copy(
-                            isBusy = false,
-                            picking = null,
-                            outcome = ScanOutcome.Received(saved, previous = order),
-                        )
-                    }
-                }.onFailure { error ->
-                    _state.update { it.copy(isBusy = false, picking = null) }
-                    eventChannel.send(ScanToReceiveEvent.ShowError(error.toUiText()))
+        val received =
+            order.copy(
+                isbn = isbn,
+                status = OrderStatus.RECEIVED,
+                receivedDate = order.receivedDate.ifBlank { todayIso() },
+            )
+        orderRepository
+            .updateOrder(received)
+            .onSuccess { saved ->
+                _state.update {
+                    it.copy(
+                        isBusy = false,
+                        picking = null,
+                        outcome = ScanOutcome.Received(saved, previous = order),
+                    )
                 }
-        }
+            }.onFailure { error ->
+                _state.update { it.copy(isBusy = false, picking = null) }
+                eventChannel.send(ScanToReceiveEvent.ShowError(error.toUiText()))
+            }
     }
 
     /**

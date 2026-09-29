@@ -44,12 +44,11 @@ fun BookCover(
     contentDescription: String? = null,
     placeholder: @Composable () -> Unit = {},
 ) {
-    val shape = RoundedCornerShape(width * 0.12f)
     Box(
         modifier =
             modifier
                 .size(width, width * COVER_ASPECT)
-                .clip(shape)
+                .clip(RoundedCornerShape(width * 0.12f))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {

@@ -19,7 +19,6 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_added
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_updated
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
-import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -359,15 +358,12 @@ class AddEditOrderViewModel(
             author = author.ifBlank { previous.author },
             publisher = publisher.ifBlank { previous.publisher },
             store = store.ifBlank { previous.store },
-        ).let { filled ->
-            filled.copy(
-                errors =
-                    filled.errors
-                        .filterNot { field -> filled.valueOf(field).isNotBlank() }
-                        .toSet(),
-            )
-        }
+        ).clearingFilled()
     }
+
+    /** Drops the "required" errors of fields that have been filled in for the user. */
+    private fun AddEditOrderState.clearingFilled(): AddEditOrderState =
+        copy(errors = errors.filterNot { field -> valueOf(field).isNotBlank() }.toSet())
 
     /**
      * Looks the current ISBN up and fills in what the user has left blank. Never blocks the form:
@@ -385,9 +381,9 @@ class AddEditOrderViewModel(
             viewModelScope.launch {
                 delay(delayMillis)
                 _state.update { it.copy(isLookingUpBook = true) }
-                val book = (bookRepository.lookup(isbn) as? Result.Success)?.data
+                val result = bookRepository.lookup(isbn)
                 _state.update { it.copy(isLookingUpBook = false) }
-                if (book != null) fillFrom(book)
+                result.onSuccess { book -> book?.let(::fillFrom) }
             }
     }
 
@@ -408,7 +404,7 @@ class AddEditOrderViewModel(
                     releaseDate = current.releaseDate.ifBlank { book.releaseDate.orEmpty() },
                     coverIsbn = if (book.hasCover) book.isbn else current.coverIsbn,
                 )
-            filled.copy(errors = filled.errors.filterNot { field -> filled.valueOf(field).isNotBlank() }.toSet())
+            filled.clearingFilled()
         }
     }
 
