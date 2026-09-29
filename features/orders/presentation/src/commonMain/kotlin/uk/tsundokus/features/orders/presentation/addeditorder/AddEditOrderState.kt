@@ -31,6 +31,10 @@ data class AddEditOrderState(
     val suggestionField: OrderFormField? = null,
     /** Values from the user's existing orders that match what they have typed into that field. */
     val suggestions: List<String> = emptyList(),
+    /** A book lookup for the ISBN is under way. */
+    val isLookingUpBook: Boolean = false,
+    /** The ISBN the server has a cover for — shown beside the field while it still matches. */
+    val coverIsbn: String? = null,
 ) {
     /**
      * The form's content with the transient bookkeeping stripped, so two states can be compared for
@@ -44,6 +48,8 @@ data class AddEditOrderState(
             isDirty = false,
             suggestionField = null,
             suggestions = emptyList(),
+            isLookingUpBook = false,
+            coverIsbn = null,
         )
 }
 

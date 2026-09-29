@@ -2,6 +2,9 @@ package uk.tsundokus.composeapp
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 
 import androidx.compose.animation.ContentTransform
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -140,6 +143,15 @@ private fun rememberEntryDecorators(backStack: NavBackStack<NavKey>): List<NavEn
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
+    // Book covers. Coil's defaults do the heavy lifting — a memory cache sized to the device and, off
+    // the web, a bounded disk cache — so each cover is downloaded once per device. On the web the
+    // browser's HTTP cache plays the disk cache, fed by the server's year-long cache headers.
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader
+            .Builder(context)
+            .components { add(KtorNetworkFetcherFactory()) }
+            .build()
+    }
     KoinApplication(
         configuration = koinConfiguration<TsundokuKoinApp>(),
     ) {

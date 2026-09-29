@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -34,6 +36,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -60,6 +64,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_invalid
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_looking_up
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_scan_cd
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_label
@@ -88,6 +93,7 @@ import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.dialog.TsundokuConfirmDialog
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
+import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.domain.preferences.AppCurrency
@@ -96,7 +102,9 @@ import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.core.presentation.util.UiText
+import uk.tsundokus.features.orders.domain.models.Isbn
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.presentation.components.BookCover
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
@@ -543,7 +551,40 @@ private fun IsbnFormField(
 ) {
     var scanning by remember { mutableStateOf(false) }
     val canScan = remember { isCameraScanningSupported() }
+    val coverIsbn = state.coverIsbn?.takeIf { it == Isbn.normalize(state.isbn) }
 
+    Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        IsbnTextField(
+            state = state,
+            onAction = onAction,
+            canScan = canScan,
+            onScan = { scanning = true },
+            modifier = Modifier.weight(1f),
+        )
+        // The looked-up book's cover, so it is plain at a glance that the right book was found.
+        if (coverIsbn != null) BookCover(isbn = coverIsbn, width = 44.dp)
+    }
+
+    if (scanning) {
+        IsbnScannerDialog(
+            onIsbn = { isbn ->
+                scanning = false
+                onAction(AddEditOrderAction.OnIsbnScanned(isbn))
+            },
+            onDismiss = { scanning = false },
+        )
+    }
+}
+
+@Composable
+private fun IsbnTextField(
+    state: AddEditOrderState,
+    onAction: (AddEditOrderAction) -> Unit,
+    canScan: Boolean,
+    onScan: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val lookingUpLabel = stringResource(Res.string.add_edit_order_isbn_looking_up)
     OutlinedTextField(
         value = state.isbn,
         onValueChange = { onAction(AddEditOrderAction.OnIsbnChange(it)) },
@@ -553,30 +594,35 @@ private fun IsbnFormField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         trailingIcon =
-            if (canScan) {
+            if (canScan || state.isLookingUpBook) {
                 {
-                    IconButton(onClick = { scanning = true }) {
-                        Icon(
-                            imageVector = TsundokuIcons.BarcodeScanner,
-                            contentDescription = stringResource(Res.string.add_edit_order_isbn_scan_cd),
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (state.isLookingUpBook) {
+                            CircularProgressIndicator(
+                                strokeWidth = 2.dp,
+                                modifier =
+                                    Modifier.size(16.dp).semantics {
+                                        contentDescription = lookingUpLabel
+                                    },
+                            )
+                        }
+                        if (canScan) {
+                            IconButton(onClick = onScan) {
+                                Icon(
+                                    imageVector = TsundokuIcons.BarcodeScanner,
+                                    contentDescription = stringResource(Res.string.add_edit_order_isbn_scan_cd),
+                                )
+                            }
+                        } else {
+                            HorizontalSpacer(12.dp)
+                        }
                     }
                 }
             } else {
                 null
             },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     )
-
-    if (scanning) {
-        IsbnScannerDialog(
-            onIsbn = { isbn ->
-                scanning = false
-                onAction(AddEditOrderAction.OnIsbnChange(isbn))
-            },
-            onDismiss = { scanning = false },
-        )
-    }
 }
 
 @Composable

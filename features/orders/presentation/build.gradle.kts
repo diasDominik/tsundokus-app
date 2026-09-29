@@ -15,6 +15,7 @@ kotlin {
                 implementation(libs.jetbrains.material3.adaptive)
                 implementation(libs.jetbrains.navigationevent.compose)
                 implementation(libs.jetbrains.lifecycle.viewmodel.navigation3)
+                implementation(libs.coil.compose)
             }
         }
 

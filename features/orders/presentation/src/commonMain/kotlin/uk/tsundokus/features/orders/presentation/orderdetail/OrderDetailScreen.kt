@@ -57,6 +57,7 @@ import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.presentation.components.BookCover
 import uk.tsundokus.features.orders.presentation.components.FactRow
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
@@ -159,27 +160,34 @@ private fun ColumnScope.OrderDetailContent(
     onReportDelay: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Text(
-        text = listOf(order.title, order.volume).filter { it.isNotBlank() }.joinToString(" "),
-        style = MaterialTheme.typography.headlineSmall,
-        fontWeight = FontWeight.SemiBold,
-    )
-    if (order.byline.isNotBlank()) {
-        Text(
-            text = order.byline,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-    VerticalSpacer(12.dp)
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        StatusChip(status = order.status)
-        Text(
-            text = priceLabel(order),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(1f).padding(start = 12.dp),
-        )
+    Row(verticalAlignment = Alignment.Top) {
+        if (order.hasCover && order.isbn.isNotBlank()) {
+            BookCover(isbn = order.isbn, width = 88.dp, modifier = Modifier.padding(end = 16.dp))
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = listOf(order.title, order.volume).filter { it.isNotBlank() }.joinToString(" "),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            if (order.byline.isNotBlank()) {
+                Text(
+                    text = order.byline,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            VerticalSpacer(12.dp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                StatusChip(status = order.status)
+                Text(
+                    text = priceLabel(order),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f).padding(start = 12.dp),
+                )
+            }
+        }
     }
 
     VerticalSpacer(20.dp)

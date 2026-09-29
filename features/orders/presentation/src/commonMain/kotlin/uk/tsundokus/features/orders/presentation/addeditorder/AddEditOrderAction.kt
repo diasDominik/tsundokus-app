@@ -13,8 +13,11 @@ sealed interface AddEditOrderAction {
 
     data class OnVolumeChange(val value: String) : AddEditOrderAction
 
-    /** Typed into the ISBN field, or read from a scanned barcode. */
+    /** Typed into the ISBN field. */
     data class OnIsbnChange(val value: String) : AddEditOrderAction
+
+    /** Read from a scanned barcode: complete at once, so it is looked up without waiting. */
+    data class OnIsbnScanned(val isbn: String) : AddEditOrderAction
 
     data class OnStoreChange(val value: String) : AddEditOrderAction
 
