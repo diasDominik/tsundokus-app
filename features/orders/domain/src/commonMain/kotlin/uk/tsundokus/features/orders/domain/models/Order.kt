@@ -5,6 +5,7 @@ import uk.tsundokus.core.domain.preferences.AppCurrency
 /**
  * A tracked manga order. Dates are ISO `yyyy-MM-dd` strings (empty = unset) to mirror the design
  * and avoid a datetime dependency; [createdAt] is epoch milliseconds and is the RECENT sort key.
+ * [isbn] is the 13 ISBN-13 digits (see [Isbn]); blank only on orders made before it was recorded.
  */
 data class Order(
     val id: String,
@@ -23,6 +24,7 @@ data class Order(
     val eta: String = "",
     val receivedDate: String = "",
     val delayedTo: String = "",
+    val isbn: String = "",
     val createdAt: Long = 0L,
 ) {
     val subtitle: String
