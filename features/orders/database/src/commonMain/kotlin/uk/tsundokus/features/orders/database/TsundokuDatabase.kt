@@ -1,5 +1,6 @@
 package uk.tsundokus.features.orders.database
 
+import androidx.room3.AutoMigration
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
@@ -10,8 +11,11 @@ import uk.tsundokus.features.orders.database.entities.PendingOrderOpEntity
 
 @Database(
     entities = [OrderEntity::class, PendingOrderOpEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
+    // A real migration rather than the destructive fallback: dropping the tables would also drop
+    // the outbox, losing any write made offline that has not reached the server yet.
+    autoMigrations = [AutoMigration(from = 2, to = 3)],
 )
 @ConstructedBy(TsundokuDatabaseConstructor::class)
 abstract class TsundokuDatabase : RoomDatabase() {

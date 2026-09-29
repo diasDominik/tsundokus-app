@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Scanning a book's ISBN barcode to mark its order received. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Not required: without a camera the ISBN is typed, so the app still installs there. -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <!--
       The passkey libraries declare minSdk 28, the app supports 26. Android 8 keeps the app and

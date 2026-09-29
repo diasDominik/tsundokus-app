@@ -74,6 +74,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.orders_list_
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_no_matches_search_caption
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_no_matches_title
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_refresh_cd
+import tsundokuapp.features.orders.presentation.generated.resources.orders_list_scan_cd
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_search_placeholder
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_sort
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_status_filter
@@ -110,6 +111,7 @@ import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
 @Composable
 fun OrdersListRoot(
     onOpenOrder: (String) -> Unit,
+    onScanToReceive: () -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
     snackbar: SnackbarController,
@@ -127,6 +129,7 @@ fun OrdersListRoot(
         state = state,
         onAction = viewModel::onAction,
         onOpenOrder = onOpenOrder,
+        onScanToReceive = onScanToReceive,
         onEditOrder = onEditOrder,
         onReportDelay = onReportDelay,
         snackbar = snackbar,
@@ -138,6 +141,7 @@ private fun OrdersListScreen(
     state: OrdersListState,
     onAction: (OrdersListAction) -> Unit,
     onOpenOrder: (String) -> Unit,
+    onScanToReceive: () -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
     snackbar: SnackbarController,
@@ -171,7 +175,12 @@ private fun OrdersListScreen(
                         .widthIn(min = 320.dp, max = 400.dp)
                         .fillMaxHeight(),
             ) {
-                ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
+                ListHeader(
+                    state = state,
+                    onAction = onAction,
+                    onScanToReceive = onScanToReceive,
+                    searchFocusRequester = searchFocusRequester,
+                )
                 OrdersListBody(
                     state = state,
                     onAction = onAction,
@@ -212,7 +221,12 @@ private fun OrdersListScreen(
             contentAlignment = Alignment.TopCenter,
         ) {
             Column(modifier = Modifier.widthIn(max = LIST_MAX_WIDTH).fillMaxSize()) {
-                ListHeader(state = state, onAction = onAction, searchFocusRequester = searchFocusRequester)
+                ListHeader(
+                    state = state,
+                    onAction = onAction,
+                    onScanToReceive = onScanToReceive,
+                    searchFocusRequester = searchFocusRequester,
+                )
                 OrdersListBody(
                     state = state,
                     onAction = onAction,
@@ -230,6 +244,7 @@ private val LIST_MAX_WIDTH = 600.dp
 private fun ListHeader(
     state: OrdersListState,
     onAction: (OrdersListAction) -> Unit,
+    onScanToReceive: () -> Unit,
     searchFocusRequester: FocusRequester,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -240,6 +255,12 @@ private fun ListHeader(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f),
             )
+            IconButton(onClick = onScanToReceive) {
+                Icon(
+                    imageVector = TsundokuIcons.BarcodeScanner,
+                    contentDescription = stringResource(Res.string.orders_list_scan_cd),
+                )
+            }
             SortMenu(state = state, onAction = onAction)
         }
         SyncStatusLine(state = state, onAction = onAction)
@@ -645,6 +666,7 @@ private fun OrdersListScreenPreview() {
                 state = previewState(),
                 onAction = {},
                 onOpenOrder = {},
+                onScanToReceive = {},
                 onEditOrder = {},
                 onReportDelay = {},
                 snackbar = rememberSnackbarController(remember { SnackbarHostState() }),

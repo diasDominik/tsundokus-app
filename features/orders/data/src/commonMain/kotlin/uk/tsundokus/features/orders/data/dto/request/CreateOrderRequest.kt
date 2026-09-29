@@ -22,4 +22,7 @@ data class CreateOrderRequest(
     val eta: String? = null,
     val receivedDate: String? = null,
     val delayedTo: String? = null,
+    // Always sent: blank clears the server's ISBN. The server reads a missing field (an older app)
+    // as "unchanged" instead, so that app cannot erase an ISBN this one recorded.
+    val isbn: String? = null,
 )

@@ -85,6 +85,7 @@ import uk.tsundokus.features.orders.presentation.navigation.OrderDetail
 import uk.tsundokus.features.orders.presentation.navigation.Orders
 import uk.tsundokus.features.orders.presentation.navigation.ReadingList
 import uk.tsundokus.features.orders.presentation.navigation.ReportDelay
+import uk.tsundokus.features.orders.presentation.navigation.ScanToReceive
 import uk.tsundokus.features.orders.presentation.navigation.ordersGraph
 import uk.tsundokus.features.orders.presentation.navigation.ordersSerializersModule
 import uk.tsundokus.features.settings.presentation.navigation.Settings
@@ -244,7 +245,7 @@ fun App() {
                                 // stacks a second Add-order screen on top of the first.
                                 val fabScreen = currentKey as? ScreenWithFab
                                 if (fabScreen?.fabAction == FabAction.AddOrder) {
-                                    backStack.add(AddOrder)
+                                    backStack.add(AddOrder())
                                     true
                                 } else {
                                     false
@@ -296,7 +297,7 @@ fun App() {
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                                 onClick = {
                                     when (fabScreen.fabAction) {
-                                        FabAction.AddOrder -> backStack.add(AddOrder)
+                                        FabAction.AddOrder -> backStack.add(AddOrder())
                                     }
                                 },
                             ) {
@@ -328,7 +329,8 @@ fun App() {
                                     ordersGraph(
                                         backStack = backStack,
                                         onOpenOrder = { backStack.add(OrderDetail(it)) },
-                                        onAddOrder = { backStack.add(AddOrder) },
+                                        onAddOrder = { isbn -> backStack.add(AddOrder(isbn)) },
+                                        onScanToReceive = { backStack.add(ScanToReceive) },
                                         onEditOrder = { backStack.add(EditOrder(it)) },
                                         onReportDelay = { backStack.add(ReportDelay(it)) },
                                         onBack = { backStack.removeLastOrNull() },

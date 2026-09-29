@@ -8,6 +8,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.nav_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.nav_orders
 import tsundokuapp.features.orders.presentation.generated.resources.nav_reading
 import tsundokuapp.features.orders.presentation.generated.resources.nav_report_delay
+import tsundokuapp.features.orders.presentation.generated.resources.nav_scan_to_receive
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.presentation.navigation.FabAction
 import uk.tsundokus.core.presentation.navigation.LoggableNavKey
@@ -48,8 +49,9 @@ data class OrderDetail(val orderId: String) : LoggableNavKey(), LoggedIn, Screen
     override val topBarAction: TopBarAction get() = TopBarAction.Back
 }
 
+/** A new order; [isbn] is set when it was started from a scanned barcode nothing matched. */
 @Serializable
-data object AddOrder : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
+data class AddOrder(val isbn: String = "") : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_add_order)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }
@@ -57,6 +59,12 @@ data object AddOrder : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
 @Serializable
 data class EditOrder(val orderId: String) : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_edit_order)
+    override val topBarAction: TopBarAction get() = TopBarAction.Close
+}
+
+@Serializable
+data object ScanToReceive : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
+    override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_scan_to_receive)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }
 

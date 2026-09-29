@@ -32,6 +32,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_detail
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_edit
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_delayed_to
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_eta
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_isbn
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_ordered
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_price
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_received
@@ -247,6 +248,9 @@ private fun OrderFacts(order: Order) {
             FactRow(stringResource(Res.string.order_detail_fact_store), order.store)
         }
         FactRow(stringResource(Res.string.order_detail_fact_price), priceLabel(order))
+        if (order.isbn.isNotBlank()) {
+            FactRow(stringResource(Res.string.order_detail_fact_isbn), order.isbn)
+        }
         if (order.orderDate.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_ordered), fmtDate(order.orderDate))
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

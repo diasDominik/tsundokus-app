@@ -72,6 +72,14 @@ object TsundokuIcons {
                 "9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
         )
 
+    /** A barcode inside a viewfinder's four corners: "scan a barcode". */
+    val BarcodeScanner: ImageVector =
+        icon(
+            "BarcodeScanner",
+            "M2 2v5h2V4h3V2H2zm15 0v2h3v3h2V2h-5zM2 17v5h5v-2H4v-3H2zm18 0v3h-3v2h5v-5h-2zM6 7h1.5v10H6zm2.5 " +
+                "0h1v10h-1zm2 0h2v10h-2zm3 0h1v10h-1zm2 0h1v10h-1zm1.5 0h1v10h-1z",
+        )
+
     val Delete: ImageVector =
         icon(
             "Delete",

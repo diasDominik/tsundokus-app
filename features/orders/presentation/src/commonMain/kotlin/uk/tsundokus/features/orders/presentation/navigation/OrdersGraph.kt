@@ -7,11 +7,13 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import uk.tsundokus.core.presentation.util.SnackbarController
+import uk.tsundokus.features.orders.presentation.addeditorder.AddEditOrderArgs
 import uk.tsundokus.features.orders.presentation.addeditorder.AddEditOrderRoot
 import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
 import uk.tsundokus.features.orders.presentation.orderslist.OrdersListRoot
 import uk.tsundokus.features.orders.presentation.readinglist.ReadingListRoot
 import uk.tsundokus.features.orders.presentation.reportdelay.ReportDelayRoot
+import uk.tsundokus.features.orders.presentation.scantoreceive.ScanToReceiveRoot
 
 val ordersSerializersModule =
     SerializersModule {
@@ -22,6 +24,7 @@ val ordersSerializersModule =
             subclass(AddOrder::class)
             subclass(EditOrder::class)
             subclass(ReportDelay::class)
+            subclass(ScanToReceive::class)
         }
     }
 
@@ -32,7 +35,8 @@ val ordersSerializersModule =
 fun EntryProviderScope<NavKey>.ordersGraph(
     backStack: NavBackStack<NavKey>,
     onOpenOrder: (String) -> Unit,
-    onAddOrder: () -> Unit,
+    onAddOrder: (isbn: String) -> Unit,
+    onScanToReceive: () -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
     onBack: () -> Unit,
@@ -41,6 +45,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     entry<Orders> {
         OrdersListRoot(
             onOpenOrder = onOpenOrder,
+            onScanToReceive = onScanToReceive,
             onEditOrder = onEditOrder,
             onReportDelay = onReportDelay,
             snackbar = snackbar,
@@ -64,10 +69,10 @@ fun EntryProviderScope<NavKey>.ordersGraph(
         )
     }
 
-    entry<AddOrder> {
+    entry<AddOrder> { route ->
         AddEditOrderRoot(
-            navKey = AddOrder,
-            orderId = null,
+            navKey = route,
+            args = AddEditOrderArgs(initialIsbn = route.isbn),
             onSaved = onBack,
             onClose = onBack,
             snackbar = snackbar,
@@ -77,9 +82,17 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     entry<EditOrder> { route ->
         AddEditOrderRoot(
             navKey = route,
-            orderId = route.orderId,
+            args = AddEditOrderArgs(orderId = route.orderId),
             onSaved = onBack,
             onClose = onBack,
+            snackbar = snackbar,
+        )
+    }
+
+    entry<ScanToReceive> {
+        ScanToReceiveRoot(
+            onOpenOrder = onOpenOrder,
+            onAddOrder = onAddOrder,
             snackbar = snackbar,
         )
     }

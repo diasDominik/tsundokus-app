@@ -26,8 +26,19 @@ kotlin {
             }
         }
 
+        // KScan gives camera scanning on Android, iOS and web. Not desktop: its desktop artifact pulls
+        // in OpenCV natives for every OS, so desktop types the ISBN instead (IsbnScanner.desktop.kt).
         androidMain {
             dependencies {
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.core.ktx)
+                implementation(libs.kscan)
+            }
+        }
+
+        wasmJsMain {
+            dependencies {
+                implementation(libs.kscan)
             }
         }
 
@@ -38,6 +49,7 @@ kotlin {
 
         iosMain {
             dependencies {
+                implementation(libs.kscan)
             }
         }
     }

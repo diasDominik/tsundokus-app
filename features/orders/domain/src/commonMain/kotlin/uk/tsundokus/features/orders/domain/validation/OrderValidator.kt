@@ -1,5 +1,7 @@
 package uk.tsundokus.features.orders.domain.validation
 
+import uk.tsundokus.features.orders.domain.models.Isbn
+
 object OrderValidator {
     private const val MAX_DECIMALS = 2
 
@@ -7,6 +9,9 @@ object OrderValidator {
 
     /** A required free-text field (author, publisher, store) must carry something. */
     fun isRequiredTextValid(value: String): Boolean = value.isNotBlank()
+
+    /** A required ISBN must be a real one: ISBN-13 or ISBN-10 with a correct check digit. */
+    fun isIsbnValid(isbn: String): Boolean = Isbn.normalize(isbn) != null
 
     /** A required date must be set; the picker guarantees the format, so presence is enough. */
     fun isRequiredDateValid(isoDate: String): Boolean = isoDate.isNotBlank()
