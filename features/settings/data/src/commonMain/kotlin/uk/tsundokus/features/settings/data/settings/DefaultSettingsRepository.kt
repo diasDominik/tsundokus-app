@@ -5,9 +5,11 @@ import kotlinx.coroutines.flow.combine
 import org.koin.core.annotation.Single
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
+import uk.tsundokus.core.domain.preferences.DeviceCurrencyProvider
 import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.EmptyResult
+import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.asEmptyResult
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.features.settings.domain.models.AppSettings
@@ -24,6 +26,7 @@ import uk.tsundokus.features.settings.domain.settings.SettingsService
 class DefaultSettingsRepository(
     private val settingsService: SettingsService,
     private val appPreferencesRepository: AppPreferencesRepository,
+    private val deviceCurrencyProvider: DeviceCurrencyProvider,
 ) : SettingsRepository {
     override fun observe(): Flow<AppSettings> =
         combine(
@@ -37,12 +40,24 @@ class DefaultSettingsRepository(
         }
 
     override suspend fun fetch(): EmptyResult<DataError.Remote> =
-        settingsService
-            .getSettings()
-            .onSuccess { settings ->
+        when (val result = settingsService.getSettings()) {
+            is Result.Failure -> {
+                result
+            }
+
+            is Result.Success -> {
+                val settings = result.data
                 appPreferencesRepository.setThemeMode(settings.theme)
-                appPreferencesRepository.setCurrency(settings.currency)
-            }.asEmptyResult()
+                if (settings.isCurrencyChosen) {
+                    appPreferencesRepository.setCurrency(settings.currency)
+                    Result.Success(Unit)
+                } else {
+                    // A new account: nobody has picked a currency, so pick the device's and tell the
+                    // server, so every device of this account agrees from here on.
+                    updateCurrency(deviceCurrencyProvider.currentCurrency() ?: settings.currency)
+                }
+            }
+        }
 
     override suspend fun updateTheme(theme: ThemeMode): EmptyResult<DataError.Remote> {
         // Persist locally first so the UI flips immediately even if the network call is slow/fails.

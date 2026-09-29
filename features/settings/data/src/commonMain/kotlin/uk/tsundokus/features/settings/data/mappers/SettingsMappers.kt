@@ -8,7 +8,8 @@ import uk.tsundokus.features.settings.domain.models.AppSettings
 fun SettingsDto.toDomain(): AppSettings =
     AppSettings(
         theme = theme.toThemeMode(),
-        currency = AppCurrency.fromName(currency),
+        currency = AppCurrency.fromCode(currency),
+        isCurrencyChosen = currencyChosen,
     )
 
 /** Server transmits the enum name (LIGHT/DARK/SYSTEM); fall back to SYSTEM on anything unexpected. */

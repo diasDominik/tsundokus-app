@@ -100,15 +100,22 @@ private fun pad2(value: Int): String = value.toString().padStart(2, '0')
 
 private fun pad4(value: Long): String = value.toString().padStart(4, '0')
 
-/** Currency symbol + amount with two decimals, e.g. `€19.99`. */
-fun priceLabel(order: Order): String = order.currency.symbol + formatAmount(order.price)
+/** The amount in its currency, with that currency's decimals and symbol: `19.99 €`, `$19.99`, `¥1200`. */
+fun priceLabel(order: Order): String = order.currency.format(formatAmount(order.price, order.currency.decimals))
 
-private fun formatAmount(value: Double): String {
-    val cents = round(value * 100).toLong()
-    val sign = if (cents < 0) "-" else ""
-    val magnitude = abs(cents)
-    val whole = magnitude / 100
-    val fraction = (magnitude % 100).toString().padStart(2, '0')
+/** [value] with exactly [decimals] fraction digits, rounded; no grouping, "." as the separator. */
+internal fun formatAmount(
+    value: Double,
+    decimals: Int,
+): String {
+    var scale = 1L
+    repeat(decimals) { scale *= 10 }
+    val minor = round(value * scale).toLong()
+    val sign = if (minor < 0) "-" else ""
+    val magnitude = abs(minor)
+    val whole = magnitude / scale
+    if (decimals == 0) return "$sign$whole"
+    val fraction = (magnitude % scale).toString().padStart(decimals, '0')
     return "$sign$whole.$fraction"
 }
 

@@ -316,6 +316,27 @@ class AddEditOrderValidationTest {
         }
 
     @Test
+    fun `a yen price reads a separator as grouping`() =
+        runTest {
+            val sut = viewModel()
+            sut.onAction(AddEditOrderAction.OnCurrencySelected(AppCurrency.fromCode("JPY")))
+            sut.onAction(AddEditOrderAction.OnPriceChange("1,200"))
+
+            assertEquals("1200", sut.state.value.price)
+        }
+
+    @Test
+    fun `switching to a currency without decimals refits the price`() =
+        runTest {
+            val sut = viewModel()
+            sut.onAction(AddEditOrderAction.OnPriceChange("12.40"))
+            sut.onAction(AddEditOrderAction.OnCurrencySelected(AppCurrency.fromCode("JPY")))
+
+            // Rounded to whole yen, not read as 1240.
+            assertEquals("12", sut.state.value.price)
+        }
+
+    @Test
     fun `a new order starts in the currency chosen in settings`() =
         runTest {
             val sut = viewModel(preferences = FakeAppPreferencesRepository(AppCurrency.GBP))

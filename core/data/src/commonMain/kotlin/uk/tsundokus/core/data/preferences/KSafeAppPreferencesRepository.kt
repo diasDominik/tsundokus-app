@@ -8,11 +8,13 @@ import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
+import uk.tsundokus.core.domain.preferences.DeviceCurrencyProvider
 import uk.tsundokus.core.domain.preferences.ThemeMode
 
 @Single(binds = [AppPreferencesRepository::class])
 class KSafeAppPreferencesRepository(
     @Named("prefs") private val prefs: KSafe,
+    private val deviceCurrencyProvider: DeviceCurrencyProvider,
 ) : AppPreferencesRepository {
     override fun themeMode(): Flow<ThemeMode> =
         prefs.getFlow(KEY_THEME_MODE, ThemeMode.SYSTEM.name).map { stored ->
@@ -23,13 +25,21 @@ class KSafeAppPreferencesRepository(
         prefs.put(KEY_THEME_MODE, mode.name, KSafeWriteMode.Plain)
     }
 
+    /**
+     * The stored ISO code. Before anything is stored — a fresh install, before the first settings
+     * sync — it is the device's currency, so the first order is already in the right one.
+     */
     override fun currency(): Flow<AppCurrency> =
-        prefs.getFlow(KEY_CURRENCY, AppCurrency.EUR.name).map { stored ->
-            AppCurrency.fromName(stored)
+        prefs.getFlow(KEY_CURRENCY, "").map { stored ->
+            if (stored.isBlank()) {
+                deviceCurrencyProvider.currentCurrency() ?: AppCurrency.EUR
+            } else {
+                AppCurrency.fromCode(stored)
+            }
         }
 
     override suspend fun setCurrency(currency: AppCurrency) {
-        prefs.put(KEY_CURRENCY, currency.name, KSafeWriteMode.Plain)
+        prefs.put(KEY_CURRENCY, currency.code, KSafeWriteMode.Plain)
     }
 
     private companion object {

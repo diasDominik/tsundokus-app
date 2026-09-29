@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.NavKey
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.auth.StaleSessionStore
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
+import uk.tsundokus.core.domain.preferences.CurrencySync
 import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.domain.sync.LocalDataResetter
 import uk.tsundokus.features.orders.data.sync.OrderRealtimeSync
@@ -28,8 +29,11 @@ class MainViewModel(
     private val localDataResetter: LocalDataResetter,
     appPreferencesRepository: AppPreferencesRepository,
     orderRealtimeSync: OrderRealtimeSync,
+    currencySync: CurrencySync,
 ) : ViewModel() {
     init {
+        // The currency list is the server's; load the cached copy and refresh it on sign-in.
+        currencySync.start()
         // Hold the realtime order socket for the whole app lifetime; it connects while signed in and
         // reconnects on drops. Idempotent, so a second start() is a no-op.
         orderRealtimeSync.start()

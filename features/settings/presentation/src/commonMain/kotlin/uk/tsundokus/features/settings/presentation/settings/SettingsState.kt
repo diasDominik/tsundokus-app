@@ -8,4 +8,5 @@ data class SettingsState(
     val accountEmail: String = "",
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val currency: AppCurrency = AppCurrency.EUR,
+    val suggestedCurrencies: List<AppCurrency> = emptyList(),
 )

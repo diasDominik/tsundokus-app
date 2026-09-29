@@ -15,6 +15,7 @@ import tsundokuapp.features.settings.presentation.generated.resources.Res
 import tsundokuapp.features.settings.presentation.generated.resources.settings_currency_changed
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.preferences.AppCurrency
+import uk.tsundokus.core.domain.preferences.DeviceCurrencyProvider
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -28,7 +29,13 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val accountService: AccountService,
     private val sessionStorage: SessionStorage,
+    deviceCurrencyProvider: DeviceCurrencyProvider,
 ) : ViewModel() {
+    /** The device's own currency and the long-standing three, offered first in the picker. */
+    private val suggestedCurrencies =
+        listOfNotNull(deviceCurrencyProvider.currentCurrency(), AppCurrency.EUR, AppCurrency.USD, AppCurrency.GBP)
+            .distinctBy(AppCurrency::code)
+
     private val eventChannel = Channel<SettingsEvent>()
     val events = eventChannel.receiveAsFlow()
 
@@ -43,6 +50,7 @@ class SettingsViewModel(
                 accountEmail = user?.email.orEmpty(),
                 theme = settings.theme,
                 currency = settings.currency,
+                suggestedCurrencies = suggestedCurrencies,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -72,7 +80,7 @@ class SettingsViewModel(
                 .onSuccess {
                     eventChannel.send(
                         SettingsEvent.ShowMessage(
-                            UiText.Resource(Res.string.settings_currency_changed, arrayOf(currency.symbol)),
+                            UiText.Resource(Res.string.settings_currency_changed, arrayOf(currency.code)),
                         ),
                     )
                 }.onFailure { error ->
