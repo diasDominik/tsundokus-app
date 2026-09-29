@@ -164,9 +164,12 @@ private fun buildState(
 private fun Order.matchesQuery(query: String): Boolean {
     if (query.isBlank()) return true
     val needle = query.trim()
+    // Typed with hyphens or not, an ISBN finds its order; it is stored without them.
+    val isbnNeedle = needle.filterNot { it == '-' || it == ' ' }
     return title.contains(needle, ignoreCase = true) ||
         author.contains(needle, ignoreCase = true) ||
-        publisher.contains(needle, ignoreCase = true)
+        publisher.contains(needle, ignoreCase = true) ||
+        (isbnNeedle.isNotEmpty() && isbn.contains(isbnNeedle, ignoreCase = true))
 }
 
 private fun comparatorFor(preference: OrderSortPreference): Comparator<Order> {

@@ -25,6 +25,7 @@ kotlin = "2.4.20"
 kotlinx-browser = "0.5.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
+kscan = "0.10.0"
 turbine = "1.2.1"
 kotlinxCoroutinesSwing = "1.11.0"
 ksafe = "3.2.0"
@@ -91,6 +92,7 @@ kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.re
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 ksafe = { module = "eu.anifantakis:ksafe", version.ref = "ksafe" }
+kscan = { module = "io.github.ismai117:KScan", version.ref = "kscan" }
 ktlint-gradle-plugin = { module = "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin", version.ref = "ktlint" }
 
 # Build logic gradle plugins.

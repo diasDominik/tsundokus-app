@@ -4,6 +4,8 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Tsundoku uses the camera to read the ISBN barcode on your books, so it can mark their orders as received.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

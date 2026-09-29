@@ -114,7 +114,7 @@ class AddEditOrderSuggestionsTest {
         orders: List<Order> = history,
         orderId: String? = null,
     ) = AddEditOrderViewModel(
-        orderId = orderId,
+        args = AddEditOrderArgs(orderId = orderId),
         orderRepository = StoredOrdersRepository(orders),
         appPreferencesRepository = StaticPreferencesRepository(),
     )

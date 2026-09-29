@@ -37,6 +37,10 @@
     <string name="add_edit_order_eta_error_before_order">Cannot be before the order date</string>
     <string name="add_edit_order_delayed_to_error_before_order">Cannot be before the order date</string>
     <string name="add_edit_order_received_date_error_too_early">Cannot be before the order or ship date</string>
+    <string name="add_edit_order_isbn_label">ISBN</string>
+    <string name="add_edit_order_isbn_error_required">ISBN is required</string>
+    <string name="add_edit_order_isbn_error_invalid">Not a valid ISBN. Check the digits</string>
+    <string name="add_edit_order_isbn_scan_cd">Scan the barcode</string>
     <string name="add_edit_order_author_label">Author</string>
     <string name="add_edit_order_volume_label">Volume</string>
     <string name="add_edit_order_publisher_label">Publisher</string>
@@ -69,6 +73,7 @@
     <string name="nav_add_order">Add order</string>
     <string name="nav_edit_order">Edit order</string>
     <string name="nav_report_delay">Report delay</string>
+    <string name="nav_scan_to_receive">Scan to receive</string>
 
     <string name="orders_list_title">Orders</string>
     <string name="orders_list_sort">Sort · %1$s</string>
@@ -114,6 +119,7 @@
     <string name="order_detail_fact_eta">ETA</string>
     <string name="order_detail_fact_delayed_to">Delayed to</string>
     <string name="order_detail_fact_received">Received</string>
+    <string name="order_detail_fact_isbn">ISBN</string>
 
     <string name="timeline_ordered">Ordered</string>
     <string name="timeline_cancelled">Cancelled</string>
@@ -155,6 +161,34 @@
     <string name="add_edit_order_saved_added">Order added</string>
     <string name="add_edit_order_saved_updated">Order updated</string>
     <string name="add_edit_order_deleted">Order deleted</string>
+
+    <string name="orders_list_scan_cd">Scan a book to mark it received</string>
+
+    <string name="scan_to_receive_hint">Point the camera at the barcode on the back cover</string>
+    <string name="scan_to_receive_no_camera">No camera here. Type the ISBN, or use a USB barcode scanner.</string>
+    <string name="scan_to_receive_manual_label">Or type the ISBN</string>
+    <string name="scan_to_receive_manual_submit">Find</string>
+    <string name="scan_to_receive_invalid">That is not a valid ISBN</string>
+    <string name="scan_to_receive_received">Marked as received</string>
+    <string name="scan_to_receive_undo">Undo</string>
+    <string name="scan_to_receive_undone">Back to how it was</string>
+    <string name="scan_to_receive_already_received">Already received on %1$s</string>
+    <string name="scan_to_receive_already_cancelled">This order was cancelled</string>
+    <string name="scan_to_receive_pick_duplicate_title">Which of these arrived?</string>
+    <string name="scan_to_receive_pick_duplicate_message">You have more than one open order for ISBN %1$s.</string>
+    <string name="scan_to_receive_pick_unknown_title">Which order is this?</string>
+    <string name="scan_to_receive_pick_unknown_message">No order has ISBN %1$s yet. Pick the one it belongs to. It gets this ISBN and is marked received.</string>
+    <string name="scan_to_receive_pick_unknown_empty">No order is missing an ISBN. Add this book as a new order?</string>
+    <string name="scan_to_receive_add_new">Add as new order</string>
+    <string name="scan_to_receive_cancel">Cancel</string>
+
+    <string name="scanner_permission_rationale">Tsundoku needs the camera to read the barcode on your books.</string>
+    <string name="scanner_permission_allow">Allow camera</string>
+    <string name="scanner_permission_denied">Camera access is off. Turn it on in Settings to scan barcodes.</string>
+    <string name="scanner_permission_open_settings">Open Settings</string>
+    <string name="scanner_error">The camera could not start: %1$s</string>
+    <string name="scanner_retry">Try again</string>
+    <string name="scanner_dialog_title">Scan the ISBN barcode</string>
 
     <plurals name="orders_list_unsynced_changes">
         <item quantity="one">%1$d unsynced change</item>

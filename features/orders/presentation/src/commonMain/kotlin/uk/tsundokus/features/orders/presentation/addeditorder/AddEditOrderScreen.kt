@@ -18,6 +18,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
@@ -55,6 +57,10 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_discard_title
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_error_before_order
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_invalid
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_required
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_label
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_scan_cd
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_order_date_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_price_error_required
@@ -80,6 +86,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.nav_edit_ord
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.dialog.TsundokuConfirmDialog
+import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
@@ -94,18 +101,20 @@ import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
 import uk.tsundokus.features.orders.presentation.components.labelRes
+import uk.tsundokus.features.orders.presentation.scanner.IsbnScannerDialog
+import uk.tsundokus.features.orders.presentation.scanner.isCameraScanningSupported
 
 @Composable
 fun AddEditOrderRoot(
     navKey: NavKey,
-    orderId: String?,
+    args: AddEditOrderArgs,
     onSaved: () -> Unit,
     onClose: () -> Unit,
     snackbar: SnackbarController,
     viewModel: AddEditOrderViewModel =
         koinViewModel(
-            key = orderId ?: "add",
-            parameters = { parametersOf(orderId) },
+            key = args.orderId ?: "add:${args.initialIsbn}",
+            parameters = { parametersOf(args) },
         ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -229,6 +238,8 @@ private fun ColumnScope.AddEditOrderForm(
             state = state,
             onAction = onAction,
         )
+
+        IsbnFormField(state = state, onAction = onAction)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             SuggestingFormField(
@@ -400,16 +411,53 @@ private fun AddEditOrderState.errorFor(field: OrderFormField): String? =
     } else {
         stringResource(
             when (field) {
-                OrderFormField.TITLE -> Res.string.add_edit_order_title_error_required
-                OrderFormField.AUTHOR -> Res.string.add_edit_order_author_error_required
-                OrderFormField.PUBLISHER -> Res.string.add_edit_order_publisher_error_required
-                OrderFormField.STORE -> Res.string.add_edit_order_store_error_required
-                OrderFormField.PRICE -> Res.string.add_edit_order_price_error_required
-                OrderFormField.ORDER_DATE -> Res.string.add_edit_order_order_date_error_required
-                OrderFormField.SHIP_DATE -> Res.string.add_edit_order_ship_date_error_before_order
-                OrderFormField.ETA -> Res.string.add_edit_order_eta_error_before_order
-                OrderFormField.DELAYED_TO -> Res.string.add_edit_order_delayed_to_error_before_order
-                OrderFormField.RECEIVED_DATE -> Res.string.add_edit_order_received_date_error_too_early
+                OrderFormField.TITLE -> {
+                    Res.string.add_edit_order_title_error_required
+                }
+
+                OrderFormField.ISBN -> {
+                    if (isbn.isBlank()) {
+                        Res.string.add_edit_order_isbn_error_required
+                    } else {
+                        Res.string.add_edit_order_isbn_error_invalid
+                    }
+                }
+
+                OrderFormField.AUTHOR -> {
+                    Res.string.add_edit_order_author_error_required
+                }
+
+                OrderFormField.PUBLISHER -> {
+                    Res.string.add_edit_order_publisher_error_required
+                }
+
+                OrderFormField.STORE -> {
+                    Res.string.add_edit_order_store_error_required
+                }
+
+                OrderFormField.PRICE -> {
+                    Res.string.add_edit_order_price_error_required
+                }
+
+                OrderFormField.ORDER_DATE -> {
+                    Res.string.add_edit_order_order_date_error_required
+                }
+
+                OrderFormField.SHIP_DATE -> {
+                    Res.string.add_edit_order_ship_date_error_before_order
+                }
+
+                OrderFormField.ETA -> {
+                    Res.string.add_edit_order_eta_error_before_order
+                }
+
+                OrderFormField.DELAYED_TO -> {
+                    Res.string.add_edit_order_delayed_to_error_before_order
+                }
+
+                OrderFormField.RECEIVED_DATE -> {
+                    Res.string.add_edit_order_received_date_error_too_early
+                }
             },
         )
     }
@@ -484,6 +532,53 @@ private fun SuggestingFormField(
     }
 }
 
+/**
+ * The ISBN, typed or read off the barcode. The scan button only appears where there is a camera to
+ * scan with; everywhere else the field is typed into (a USB barcode scanner types too).
+ */
+@Composable
+private fun IsbnFormField(
+    state: AddEditOrderState,
+    onAction: (AddEditOrderAction) -> Unit,
+) {
+    var scanning by remember { mutableStateOf(false) }
+    val canScan = remember { isCameraScanningSupported() }
+
+    OutlinedTextField(
+        value = state.isbn,
+        onValueChange = { onAction(AddEditOrderAction.OnIsbnChange(it)) },
+        label = { Text(stringResource(Res.string.add_edit_order_isbn_label)) },
+        isError = OrderFormField.ISBN in state.errors,
+        supportingText = state.errorFor(OrderFormField.ISBN)?.let { message -> { Text(message) } },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        trailingIcon =
+            if (canScan) {
+                {
+                    IconButton(onClick = { scanning = true }) {
+                        Icon(
+                            imageVector = TsundokuIcons.BarcodeScanner,
+                            contentDescription = stringResource(Res.string.add_edit_order_isbn_scan_cd),
+                        )
+                    }
+                }
+            } else {
+                null
+            },
+        modifier = Modifier.fillMaxWidth(),
+    )
+
+    if (scanning) {
+        IsbnScannerDialog(
+            onIsbn = { isbn ->
+                scanning = false
+                onAction(AddEditOrderAction.OnIsbnChange(isbn))
+            },
+            onDismiss = { scanning = false },
+        )
+    }
+}
+
 @Composable
 private fun SectionLabel(text: StringResource) {
     Text(
@@ -503,6 +598,7 @@ private fun AddEditOrderScreenPreview() {
                 state =
                     AddEditOrderState(
                         title = "Chainsaw Man",
+                        isbn = "9784088820453",
                         author = "Tatsuki Fujimoto",
                         volume = "Vol. 12",
                         store = "Amazon",

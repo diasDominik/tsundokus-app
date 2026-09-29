@@ -96,14 +96,16 @@ class AddEditOrderValidationTest {
     private fun viewModel(
         repository: OrderRepository = RecordingOrderRepository(),
         preferences: AppPreferencesRepository = FakeAppPreferencesRepository(),
+        args: AddEditOrderArgs = AddEditOrderArgs(),
     ) = AddEditOrderViewModel(
-        orderId = null,
+        args = args,
         orderRepository = repository,
         appPreferencesRepository = preferences,
     )
 
     private fun AddEditOrderViewModel.fillValidForm() {
         onAction(AddEditOrderAction.OnTitleChange("Berserk"))
+        onAction(AddEditOrderAction.OnIsbnChange("9784088820453"))
         onAction(AddEditOrderAction.OnAuthorChange("Kentaro Miura"))
         onAction(AddEditOrderAction.OnPublisherChange("Dark Horse"))
         onAction(AddEditOrderAction.OnStoreChange("Amazon"))
@@ -121,6 +123,7 @@ class AddEditOrderValidationTest {
             assertEquals(
                 setOf(
                     OrderFormField.TITLE,
+                    OrderFormField.ISBN,
                     OrderFormField.AUTHOR,
                     OrderFormField.PUBLISHER,
                     OrderFormField.STORE,
@@ -266,6 +269,49 @@ class AddEditOrderValidationTest {
                 sut.state.value.errors
                     .isEmpty(),
             )
+        }
+
+    @Test
+    fun `an ISBN with a wrong check digit blocks the save`() =
+        runTest {
+            val repository = RecordingOrderRepository()
+            val sut = viewModel(repository)
+            sut.fillValidForm()
+            sut.onAction(AddEditOrderAction.OnIsbnChange("9784088820454"))
+            sut.onAction(AddEditOrderAction.OnSave)
+
+            assertEquals(setOf(OrderFormField.ISBN), sut.state.value.errors)
+            assertEquals(null, repository.created)
+        }
+
+    @Test
+    fun `a typed ISBN is saved as its ISBN-13 digits`() =
+        runTest {
+            val repository = RecordingOrderRepository()
+            val sut = viewModel(repository)
+            sut.fillValidForm()
+            sut.onAction(AddEditOrderAction.OnIsbnChange("4-08-882045-2"))
+            sut.onAction(AddEditOrderAction.OnSave)
+
+            assertEquals("9784088820453", repository.created?.isbn)
+        }
+
+    @Test
+    fun `hyphens never reach the ISBN field`() =
+        runTest {
+            val sut = viewModel()
+            sut.onAction(AddEditOrderAction.OnIsbnChange("978-4-08"))
+
+            assertEquals("978408", sut.state.value.isbn)
+        }
+
+    @Test
+    fun `a new order from a scan opens with its ISBN and nothing to discard`() =
+        runTest {
+            val sut = viewModel(args = AddEditOrderArgs(initialIsbn = "9784088820453"))
+
+            assertEquals("9784088820453", sut.state.value.isbn)
+            assertFalse(sut.state.value.isDirty)
         }
 
     @Test

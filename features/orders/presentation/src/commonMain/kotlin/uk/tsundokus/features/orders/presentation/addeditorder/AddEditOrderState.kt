@@ -10,6 +10,7 @@ data class AddEditOrderState(
     val author: String = "",
     val publisher: String = "",
     val volume: String = "",
+    val isbn: String = "",
     val store: String = "",
     val price: String = "",
     val currency: AppCurrency = AppCurrency.EUR,
@@ -52,6 +53,7 @@ data class AddEditOrderState(
  */
 enum class OrderFormField {
     TITLE,
+    ISBN,
     AUTHOR,
     PUBLISHER,
     STORE,

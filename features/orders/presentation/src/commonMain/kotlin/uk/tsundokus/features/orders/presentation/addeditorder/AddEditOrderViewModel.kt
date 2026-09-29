@@ -21,6 +21,7 @@ import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.core.presentation.util.toUiText
+import uk.tsundokus.features.orders.domain.models.Isbn
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.order.OrderRepository
@@ -45,13 +46,27 @@ private val DATE_FIELDS =
         OrderFormField.DELAYED_TO,
     )
 
+/**
+ * What the form opens on: the order to edit ([orderId]), or a new order, optionally with an ISBN
+ * already read from a barcode. One object rather than two injected parameters, since Koin matches
+ * injected parameters by type and both would be strings.
+ */
+data class AddEditOrderArgs(
+    val orderId: String? = null,
+    val initialIsbn: String = "",
+)
+
 @KoinViewModel
 class AddEditOrderViewModel(
-    @InjectedParam private val orderId: String?,
+    @InjectedParam private val args: AddEditOrderArgs,
     private val orderRepository: OrderRepository,
     private val appPreferencesRepository: AppPreferencesRepository,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(AddEditOrderState(isEdit = orderId != null))
+    private val orderId = args.orderId
+
+    // A new order started from a scan arrives with its ISBN already read; it counts as part of the
+    // blank form, so leaving without touching anything else asks nothing.
+    private val _state = MutableStateFlow(AddEditOrderState(isEdit = orderId != null, isbn = args.initialIsbn))
     val state = _state.asStateFlow()
 
     private val eventChannel = Channel<AddEditOrderEvent>()
@@ -115,6 +130,10 @@ class AddEditOrderViewModel(
 
             is AddEditOrderAction.OnVolumeChange -> {
                 updateForm { it.copy(volume = action.value) }
+            }
+
+            is AddEditOrderAction.OnIsbnChange -> {
+                updateForm { it.copy(isbn = Isbn.sanitize(action.value)).clearing(OrderFormField.ISBN) }
             }
 
             is AddEditOrderAction.OnStoreChange -> {
@@ -338,6 +357,7 @@ class AddEditOrderViewModel(
     private fun AddEditOrderState.validate(): Set<OrderFormField> =
         buildSet {
             if (!OrderValidator.isTitleValid(title)) add(OrderFormField.TITLE)
+            if (!OrderValidator.isIsbnValid(isbn)) add(OrderFormField.ISBN)
             if (!OrderValidator.isRequiredTextValid(author)) add(OrderFormField.AUTHOR)
             if (!OrderValidator.isRequiredTextValid(publisher)) add(OrderFormField.PUBLISHER)
             if (!OrderValidator.isRequiredTextValid(store)) add(OrderFormField.STORE)
@@ -372,6 +392,7 @@ class AddEditOrderViewModel(
                 author = order.author,
                 publisher = order.publisher,
                 volume = order.volume,
+                isbn = order.isbn,
                 store = order.store,
                 price = if (order.price == 0.0) "" else order.price.toString(),
                 currency = order.currency,
@@ -455,6 +476,8 @@ class AddEditOrderViewModel(
             author = author.trim(),
             publisher = publisher.trim(),
             volume = volume.trim(),
+            // Validated before this runs, so it always normalises.
+            isbn = Isbn.normalize(isbn).orEmpty(),
             store = store.trim(),
             price = price.toDoubleOrNull() ?: 0.0,
             currency = currency,
