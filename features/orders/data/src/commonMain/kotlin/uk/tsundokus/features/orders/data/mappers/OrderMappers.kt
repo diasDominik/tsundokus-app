@@ -29,6 +29,7 @@ fun OrderDto.toDomain(): Order =
         receivedDate = receivedDate.orEmpty(),
         delayedTo = delayedTo.orEmpty(),
         isbn = isbn.orEmpty(),
+        hasCover = hasCover,
         createdAt = createdAt,
     )
 
@@ -51,6 +52,7 @@ fun Order.toEntity(pendingSync: Boolean = false): OrderEntity =
         receivedDate = receivedDate,
         delayedTo = delayedTo,
         isbn = isbn,
+        hasCover = hasCover,
         createdAt = createdAt,
         pendingSync = pendingSync,
     )
@@ -74,6 +76,7 @@ fun OrderEntity.toDomain(): Order =
         receivedDate = receivedDate,
         delayedTo = delayedTo,
         isbn = isbn,
+        hasCover = hasCover,
         createdAt = createdAt,
     )
 

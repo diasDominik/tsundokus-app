@@ -22,5 +22,6 @@ data class OrderDto(
     val delayedTo: String?,
     // Defaulted so a response from a server that predates ISBNs still decodes.
     val isbn: String? = null,
+    val hasCover: Boolean = false,
     val createdAt: Long,
 )
