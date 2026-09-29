@@ -65,7 +65,7 @@ fun TsundokuTextFieldLayout(
                     if (isError) {
                         MaterialTheme.colorScheme.error
                     } else {
-                        Color.Unspecified // MaterialTheme.colorScheme.extended.textTertiary
+                        Color.Unspecified
                     },
                 style = MaterialTheme.typography.bodySmall,
             )

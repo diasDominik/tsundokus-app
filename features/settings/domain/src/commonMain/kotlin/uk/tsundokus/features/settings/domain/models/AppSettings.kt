@@ -10,4 +10,6 @@ import uk.tsundokus.core.domain.preferences.ThemeMode
 data class AppSettings(
     val theme: ThemeMode = ThemeMode.SYSTEM,
     val currency: AppCurrency = AppCurrency.EUR,
+    /** False for an account nobody has picked a currency for yet: [currency] is then only a stand-in. */
+    val isCurrencyChosen: Boolean = true,
 )

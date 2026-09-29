@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -118,16 +117,14 @@ class AddEditOrderBookLookupTest {
         bookRepository = books,
     )
 
-    private fun TestScope.settle() = advanceUntilIdle()
-
     @Test
     fun `a scanned ISBN fills the blank fields`() =
         runTest(dispatcher) {
             val sut = viewModel()
-            settle()
+            advanceUntilIdle()
 
             sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
-            settle()
+            advanceUntilIdle()
 
             val state = sut.state.value
             assertEquals(book.title, state.title)
@@ -142,11 +139,11 @@ class AddEditOrderBookLookupTest {
     fun `what the user typed is never overwritten`() =
         runTest(dispatcher) {
             val sut = viewModel()
-            settle()
+            advanceUntilIdle()
             sut.onAction(AddEditOrderAction.OnTitleChange("My own title"))
 
             sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
-            settle()
+            advanceUntilIdle()
 
             assertEquals("My own title", sut.state.value.title)
             assertEquals(book.author, sut.state.value.author)
@@ -157,7 +154,7 @@ class AddEditOrderBookLookupTest {
         runTest(dispatcher) {
             val books = FakeBookRepository(mapOf(ISBN to book))
             val sut = viewModel(books)
-            settle()
+            advanceUntilIdle()
 
             sut.onAction(AddEditOrderAction.OnIsbnChange(ISBN))
             advanceTimeBy(300)
@@ -174,13 +171,13 @@ class AddEditOrderBookLookupTest {
         runTest(dispatcher) {
             val books = FakeBookRepository(mapOf(ISBN to book))
             val sut = viewModel(books)
-            settle()
+            advanceUntilIdle()
 
             // The first ten digits of this ISBN-13 are a valid ISBN-10 of another book.
             sut.onAction(AddEditOrderAction.OnIsbnChange("4088820452"))
             advanceTimeBy(100)
             sut.onAction(AddEditOrderAction.OnIsbnChange(ISBN))
-            settle()
+            advanceUntilIdle()
 
             assertEquals(listOf(ISBN), books.lookedUp)
         }
@@ -191,7 +188,7 @@ class AddEditOrderBookLookupTest {
             val gate = CompletableDeferred<Unit>()
             val books = FakeBookRepository(mapOf(ISBN to book), gate = gate)
             val sut = viewModel(books)
-            settle()
+            advanceUntilIdle()
             sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
             runCurrent()
             assertTrue(sut.state.value.isLookingUpBook)
@@ -199,7 +196,7 @@ class AddEditOrderBookLookupTest {
             // The lookup is already under way when the field is cleared.
             sut.onAction(AddEditOrderAction.OnIsbnChange(""))
             gate.complete(Unit)
-            settle()
+            advanceUntilIdle()
 
             assertEquals("", sut.state.value.title)
             assertFalse(sut.state.value.isLookingUpBook)
@@ -209,10 +206,10 @@ class AddEditOrderBookLookupTest {
     fun `a failed lookup leaves the form as it was`() =
         runTest(dispatcher) {
             val sut = viewModel(FakeBookRepository(failing = true))
-            settle()
+            advanceUntilIdle()
 
             sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
-            settle()
+            advanceUntilIdle()
 
             assertEquals("", sut.state.value.title)
             assertFalse(sut.state.value.isLookingUpBook)
@@ -222,7 +219,7 @@ class AddEditOrderBookLookupTest {
     fun `an order started from a scan is filled in on open`() =
         runTest(dispatcher) {
             val sut = viewModel(args = AddEditOrderArgs(initialIsbn = ISBN))
-            settle()
+            advanceUntilIdle()
 
             assertEquals(book.title, sut.state.value.title)
         }
@@ -232,15 +229,15 @@ class AddEditOrderBookLookupTest {
         runTest(dispatcher) {
             val orders = SavingOrderRepository()
             val sut = viewModel(orders = orders)
-            settle()
+            advanceUntilIdle()
             sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
-            settle()
+            advanceUntilIdle()
             sut.onAction(AddEditOrderAction.OnStoreChange("Amazon"))
             sut.onAction(AddEditOrderAction.OnPriceChange("7"))
             sut.onAction(AddEditOrderAction.OnOrderDateChange("2026-09-01"))
 
             sut.onAction(AddEditOrderAction.OnSave)
-            settle()
+            advanceUntilIdle()
 
             assertEquals(true, orders.saved?.hasCover)
         }
@@ -263,17 +260,17 @@ class AddEditOrderBookLookupTest {
             val orders = SavingOrderRepository(existing)
             val sut =
                 viewModel(books = FakeBookRepository(), orders = orders, args = AddEditOrderArgs(orderId = "1"))
-            settle()
+            advanceUntilIdle()
             assertEquals(ISBN, sut.state.value.coverIsbn)
 
             sut.onAction(AddEditOrderAction.OnSave)
-            settle()
+            advanceUntilIdle()
             assertEquals(true, orders.saved?.hasCover)
 
             sut.onAction(AddEditOrderAction.OnIsbnScanned(OTHER_ISBN))
-            settle()
+            advanceUntilIdle()
             sut.onAction(AddEditOrderAction.OnSave)
-            settle()
+            advanceUntilIdle()
             assertEquals(false, orders.saved?.hasCover)
         }
 
@@ -281,10 +278,10 @@ class AddEditOrderBookLookupTest {
     fun `an unknown book changes nothing`() =
         runTest(dispatcher) {
             val sut = viewModel(FakeBookRepository())
-            settle()
+            advanceUntilIdle()
 
             sut.onAction(AddEditOrderAction.OnIsbnScanned(OTHER_ISBN))
-            settle()
+            advanceUntilIdle()
 
             assertEquals("", sut.state.value.title)
             assertNull(sut.state.value.coverIsbn)

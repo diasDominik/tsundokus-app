@@ -19,7 +19,6 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_added
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_updated
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
-import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -31,6 +30,7 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.domain.validation.OrderValidator
+import uk.tsundokus.features.orders.presentation.components.formatAmount
 import uk.tsundokus.features.orders.presentation.components.nowEpochMillis
 import uk.tsundokus.features.orders.presentation.components.todayIso
 import kotlin.uuid.ExperimentalUuidApi
@@ -41,6 +41,9 @@ private const val MAX_SUGGESTIONS = 5
 
 /** One character is too little to narrow anything down; it would just offer the whole history. */
 private const val MIN_SUGGESTION_QUERY = 2
+
+/** Enough for the handful a collector really uses, few enough to leave the full list in view. */
+private const val MAX_SUGGESTED_CURRENCIES = 5
 
 /** How long typing has to pause before a typed ISBN is looked up. */
 private const val TYPED_ISBN_PAUSE_MILLIS = 400L
@@ -165,7 +168,9 @@ class AddEditOrderViewModel(
 
             is AddEditOrderAction.OnPriceChange -> {
                 updateForm {
-                    it.copy(price = OrderValidator.sanitizePrice(action.value)).clearing(OrderFormField.PRICE)
+                    it
+                        .copy(price = OrderValidator.sanitizePrice(action.value, it.currency.decimals))
+                        .clearing(OrderFormField.PRICE)
                 }
             }
 
@@ -194,7 +199,19 @@ class AddEditOrderViewModel(
             }
 
             is AddEditOrderAction.OnCurrencySelected -> {
-                updateForm { it.copy(currency = action.currency) }
+                // The amount is kept and shown with the new currency's decimals — "12.40" in euros is
+                // "12" in yen, never "1240". Nothing is converted: switching currency fixes a wrong
+                // pick, it does not reprice the order.
+                updateForm {
+                    it.copy(
+                        currency = action.currency,
+                        price =
+                            it.price.toDoubleOrNull()?.let { amount ->
+                                formatAmount(amount, action.currency.decimals)
+                            }
+                                ?: it.price,
+                    )
+                }
             }
 
             is AddEditOrderAction.OnStatusSelected -> {
@@ -261,6 +278,16 @@ class AddEditOrderViewModel(
         authors = rank(others.map(Order::author))
         publishers = rank(others.map(Order::publisher))
         stores = rank(others.map(Order::store))
+        // The currencies this user actually orders in, most-used first: offered first in the picker.
+        val currencies =
+            orders
+                .groupingBy { it.currency }
+                .eachCount()
+                .entries
+                .sortedByDescending { it.value }
+                .map { it.key }
+                .take(MAX_SUGGESTED_CURRENCIES)
+        _state.update { it.copy(suggestedCurrencies = currencies) }
         // Ascending by creation, so the newest order for a title wins the key.
         latestByTitle = others.sortedBy(Order::createdAt).associateBy { it.title.trim().lowercase() }
 
@@ -359,15 +386,12 @@ class AddEditOrderViewModel(
             author = author.ifBlank { previous.author },
             publisher = publisher.ifBlank { previous.publisher },
             store = store.ifBlank { previous.store },
-        ).let { filled ->
-            filled.copy(
-                errors =
-                    filled.errors
-                        .filterNot { field -> filled.valueOf(field).isNotBlank() }
-                        .toSet(),
-            )
-        }
+        ).clearingFilled()
     }
+
+    /** Drops the "required" errors of fields that have been filled in for the user. */
+    private fun AddEditOrderState.clearingFilled(): AddEditOrderState =
+        copy(errors = errors.filterNot { field -> valueOf(field).isNotBlank() }.toSet())
 
     /**
      * Looks the current ISBN up and fills in what the user has left blank. Never blocks the form:
@@ -385,9 +409,9 @@ class AddEditOrderViewModel(
             viewModelScope.launch {
                 delay(delayMillis)
                 _state.update { it.copy(isLookingUpBook = true) }
-                val book = (bookRepository.lookup(isbn) as? Result.Success)?.data
+                val result = bookRepository.lookup(isbn)
                 _state.update { it.copy(isLookingUpBook = false) }
-                if (book != null) fillFrom(book)
+                result.onSuccess { book -> book?.let(::fillFrom) }
             }
     }
 
@@ -408,7 +432,7 @@ class AddEditOrderViewModel(
                     releaseDate = current.releaseDate.ifBlank { book.releaseDate.orEmpty() },
                     coverIsbn = if (book.hasCover) book.isbn else current.coverIsbn,
                 )
-            filled.copy(errors = filled.errors.filterNot { field -> filled.valueOf(field).isNotBlank() }.toSet())
+            filled.clearingFilled()
         }
     }
 
@@ -460,7 +484,7 @@ class AddEditOrderViewModel(
                 isbn = order.isbn,
                 coverIsbn = order.isbn.takeIf { order.hasCover },
                 store = order.store,
-                price = if (order.price == 0.0) "" else order.price.toString(),
+                price = if (order.price == 0.0) "" else formatAmount(order.price, order.currency.decimals),
                 currency = order.currency,
                 status = order.status,
                 readState = order.readState,

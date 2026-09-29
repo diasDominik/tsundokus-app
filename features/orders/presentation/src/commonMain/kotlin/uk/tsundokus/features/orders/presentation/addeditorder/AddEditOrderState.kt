@@ -35,6 +35,8 @@ data class AddEditOrderState(
     val isLookingUpBook: Boolean = false,
     /** The ISBN the server has a cover for — shown beside the field while it still matches. */
     val coverIsbn: String? = null,
+    /** Currencies of the user's orders, most-used first, offered first in the currency picker. */
+    val suggestedCurrencies: List<AppCurrency> = emptyList(),
 ) {
     /**
      * The form's content with the transient bookkeeping stripped, so two states can be compared for
@@ -50,6 +52,7 @@ data class AddEditOrderState(
             suggestions = emptyList(),
             isLookingUpBook = false,
             coverIsbn = null,
+            suggestedCurrencies = emptyList(),
         )
 }
 

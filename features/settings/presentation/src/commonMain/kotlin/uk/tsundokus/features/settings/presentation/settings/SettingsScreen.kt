@@ -69,6 +69,7 @@ import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.domain.legal.LegalUrls
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.ThemeMode
+import uk.tsundokus.core.presentation.currency.CurrencyField
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.features.settings.presentation.AppInfo
 
@@ -177,6 +178,7 @@ internal fun SettingsScreen(
             AppearanceCard(theme = state.theme, onThemeSelected = { onAction(SettingsAction.ChangeTheme(it)) })
             CurrencyCard(
                 currency = state.currency,
+                suggested = state.suggestedCurrencies,
                 onCurrencySelected = { onAction(SettingsAction.ChangeCurrency(it)) },
             )
 
@@ -394,15 +396,11 @@ private fun AppearanceCard(
 @Composable
 private fun CurrencyCard(
     currency: AppCurrency,
+    suggested: List<AppCurrency>,
     onCurrencySelected: (AppCurrency) -> Unit,
 ) {
-    val currencies = AppCurrency.entries
     PreferenceCard(title = stringResource(Res.string.settings_currency)) {
-        SegmentedControl(
-            options = currencies.map { it.symbol },
-            selectedIndex = currencies.indexOf(currency),
-            onSelect = { index -> onCurrencySelected(currencies[index]) },
-        )
+        CurrencyField(currency = currency, onSelect = onCurrencySelected, suggested = suggested)
     }
 }
 

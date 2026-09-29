@@ -34,7 +34,7 @@ class KtorSettingsService(
                 body =
                     UpdateSettingsRequest(
                         theme = theme?.name,
-                        currency = currency?.name,
+                        currency = currency?.code,
                     ),
             ).map { it.toDomain() }
 }

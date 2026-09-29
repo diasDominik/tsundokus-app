@@ -24,9 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +48,6 @@ import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_add
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_author_label
-import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_currency_option
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delayed_to_error_before_order
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delayed_to_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_delete
@@ -96,7 +92,7 @@ import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
-import uk.tsundokus.core.domain.preferences.AppCurrency
+import uk.tsundokus.core.presentation.currency.CurrencyField
 import uk.tsundokus.core.presentation.navigation.OverrideTopBar
 import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
@@ -298,17 +294,11 @@ private fun ColumnScope.AddEditOrderForm(
         }
 
         SectionLabel(Res.string.add_edit_order_section_currency)
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            AppCurrency.entries.forEachIndexed { index, currency ->
-                SegmentedButton(
-                    selected = state.currency == currency,
-                    onClick = { onAction(AddEditOrderAction.OnCurrencySelected(currency)) },
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = AppCurrency.entries.size),
-                ) {
-                    Text(stringResource(Res.string.add_edit_order_currency_option, currency.symbol, currency.name))
-                }
-            }
-        }
+        CurrencyField(
+            currency = state.currency,
+            onSelect = { onAction(AddEditOrderAction.OnCurrencySelected(it)) },
+            suggested = state.suggestedCurrencies,
+        )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OrderDateField(

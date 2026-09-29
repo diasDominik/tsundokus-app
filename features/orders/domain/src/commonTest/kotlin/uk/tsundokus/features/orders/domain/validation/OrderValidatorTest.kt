@@ -38,4 +38,16 @@ class OrderValidatorTest {
         assertEquals(19.99, OrderValidator.sanitizePrice("19.99").toDouble())
         assertEquals("", OrderValidator.sanitizePrice(""))
     }
+
+    @Test
+    fun `in a currency without decimals a separator is grouping`() {
+        assertEquals("1200", OrderValidator.sanitizePrice("1,200", maxDecimals = 0))
+        assertEquals("1200", OrderValidator.sanitizePrice("1.200", maxDecimals = 0))
+        assertEquals("12000", OrderValidator.sanitizePrice("¥12,000", maxDecimals = 0))
+    }
+
+    @Test
+    fun `a currency with three decimals keeps three`() {
+        assertEquals("1.250", OrderValidator.sanitizePrice("1.2509", maxDecimals = 3))
+    }
 }

@@ -121,10 +121,15 @@ private fun ScanToReceiveScreen(
             if (cameraSupported) {
                 Viewfinder(state = state, onAction = onAction)
             }
-            val hint =
-                if (cameraSupported) Res.string.scan_to_receive_hint else Res.string.scan_to_receive_no_camera
             Text(
-                text = stringResource(hint),
+                text =
+                    stringResource(
+                        if (cameraSupported) {
+                            Res.string.scan_to_receive_hint
+                        } else {
+                            Res.string.scan_to_receive_no_camera
+                        },
+                    ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -68,11 +68,11 @@ fun TsundokuMultiLineTextField(
         modifier =
             modifier
                 .background(
-                    color = Color.Unspecified, // MaterialTheme.colorScheme.extended.surfaceLower,
+                    color = Color.Unspecified,
                     shape = RoundedCornerShape(16.dp),
                 ).border(
                     width = 1.dp,
-                    color = Color.Unspecified, // MaterialTheme.colorScheme.extended.surfaceOutline,
+                    color = Color.Unspecified,
                     shape = RoundedCornerShape(16.dp),
                 ).clickable(
                     interactionSource = null,
@@ -93,10 +93,6 @@ fun TsundokuMultiLineTextField(
                 Modifier
                     .fillMaxWidth()
                     .focusRequester(textFieldFocusRequester),
-            /*textStyle =
-                MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.extended.textPrimary,
-                ),*/
             lineLimits =
                 TextFieldLineLimits.MultiLine(
                     minHeightInLines = 1,
@@ -111,7 +107,6 @@ fun TsundokuMultiLineTextField(
                     {
                         Text(
                             text = placeholder,
-                            // color = MaterialTheme.colorScheme.extended.textPlaceholder,
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     }

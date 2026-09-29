@@ -82,7 +82,7 @@ fun TsundokuTextField(
                         if (enabled) {
                             MaterialTheme.colorScheme.onSurface
                         } else {
-                            Color.Unspecified // MaterialTheme.colorScheme.extended.textPlaceholder
+                            Color.Unspecified
                         },
                 ),
             keyboardOptions =
@@ -95,7 +95,6 @@ fun TsundokuTextField(
                     {
                         Text(
                             text = placeholder,
-                            // color = MaterialTheme.colorScheme.extended.textPlaceholder,
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }

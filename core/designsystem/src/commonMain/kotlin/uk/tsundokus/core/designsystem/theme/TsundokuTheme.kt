@@ -22,58 +22,16 @@ val ColorScheme.extended: ExtendedColors
 @Immutable
 data class ExtendedColors(
     val positive: Color,
-    val positiveContainer: Color,
-    val onPositiveContainer: Color,
-    val negative: Color,
-    val negativeContainer: Color,
-    val onNegativeContainer: Color,
-    val settled: Color,
-    val settledContainer: Color,
-    val onSettledContainer: Color,
-    val deleted: Color,
-    val deletedContainer: Color,
-    val textPrimary: Color,
-    val brandCream: Color,
-    val brandOrange: Color,
-    val brandDeep: Color,
 )
 
 private val LightExtendedColors =
     ExtendedColors(
         positive = extended_light_positive,
-        positiveContainer = extended_light_positiveContainer,
-        onPositiveContainer = extended_light_onPositiveContainer,
-        negative = extended_light_negative,
-        negativeContainer = extended_light_negativeContainer,
-        onNegativeContainer = extended_light_onNegativeContainer,
-        settled = extended_light_settled,
-        settledContainer = extended_light_settledContainer,
-        onSettledContainer = extended_light_onSettledContainer,
-        deleted = extended_light_deleted,
-        deletedContainer = extended_light_deletedContainer,
-        textPrimary = extended_light_textPrimary,
-        brandCream = brand_cream,
-        brandOrange = brand_orange,
-        brandDeep = brand_deep,
     )
 
 private val DarkExtendedColors =
     ExtendedColors(
         positive = extended_dark_positive,
-        positiveContainer = extended_dark_positiveContainer,
-        onPositiveContainer = extended_dark_onPositiveContainer,
-        negative = extended_dark_negative,
-        negativeContainer = extended_dark_negativeContainer,
-        onNegativeContainer = extended_dark_onNegativeContainer,
-        settled = extended_dark_settled,
-        settledContainer = extended_dark_settledContainer,
-        onSettledContainer = extended_dark_onSettledContainer,
-        deleted = extended_dark_deleted,
-        deletedContainer = extended_dark_deletedContainer,
-        textPrimary = extended_dark_textPrimary,
-        brandCream = brand_cream,
-        brandOrange = brand_orange,
-        brandDeep = brand_deep,
     )
 
 private val lightColorScheme =
