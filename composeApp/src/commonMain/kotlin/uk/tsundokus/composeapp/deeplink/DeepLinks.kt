@@ -7,6 +7,8 @@ import androidx.navigation3.runtime.deeplink.UriDeepLinkMatcher
 import uk.tsundokus.features.authentication.presentation.navigation.EmailVerification
 import uk.tsundokus.features.authentication.presentation.navigation.ResetPassword
 import kotlinx.serialization.serializer
+import uk.tsundokus.features.orders.presentation.navigation.ORDER_LINK_PATH
+import uk.tsundokus.features.orders.presentation.navigation.OrderDetail
 
 // Server-emitted link paths (see notification EmailService): {origin}{path}?token=<token>.
 private const val VERIFY_PATH = "/api/auth/verify"
@@ -45,6 +47,11 @@ fun buildDeepLinkMatchers(devBaseUrl: String): List<UriDeepLinkMatcher<NavKey>> 
             UriDeepLinkMatcher(
                 uriPattern = DeepLinkUri("$scheme://$authority$RESET_PATH?token={token}"),
                 serializer = serializer<ResetPassword>(),
+            ),
+            // An order — what a tapped reminder opens.
+            UriDeepLinkMatcher(
+                uriPattern = DeepLinkUri("$scheme://$authority$ORDER_LINK_PATH/{orderId}"),
+                serializer = serializer<OrderDetail>(),
             ),
         )
     }

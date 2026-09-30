@@ -209,9 +209,27 @@ fun App() {
             DisposableEffect(Unit) {
                 DeepLinkHandler.listener = listener@{ uri ->
                     val navKey = deepLinkMatchers.matchOrNull(uri) ?: return@listener
-                    backStack.clear()
-                    backStack.add(SignIn)
-                    backStack.add(navKey)
+                    when {
+                        // An order (a tapped reminder), signed in: open it over the Orders tab.
+                        navKey is LoggedIn && mainViewModel.isLoggedIn.value -> {
+                            backStack.clear()
+                            backStack.add(Orders)
+                            backStack.add(navKey)
+                        }
+
+                        // Signed out: sign in first; the order opens once that succeeds.
+                        navKey is LoggedIn -> {
+                            mainViewModel.setPendingPostAuthNavKey(navKey)
+                            backStack.clear()
+                            backStack.add(SignIn)
+                        }
+
+                        else -> {
+                            backStack.clear()
+                            backStack.add(SignIn)
+                            backStack.add(navKey)
+                        }
+                    }
                 }
                 onDispose {
                     DeepLinkHandler.listener = null
@@ -402,6 +420,8 @@ fun App() {
                                     mainViewModel.reconcileAfterLogin()
                                     backStack.clear()
                                     backStack.add(Orders)
+                                    // A link that arrived while signed out, e.g. a tapped reminder.
+                                    mainViewModel.consumePendingPostAuthNavKey()?.let(backStack::add)
                                 },
                                 snackbarHostState = snackbarHostState,
                             )

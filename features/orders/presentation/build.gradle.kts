@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.tsundoku.convention.cmp.feature)
 }
 
+// See androidApp: Robolectric's SDK 37 emulation needs jdk.internal.access exported.
+tasks.withType<Test>().configureEach {
+    jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+}
+
 kotlin {
     sourceSets {
         commonMain {
@@ -33,7 +38,18 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.core.ktx)
+                implementation(libs.androidx.work.runtime)
                 implementation(libs.kscan)
+            }
+        }
+
+        // Robolectric and WorkManager's test helpers run the reminder scheduler against a real
+        // WorkManager on the JVM.
+        getByName("androidHostTest") {
+            dependencies {
+                implementation(libs.robolectric)
+                implementation(libs.androidx.test.ext.junit)
+                implementation(libs.androidx.work.testing)
             }
         }
 
