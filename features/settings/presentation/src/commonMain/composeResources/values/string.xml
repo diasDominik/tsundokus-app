@@ -97,4 +97,16 @@
     <string name="passkeys_never_used">Not used yet</string>
     <string name="error_passkey_enrolment_failed">That passkey could not be added. Try again.</string>
     <string name="error_passkey_unsupported">This device cannot create passkeys.</string>
+
+    <string name="settings_reminders">Reminders</string>
+    <string name="settings_reminders_enabled">Remind me about orders</string>
+    <string name="settings_reminders_overdue">Overdue orders</string>
+    <string name="settings_reminders_overdue_caption">3 days after the expected date, if it hasn't arrived</string>
+    <string name="settings_reminders_delayed">New delivery date reached</string>
+    <string name="settings_reminders_delayed_caption">The morning a delayed order is due</string>
+    <string name="settings_reminders_time">Time</string>
+    <string name="settings_reminders_time_confirm">Set</string>
+    <string name="settings_reminders_time_cancel">Cancel</string>
+    <string name="settings_reminders_blocked">Notifications are turned off for Tsundoku.</string>
+    <string name="settings_reminders_open_settings">Open settings</string>
 </resources>

@@ -3,10 +3,12 @@ package uk.tsundokus.features.settings.presentation.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -16,6 +18,8 @@ import tsundokuapp.features.settings.presentation.generated.resources.settings_c
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.DeviceCurrencyProvider
+import uk.tsundokus.core.domain.preferences.ReminderPreferences
+import uk.tsundokus.core.domain.preferences.ReminderSettings
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.core.presentation.util.UiText
@@ -29,6 +33,7 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val accountService: AccountService,
     private val sessionStorage: SessionStorage,
+    private val reminderPreferences: ReminderPreferences,
     deviceCurrencyProvider: DeviceCurrencyProvider,
 ) : ViewModel() {
     /** The device's own currency and the long-standing three, offered first in the picker. */
@@ -39,11 +44,15 @@ class SettingsViewModel(
     private val eventChannel = Channel<SettingsEvent>()
     val events = eventChannel.receiveAsFlow()
 
+    private val notificationsBlocked = MutableStateFlow(false)
+
     val state: StateFlow<SettingsState> =
         combine(
             sessionStorage.authState,
             settingsRepository.observe(),
-        ) { auth, settings ->
+            reminderPreferences.settings(),
+            notificationsBlocked,
+        ) { auth, settings, reminders, blocked ->
             val user = auth?.user
             SettingsState(
                 accountName = user?.username.orEmpty(),
@@ -51,6 +60,8 @@ class SettingsViewModel(
                 theme = settings.theme,
                 currency = settings.currency,
                 suggestedCurrencies = suggestedCurrencies,
+                reminders = reminders,
+                notificationsBlocked = blocked,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -67,9 +78,46 @@ class SettingsViewModel(
 
     fun onAction(action: SettingsAction) {
         when (action) {
-            is SettingsAction.ChangeTheme -> viewModelScope.launch { settingsRepository.updateTheme(action.theme) }
-            is SettingsAction.ChangeCurrency -> onCurrencyChange(action.currency)
-            SettingsAction.SignOut -> onSignOut()
+            is SettingsAction.ChangeTheme -> {
+                viewModelScope.launch { settingsRepository.updateTheme(action.theme) }
+            }
+
+            is SettingsAction.ChangeCurrency -> {
+                onCurrencyChange(action.currency)
+            }
+
+            is SettingsAction.SetRemindersEnabled -> {
+                updateReminders { it.copy(enabled = action.enabled) }
+            }
+
+            SettingsAction.NotificationsBlocked -> {
+                notificationsBlocked.value = true
+            }
+
+            is SettingsAction.SetOverdueReminders -> {
+                updateReminders { it.copy(overdue = action.enabled) }
+            }
+
+            is SettingsAction.SetDelayedDateReminders -> {
+                updateReminders {
+                    it.copy(
+                        delayedDateReached = action.enabled,
+                    )
+                }
+            }
+
+            is SettingsAction.SetReminderTime -> {
+                updateReminders {
+                    it.copy(
+                        hour = action.hour,
+                        minute = action.minute,
+                    )
+                }
+            }
+
+            SettingsAction.SignOut -> {
+                onSignOut()
+            }
         }
     }
 
@@ -86,6 +134,15 @@ class SettingsViewModel(
                 }.onFailure { error ->
                     eventChannel.send(SettingsEvent.ShowMessage(error.toUiText()))
                 }
+        }
+    }
+
+    private fun updateReminders(change: (ReminderSettings) -> ReminderSettings) {
+        viewModelScope.launch {
+            val updated = change(reminderPreferences.settings().first())
+            // Reminders on means permission was just granted, so any earlier refusal is over.
+            if (updated.enabled) notificationsBlocked.value = false
+            reminderPreferences.update(updated)
         }
     }
 

@@ -181,6 +181,13 @@ internal fun SettingsScreen(
                 suggested = state.suggestedCurrencies,
                 onCurrencySelected = { onAction(SettingsAction.ChangeCurrency(it)) },
             )
+            if (state.remindersSupported) {
+                RemindersCard(
+                    reminders = state.reminders,
+                    notificationsBlocked = state.notificationsBlocked,
+                    onAction = onAction,
+                )
+            }
 
             SectionLabel(stringResource(Res.string.settings_section_about))
             SettingsRow(
@@ -405,7 +412,7 @@ private fun CurrencyCard(
 }
 
 @Composable
-private fun PreferenceCard(
+internal fun PreferenceCard(
     title: String,
     content: @Composable () -> Unit,
 ) {
