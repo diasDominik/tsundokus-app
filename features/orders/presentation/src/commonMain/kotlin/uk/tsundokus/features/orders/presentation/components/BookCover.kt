@@ -3,9 +3,11 @@ package uk.tsundokus.features.orders.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import org.jetbrains.compose.resources.stringResource
 import uk.tsundokus.core.data.AppBuildInfo
+import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 
 /**
@@ -44,14 +47,7 @@ fun BookCover(
     contentDescription: String? = null,
     placeholder: @Composable () -> Unit = {},
 ) {
-    Box(
-        modifier =
-            modifier
-                .size(width, width * COVER_ASPECT)
-                .clip(RoundedCornerShape(width * 0.12f))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center,
-    ) {
+    CoverFrame(width = width, modifier = modifier) {
         placeholder()
         AsyncImage(
             model = coverUrl(isbn),
@@ -87,14 +83,68 @@ fun OrderThumbnail(
             width = 40.dp,
             placeholder = { StatusTile(status = status, size = 28.dp) },
         )
-        Box(
-            modifier =
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .size(12.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                    .clip(CircleShape)
-                    .background(status.accentColor()),
-        )
+        StatusDot(status = status, modifier = Modifier.align(Alignment.BottomEnd))
     }
+}
+
+/**
+ * The leading visual of a series row: the series' cover, or a book placeholder when none of its volumes
+ * has one, with the series' status as a dot in the corner.
+ */
+@Composable
+fun SeriesThumbnail(
+    coverIsbn: String?,
+    status: OrderStatus,
+    modifier: Modifier = Modifier,
+) {
+    val statusLabel = stringResource(status.labelRes)
+    Box(modifier = modifier.semantics { contentDescription = statusLabel }) {
+        if (coverIsbn == null) {
+            CoverFrame(width = 40.dp) {
+                Icon(
+                    imageVector = TsundokuIcons.LibraryBooks,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        } else {
+            BookCover(isbn = coverIsbn, width = 40.dp)
+        }
+        StatusDot(status = status, modifier = Modifier.align(Alignment.BottomEnd))
+    }
+}
+
+/** A cover-shaped slot: fixed size and ratio, rounded, filled until something is drawn over it. */
+@Composable
+private fun CoverFrame(
+    width: Dp,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Box(
+        modifier =
+            modifier
+                .size(width, width * COVER_ASPECT)
+                .clip(RoundedCornerShape(width * 0.12f))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center,
+        content = content,
+    )
+}
+
+/** A status as a small coloured circle, ringed in the surface colour so it stands off a cover. */
+@Composable
+private fun StatusDot(
+    status: OrderStatus,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .size(12.dp)
+                .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                .clip(CircleShape)
+                .background(status.accentColor()),
+    )
 }

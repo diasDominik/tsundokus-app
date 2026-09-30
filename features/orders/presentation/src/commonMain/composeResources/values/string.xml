@@ -70,6 +70,7 @@
 
     <string name="nav_orders">Orders</string>
     <string name="nav_reading">Reading</string>
+    <string name="nav_series">Series</string>
     <string name="nav_add_order">Add order</string>
     <string name="nav_edit_order">Edit order</string>
     <string name="nav_report_delay">Report delay</string>
@@ -189,6 +190,35 @@
     <string name="scanner_error">The camera could not start: %1$s</string>
     <string name="scanner_retry">Try again</string>
     <string name="scanner_dialog_title">Scan the ISBN barcode</string>
+
+    <string name="series_list_title">Series</string>
+    <string name="series_list_search_placeholder">Search series, author, ISBN</string>
+    <string name="series_list_sort">Sort · %1$s</string>
+    <string name="series_sort_recent">Recent</string>
+    <string name="series_sort_title">Title</string>
+    <string name="series_sort_missing">Most missing</string>
+    <string name="series_list_empty_title">No series yet</string>
+    <string name="series_list_empty_caption">Orders you add show up here, grouped by series.</string>
+    <string name="series_list_no_matches_title">No series found</string>
+    <string name="series_list_no_matches_caption">Nothing matches “%1$s”.</string>
+    <string name="series_on_the_way">%1$d on the way</string>
+    <string name="series_missing">missing %1$s</string>
+    <string name="series_missing_more">%1$s +%2$d</string>
+    <string name="series_one_shot">One-shot</string>
+    <string name="series_detail_placeholder_title">Pick a series</string>
+    <string name="series_detail_placeholder_caption">Its volumes show up here.</string>
+    <string name="series_detail_volumes">Volumes</string>
+    <string name="series_detail_extras">Also in this series</string>
+    <string name="series_detail_order_next">Order vol. %1$d</string>
+    <string name="series_detail_gone">This series has no orders any more.</string>
+    <string name="series_volume_received_cd">Volume %1$d, received</string>
+    <string name="series_volume_on_the_way_cd">Volume %1$d, %2$s</string>
+    <string name="series_volume_missing_cd">Volume %1$d, missing</string>
+
+    <plurals name="series_volumes">
+        <item quantity="one">%1$d volume</item>
+        <item quantity="other">%1$d volumes</item>
+    </plurals>
 
     <plurals name="orders_list_unsynced_changes">
         <item quantity="one">%1$d unsynced change</item>

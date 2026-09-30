@@ -337,6 +337,29 @@ class AddEditOrderValidationTest {
         }
 
     @Test
+    fun `a new order for the next volume opens filled in with nothing to discard`() =
+        runTest {
+            val prefill =
+                OrderPrefill(
+                    title = "One Piece",
+                    author = "Eiichiro Oda",
+                    volume = "Vol. 13",
+                    currencyCode = "JPY",
+                )
+            val sut =
+                viewModel(
+                    preferences = FakeAppPreferencesRepository(AppCurrency.GBP),
+                    args = AddEditOrderArgs(prefill = prefill),
+                )
+
+            assertEquals("One Piece", sut.state.value.title)
+            assertEquals("Vol. 13", sut.state.value.volume)
+            // The series' currency, not the settings default.
+            assertEquals("JPY", sut.state.value.currency.code)
+            assertFalse(sut.state.value.isDirty)
+        }
+
+    @Test
     fun `a new order starts in the currency chosen in settings`() =
         runTest {
             val sut = viewModel(preferences = FakeAppPreferencesRepository(AppCurrency.GBP))

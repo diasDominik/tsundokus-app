@@ -9,6 +9,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.nav_orders
 import tsundokuapp.features.orders.presentation.generated.resources.nav_reading
 import tsundokuapp.features.orders.presentation.generated.resources.nav_report_delay
 import tsundokuapp.features.orders.presentation.generated.resources.nav_scan_to_receive
+import tsundokuapp.features.orders.presentation.generated.resources.nav_series
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.presentation.navigation.FabAction
 import uk.tsundokus.core.presentation.navigation.LoggableNavKey
@@ -18,6 +19,7 @@ import uk.tsundokus.core.presentation.navigation.ScreenWithTopBar
 import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.navigation.TopLevelTab
 import uk.tsundokus.core.presentation.util.UiText
+import uk.tsundokus.features.orders.presentation.addeditorder.OrderPrefill
 
 @Serializable
 data object Orders : LoggableNavKey(), TopLevelTab, ScreenWithFab {
@@ -44,14 +46,40 @@ data object ReadingList : LoggableNavKey(), TopLevelTab {
 }
 
 @Serializable
+data object SeriesList : LoggableNavKey(), TopLevelTab {
+    override val icon: ImageVector
+        @Composable
+        get() = TsundokuIcons.LibraryBooks
+    override val selectedIcon: ImageVector
+        @Composable
+        get() = TsundokuIcons.LibraryBooks
+    override val label: UiText = UiText.Resource(Res.string.nav_series)
+}
+
+/** One series, by its key (see seriesKey): the title with case, punctuation and volume number dropped. */
+@Serializable
+data class SeriesDetail(val seriesKey: String) : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
+    override val topBarTitle: UiText get() = UiText.DynamicString("")
+    override val topBarAction: TopBarAction get() = TopBarAction.Back
+}
+
+@Serializable
 data class OrderDetail(val orderId: String) : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.DynamicString("")
     override val topBarAction: TopBarAction get() = TopBarAction.Back
 }
 
-/** A new order; [isbn] is set when it was started from a scanned barcode nothing matched. */
+/**
+ * A new order. [isbn] is set when it was started from a scanned barcode nothing matched, [prefill]
+ * when it continues a series.
+ */
 @Serializable
-data class AddOrder(val isbn: String = "") : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
+data class AddOrder(
+    val isbn: String = "",
+    val prefill: OrderPrefill? = null,
+) : LoggableNavKey(),
+    LoggedIn,
+    ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_add_order)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
 }

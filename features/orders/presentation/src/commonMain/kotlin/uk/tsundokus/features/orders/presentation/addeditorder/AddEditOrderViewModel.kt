@@ -18,6 +18,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_deleted
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_added
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_saved_updated
+import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.domain.preferences.AppPreferencesRepository
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
@@ -65,7 +66,26 @@ private val DATE_FIELDS =
 data class AddEditOrderArgs(
     val orderId: String? = null,
     val initialIsbn: String = "",
+    val prefill: OrderPrefill? = null,
 )
+
+/**
+ * The form as it opens: blank for a new order, with a scanned ISBN or a series' next volume already in
+ * it where the route carries one. All of it counts as untouched, so leaving asks nothing.
+ */
+private fun initialState(args: AddEditOrderArgs): AddEditOrderState {
+    val prefill = args.prefill ?: OrderPrefill()
+    return AddEditOrderState(
+        isEdit = args.orderId != null,
+        isbn = args.initialIsbn,
+        title = prefill.title,
+        author = prefill.author,
+        publisher = prefill.publisher,
+        store = prefill.store,
+        volume = prefill.volume,
+        currency = prefill.currencyCode.takeIf(String::isNotBlank)?.let(AppCurrency::fromCode) ?: AppCurrency.EUR,
+    )
+}
 
 @KoinViewModel
 class AddEditOrderViewModel(
@@ -78,7 +98,7 @@ class AddEditOrderViewModel(
 
     // A new order started from a scan arrives with its ISBN already read; it counts as part of the
     // blank form, so leaving without touching anything else asks nothing.
-    private val _state = MutableStateFlow(AddEditOrderState(isEdit = orderId != null, isbn = args.initialIsbn))
+    private val _state = MutableStateFlow(initialState(args))
     val state = _state.asStateFlow()
 
     private val eventChannel = Channel<AddEditOrderEvent>()
@@ -117,11 +137,14 @@ class AddEditOrderViewModel(
                 populate(orderRepository.getOrderById(orderId).filterNotNull().first())
             }
         } else {
-            // A new order starts in the currency the user picked in settings, not a hardcoded one.
-            viewModelScope.launch {
-                val currency = appPreferencesRepository.currency().first()
-                _state.update { it.copy(currency = currency) }
-                markPristine()
+            // A new order starts in the currency the user picked in settings, not a hardcoded one —
+            // unless it continues a series, which keeps that series' currency.
+            if (args.prefill?.currencyCode.isNullOrBlank()) {
+                viewModelScope.launch {
+                    val currency = appPreferencesRepository.currency().first()
+                    _state.update { it.copy(currency = currency) }
+                    markPristine()
+                }
             }
             // Opened from a scan: the ISBN is already here, so fill in the rest straight away.
             if (args.initialIsbn.isNotBlank()) lookUpBook(delayMillis = 0)

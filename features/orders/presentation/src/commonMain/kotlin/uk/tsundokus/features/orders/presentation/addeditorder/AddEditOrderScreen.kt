@@ -117,7 +117,7 @@ fun AddEditOrderRoot(
     snackbar: SnackbarController,
     viewModel: AddEditOrderViewModel =
         koinViewModel(
-            key = args.orderId ?: "add:${args.initialIsbn}",
+            key = args.orderId ?: "add:${args.hashCode()}",
             parameters = { parametersOf(args) },
         ),
 ) {
