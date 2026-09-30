@@ -22,7 +22,7 @@ sealed interface IsbnMatch {
         private val OPEN_STATUSES = setOf(OrderStatus.ORDERED, OrderStatus.SHIPPED, OrderStatus.DELAYED)
 
         /** Matches [isbn], already normalised to ISBN-13 digits, against [orders]. */
-        fun of(
+        fun forIsbn(
             isbn: String,
             orders: List<Order>,
         ): IsbnMatch {

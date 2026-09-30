@@ -55,7 +55,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
@@ -100,6 +99,7 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
+import uk.tsundokus.features.orders.presentation.components.EmptyState
 import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
@@ -622,37 +622,6 @@ private fun NoMatchesState(
             },
             style = TsundokuButtonStyle.Secondary,
         )
-    }
-}
-
-@Composable
-private fun EmptyState(
-    title: String,
-    caption: String,
-    modifier: Modifier = Modifier,
-    action: @Composable (() -> Unit)? = null,
-) {
-    Column(
-        modifier = modifier.padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-        )
-        VerticalSpacer(8.dp)
-        Text(
-            text = caption,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        action?.let {
-            VerticalSpacer(16.dp)
-            it()
-        }
     }
 }
 
