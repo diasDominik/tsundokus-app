@@ -61,6 +61,18 @@ fun epochMillisFromIso(iso: String): Long? {
     return epochDayFromIso(year, month, day) * MILLIS_PER_DAY
 }
 
+/**
+ * [iso] moved by [days] (negative goes back), or null when [iso] is not a real date. Checked with
+ * [parseIsoDate] first: [epochMillisFromIso] alone would read "2026-02-29" as 1 March.
+ */
+fun isoPlusDays(
+    iso: String,
+    days: Int,
+): String? {
+    if (parseIsoDate(iso) == null) return null
+    return epochMillisFromIso(iso)?.let { isoFromEpochMillis(it + days * MILLIS_PER_DAY) }
+}
+
 /** Current epoch milliseconds — the [uk.tsundokus.features.orders.domain.models.Order] RECENT sort key. */
 fun nowEpochMillis(): Long = Clock.System.now().toEpochMilliseconds()
 

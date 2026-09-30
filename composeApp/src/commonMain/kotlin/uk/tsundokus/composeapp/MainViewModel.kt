@@ -10,6 +10,7 @@ import uk.tsundokus.core.domain.preferences.CurrencySync
 import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.domain.sync.LocalDataResetter
 import uk.tsundokus.features.orders.data.sync.OrderRealtimeSync
+import uk.tsundokus.features.orders.presentation.reminders.ReminderSync
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emitAll
@@ -29,6 +30,7 @@ class MainViewModel(
     private val localDataResetter: LocalDataResetter,
     appPreferencesRepository: AppPreferencesRepository,
     orderRealtimeSync: OrderRealtimeSync,
+    reminderSync: ReminderSync,
     currencySync: CurrencySync,
 ) : ViewModel() {
     init {
@@ -37,6 +39,8 @@ class MainViewModel(
         // Hold the realtime order socket for the whole app lifetime; it connects while signed in and
         // reconnects on drops. Idempotent, so a second start() is a no-op.
         orderRealtimeSync.start()
+        // Keeps the scheduled reminders in step with the orders and the reminder settings.
+        reminderSync.start()
     }
 
     // Stays Loading until the cache-aware restore resolves, so the UI never

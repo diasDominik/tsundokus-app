@@ -215,6 +215,13 @@
     <string name="series_volume_on_the_way_cd">Volume %1$d, %2$s</string>
     <string name="series_volume_missing_cd">Volume %1$d, missing</string>
 
+    <string name="reminder_overdue_title">Still waiting for %1$s?</string>
+    <string name="reminder_overdue_body">It was expected on %1$s. Tap to report a delay or mark it received.</string>
+    <string name="reminder_delayed_title">%1$s was due today</string>
+    <string name="reminder_delayed_body">Its delivery was moved to today. Tap to check on it.</string>
+    <string name="reminder_channel_name">Reminders</string>
+    <string name="reminder_channel_description">Orders that are overdue or reach their new delivery date</string>
+
     <plurals name="series_volumes">
         <item quantity="one">%1$d volume</item>
         <item quantity="other">%1$d volumes</item>

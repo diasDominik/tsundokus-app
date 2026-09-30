@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Scanning a book's ISBN barcode to mark its order received. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Reminders for overdue and delayed orders; asked for only when they are switched on. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Not required: without a camera the ISBN is typed, so the app still installs there. -->
     <uses-feature
         android:name="android.hardware.camera"

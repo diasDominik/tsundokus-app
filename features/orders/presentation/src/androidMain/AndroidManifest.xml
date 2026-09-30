@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <application>
+        <!-- Reschedules reminders when the time zone or clock changes. Both broadcasts are exempt from
+             the background limits on implicit broadcasts, so a manifest receiver still gets them. -->
+        <receiver
+            android:name="uk.tsundokus.features.orders.presentation.reminders.ReminderRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
+    </application>
+
 </manifest>
