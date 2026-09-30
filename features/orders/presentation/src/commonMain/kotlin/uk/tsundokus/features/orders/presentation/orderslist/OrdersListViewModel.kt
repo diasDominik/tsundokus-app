@@ -22,6 +22,7 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
+import uk.tsundokus.features.orders.domain.models.matchesQuery
 import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.domain.preferences.OrderSortPreference
 import uk.tsundokus.features.orders.domain.preferences.OrdersPreferences
@@ -159,17 +160,6 @@ private fun buildState(
         selectedOrderId = current.selectedOrderId ?: sorted.firstOrNull()?.id,
         counts = counts,
     )
-}
-
-private fun Order.matchesQuery(query: String): Boolean {
-    if (query.isBlank()) return true
-    val needle = query.trim()
-    // Typed with hyphens or not, an ISBN finds its order; it is stored without them.
-    val isbnNeedle = needle.filterNot { it == '-' || it == ' ' }
-    return title.contains(needle, ignoreCase = true) ||
-        author.contains(needle, ignoreCase = true) ||
-        publisher.contains(needle, ignoreCase = true) ||
-        (isbnNeedle.isNotEmpty() && isbn.contains(isbnNeedle, ignoreCase = true))
 }
 
 private fun comparatorFor(preference: OrderSortPreference): Comparator<Order> {

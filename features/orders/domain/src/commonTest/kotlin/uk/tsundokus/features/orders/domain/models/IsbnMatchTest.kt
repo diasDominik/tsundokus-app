@@ -18,7 +18,7 @@ class IsbnMatchTest {
     @Test
     fun `the one open order with the ISBN is receivable`() {
         val shipped = order("a", ISBN, OrderStatus.SHIPPED)
-        val match = IsbnMatch.of(ISBN, listOf(shipped, order("b", OTHER_ISBN)))
+        val match = IsbnMatch.forIsbn(ISBN, listOf(shipped, order("b", OTHER_ISBN)))
 
         assertEquals(IsbnMatch.Receivable(shipped), match)
     }
@@ -27,7 +27,7 @@ class IsbnMatchTest {
     fun `a delayed order is still open`() {
         val delayed = order("a", ISBN, OrderStatus.DELAYED)
 
-        assertEquals(IsbnMatch.Receivable(delayed), IsbnMatch.of(ISBN, listOf(delayed)))
+        assertEquals(IsbnMatch.Receivable(delayed), IsbnMatch.forIsbn(ISBN, listOf(delayed)))
     }
 
     @Test
@@ -35,7 +35,7 @@ class IsbnMatchTest {
         val received = order("a", ISBN, OrderStatus.RECEIVED)
         val reorder = order("b", ISBN, OrderStatus.ORDERED)
 
-        assertEquals(IsbnMatch.Receivable(reorder), IsbnMatch.of(ISBN, listOf(received, reorder)))
+        assertEquals(IsbnMatch.Receivable(reorder), IsbnMatch.forIsbn(ISBN, listOf(received, reorder)))
     }
 
     @Test
@@ -43,7 +43,7 @@ class IsbnMatchTest {
         val newer = order("a", ISBN, createdAt = 2L)
         val older = order("b", ISBN, createdAt = 1L)
 
-        assertEquals(IsbnMatch.Ambiguous(listOf(older, newer)), IsbnMatch.of(ISBN, listOf(newer, older)))
+        assertEquals(IsbnMatch.Ambiguous(listOf(older, newer)), IsbnMatch.forIsbn(ISBN, listOf(newer, older)))
     }
 
     @Test
@@ -51,7 +51,7 @@ class IsbnMatchTest {
         val cancelled = order("a", ISBN, OrderStatus.CANCELLED, createdAt = 1L)
         val received = order("b", ISBN, OrderStatus.RECEIVED, createdAt = 2L)
 
-        assertEquals(IsbnMatch.AlreadyReceived(received), IsbnMatch.of(ISBN, listOf(cancelled, received)))
+        assertEquals(IsbnMatch.AlreadyReceived(received), IsbnMatch.forIsbn(ISBN, listOf(cancelled, received)))
     }
 
     @Test
@@ -63,7 +63,7 @@ class IsbnMatchTest {
 
         assertEquals(
             IsbnMatch.NoMatch(listOf(apple, zebra)),
-            IsbnMatch.of(ISBN, listOf(zebra, apple, closed, otherIsbn)),
+            IsbnMatch.forIsbn(ISBN, listOf(zebra, apple, closed, otherIsbn)),
         )
     }
 }

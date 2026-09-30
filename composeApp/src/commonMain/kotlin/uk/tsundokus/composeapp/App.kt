@@ -89,6 +89,8 @@ import uk.tsundokus.features.orders.presentation.navigation.Orders
 import uk.tsundokus.features.orders.presentation.navigation.ReadingList
 import uk.tsundokus.features.orders.presentation.navigation.ReportDelay
 import uk.tsundokus.features.orders.presentation.navigation.ScanToReceive
+import uk.tsundokus.features.orders.presentation.navigation.SeriesDetail
+import uk.tsundokus.features.orders.presentation.navigation.SeriesList
 import uk.tsundokus.features.orders.presentation.navigation.ordersGraph
 import uk.tsundokus.features.orders.presentation.navigation.ordersSerializersModule
 import uk.tsundokus.features.settings.presentation.navigation.Settings
@@ -216,7 +218,7 @@ fun App() {
                 }
             }
 
-            val topLevelTabs = remember { listOf(Orders, ReadingList, Settings) }
+            val topLevelTabs = remember { listOf(Orders, SeriesList, ReadingList, Settings) }
             val snackbarHostState = remember { SnackbarHostState() }
             // Lives with the shell, not with a screen, so a screen can post a message on its way out.
             val snackbar = rememberSnackbarController(snackbarHostState)
@@ -341,8 +343,9 @@ fun App() {
                                     ordersGraph(
                                         backStack = backStack,
                                         onOpenOrder = { backStack.add(OrderDetail(it)) },
-                                        onAddOrder = { isbn -> backStack.add(AddOrder(isbn)) },
+                                        onAddOrder = { route -> backStack.add(route) },
                                         onScanToReceive = { backStack.add(ScanToReceive) },
+                                        onOpenSeries = { backStack.add(SeriesDetail(it)) },
                                         onEditOrder = { backStack.add(EditOrder(it)) },
                                         onReportDelay = { backStack.add(ReportDelay(it)) },
                                         onBack = { backStack.removeLastOrNull() },

@@ -14,12 +14,16 @@ import uk.tsundokus.features.orders.presentation.orderslist.OrdersListRoot
 import uk.tsundokus.features.orders.presentation.readinglist.ReadingListRoot
 import uk.tsundokus.features.orders.presentation.reportdelay.ReportDelayRoot
 import uk.tsundokus.features.orders.presentation.scantoreceive.ScanToReceiveRoot
+import uk.tsundokus.features.orders.presentation.seriesdetail.SeriesDetailRoot
+import uk.tsundokus.features.orders.presentation.serieslist.SeriesListRoot
 
 val ordersSerializersModule =
     SerializersModule {
         polymorphic(NavKey::class) {
             subclass(Orders::class)
             subclass(ReadingList::class)
+            subclass(SeriesList::class)
+            subclass(SeriesDetail::class)
             subclass(OrderDetail::class)
             subclass(AddOrder::class)
             subclass(EditOrder::class)
@@ -35,8 +39,9 @@ val ordersSerializersModule =
 fun EntryProviderScope<NavKey>.ordersGraph(
     backStack: NavBackStack<NavKey>,
     onOpenOrder: (String) -> Unit,
-    onAddOrder: (isbn: String) -> Unit,
+    onAddOrder: (AddOrder) -> Unit,
     onScanToReceive: () -> Unit,
+    onOpenSeries: (String) -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
     onBack: () -> Unit,
@@ -59,6 +64,23 @@ fun EntryProviderScope<NavKey>.ordersGraph(
         )
     }
 
+    entry<SeriesList> {
+        SeriesListRoot(
+            onOpenSeries = onOpenSeries,
+            onOpenOrder = onOpenOrder,
+            onOrderVolume = { prefill -> onAddOrder(AddOrder(prefill = prefill)) },
+            snackbar = snackbar,
+        )
+    }
+
+    entry<SeriesDetail> { route ->
+        SeriesDetailRoot(
+            seriesKey = route.seriesKey,
+            onOpenOrder = onOpenOrder,
+            onOrderVolume = { prefill -> onAddOrder(AddOrder(prefill = prefill)) },
+        )
+    }
+
     entry<OrderDetail> { route ->
         OrderDetailRoot(
             orderId = route.orderId,
@@ -72,7 +94,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     entry<AddOrder> { route ->
         AddEditOrderRoot(
             navKey = route,
-            args = AddEditOrderArgs(initialIsbn = route.isbn),
+            args = AddEditOrderArgs(initialIsbn = route.isbn, prefill = route.prefill),
             onSaved = onBack,
             onClose = onBack,
             snackbar = snackbar,
@@ -92,7 +114,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     entry<ScanToReceive> {
         ScanToReceiveRoot(
             onOpenOrder = onOpenOrder,
-            onAddOrder = onAddOrder,
+            onAddOrder = { isbn -> onAddOrder(AddOrder(isbn = isbn)) },
             snackbar = snackbar,
         )
     }

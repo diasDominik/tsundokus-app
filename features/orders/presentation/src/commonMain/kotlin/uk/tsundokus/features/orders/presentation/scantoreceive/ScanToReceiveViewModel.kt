@@ -90,7 +90,7 @@ class ScanToReceiveViewModel(
         _state.update { it.copy(lastIsbn = isbn, isBusy = true) }
         viewModelScope.launch {
             val orders = orderRepository.getOrders().first()
-            when (val match = IsbnMatch.of(isbn, orders)) {
+            when (val match = IsbnMatch.forIsbn(isbn, orders)) {
                 is IsbnMatch.Receivable -> {
                     receive(match.order, isbn)
                 }

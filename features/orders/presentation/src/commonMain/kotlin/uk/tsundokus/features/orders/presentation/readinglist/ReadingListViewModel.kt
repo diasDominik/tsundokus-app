@@ -20,6 +20,7 @@ import uk.tsundokus.core.presentation.util.toUiText
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.domain.models.matchesQuery
 import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.presentation.components.fullLabelRes
 import kotlin.time.Duration.Companion.seconds
@@ -77,15 +78,6 @@ class ReadingListViewModel(
                 }
         }
     }
-}
-
-/** Same fields the orders list searches, so one habit works on both screens. */
-private fun Order.matchesQuery(query: String): Boolean {
-    if (query.isBlank()) return true
-    val needle = query.trim()
-    return title.contains(needle, ignoreCase = true) ||
-        author.contains(needle, ignoreCase = true) ||
-        publisher.contains(needle, ignoreCase = true)
 }
 
 private fun List<Order>.groupForShelf(): Map<ReadState, List<Order>> =
