@@ -2,6 +2,8 @@ package uk.tsundokus.composeapp.deeplink
 
 import uk.tsundokus.features.authentication.presentation.navigation.EmailVerification
 import uk.tsundokus.features.authentication.presentation.navigation.ResetPassword
+import uk.tsundokus.features.orders.presentation.navigation.OrderDetail
+import uk.tsundokus.features.orders.presentation.navigation.orderDeepLink
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -48,6 +50,13 @@ class DeepLinkMatcherTest {
         val result = matchers.matchOrNull("http://localhost:8080/api/auth/verify?token=dev-token")
 
         assertEquals(EmailVerification(token = "dev-token"), result)
+    }
+
+    @Test
+    fun orderLink_fromReminder_resolvesToOrderDetail() {
+        val result = matchers.matchOrNull(orderDeepLink("0b9a6c1e-5f1a-4e5b-9c1d-2a3b4c5d6e7f"))
+
+        assertEquals(OrderDetail(orderId = "0b9a6c1e-5f1a-4e5b-9c1d-2a3b4c5d6e7f"), result)
     }
 
     @Test
