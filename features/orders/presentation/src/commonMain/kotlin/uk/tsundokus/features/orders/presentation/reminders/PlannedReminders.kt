@@ -1,10 +1,10 @@
 package uk.tsundokus.features.orders.presentation.reminders
 
 import uk.tsundokus.core.domain.preferences.ReminderSettings
+import uk.tsundokus.features.orders.domain.dates.isoPlusDays
+import uk.tsundokus.features.orders.domain.dates.parseIsoDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
-import uk.tsundokus.features.orders.presentation.components.isoPlusDays
-import uk.tsundokus.features.orders.presentation.components.parseIsoDate
 
 enum class ReminderKind {
     /** Three days past the expected date and still not received. */

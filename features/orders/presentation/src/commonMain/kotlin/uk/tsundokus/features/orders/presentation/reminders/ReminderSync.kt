@@ -12,8 +12,8 @@ import org.koin.core.annotation.Single
 import uk.tsundokus.core.data.di.APPLICATION_SCOPE
 import uk.tsundokus.core.domain.auth.SessionStorage
 import uk.tsundokus.core.domain.preferences.ReminderPreferences
+import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.order.OrderRepository
-import uk.tsundokus.features.orders.presentation.components.todayIso
 
 /**
  * Keeps the scheduled reminders in step with the orders and the reminder settings. Everything is

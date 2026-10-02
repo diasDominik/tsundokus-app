@@ -18,6 +18,7 @@ import uk.tsundokus.core.domain.sync.LastServerContactStore
 import uk.tsundokus.core.domain.sync.PendingWrites
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.presentation.util.toUiText
+import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
@@ -27,7 +28,6 @@ import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.domain.preferences.OrderSortPreference
 import uk.tsundokus.features.orders.domain.preferences.OrdersPreferences
 import uk.tsundokus.features.orders.presentation.components.arrivalDate
-import uk.tsundokus.features.orders.presentation.components.todayIso
 import kotlin.time.Duration.Companion.seconds
 
 @KoinViewModel

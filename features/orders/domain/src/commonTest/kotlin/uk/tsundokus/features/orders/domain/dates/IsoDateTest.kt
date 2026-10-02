@@ -1,4 +1,4 @@
-package uk.tsundokus.features.orders.presentation.components
+package uk.tsundokus.features.orders.domain.dates
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
