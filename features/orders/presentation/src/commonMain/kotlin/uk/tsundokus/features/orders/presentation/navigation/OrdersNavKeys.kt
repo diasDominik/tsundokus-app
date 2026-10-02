@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.nav_add_order
 import tsundokuapp.features.orders.presentation.generated.resources.nav_edit_order
+import tsundokuapp.features.orders.presentation.generated.resources.nav_export_orders
 import tsundokuapp.features.orders.presentation.generated.resources.nav_orders
 import tsundokuapp.features.orders.presentation.generated.resources.nav_reading
 import tsundokuapp.features.orders.presentation.generated.resources.nav_report_delay
@@ -106,6 +107,13 @@ data class EditOrder(val orderId: String) : LoggableNavKey(), LoggedIn, ScreenWi
 data object ScanToReceive : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_scan_to_receive)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
+}
+
+/** Saving every order as a CSV or JSON file; reached from Settings. */
+@Serializable
+data object ExportOrders : LoggableNavKey(), LoggedIn, ScreenWithTopBar {
+    override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_export_orders)
+    override val topBarAction: TopBarAction get() = TopBarAction.Back
 }
 
 @Serializable

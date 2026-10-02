@@ -12,6 +12,9 @@
     <!-- Settings screen -->
     <string name="settings_section_account">ACCOUNT</string>
     <string name="settings_section_preferences">PREFERENCES</string>
+    <string name="settings_section_your_data">YOUR DATA</string>
+    <string name="settings_export">Export orders</string>
+    <string name="settings_export_caption">Save your orders as a CSV or JSON file</string>
     <string name="settings_section_about">ABOUT</string>
     <string name="settings_change_email">Change email</string>
     <string name="settings_change_email_caption">Update your email address</string>

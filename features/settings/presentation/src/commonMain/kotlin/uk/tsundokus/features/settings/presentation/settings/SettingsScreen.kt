@@ -47,6 +47,8 @@ import tsundokuapp.features.settings.presentation.generated.resources.settings_c
 import tsundokuapp.features.settings.presentation.generated.resources.settings_delete_account
 import tsundokuapp.features.settings.presentation.generated.resources.settings_delete_account_caption
 import tsundokuapp.features.settings.presentation.generated.resources.settings_edit
+import tsundokuapp.features.settings.presentation.generated.resources.settings_export
+import tsundokuapp.features.settings.presentation.generated.resources.settings_export_caption
 import tsundokuapp.features.settings.presentation.generated.resources.settings_footer
 import tsundokuapp.features.settings.presentation.generated.resources.settings_oss_licenses
 import tsundokuapp.features.settings.presentation.generated.resources.settings_oss_licenses_caption
@@ -57,6 +59,7 @@ import tsundokuapp.features.settings.presentation.generated.resources.settings_p
 import tsundokuapp.features.settings.presentation.generated.resources.settings_section_about
 import tsundokuapp.features.settings.presentation.generated.resources.settings_section_account
 import tsundokuapp.features.settings.presentation.generated.resources.settings_section_preferences
+import tsundokuapp.features.settings.presentation.generated.resources.settings_section_your_data
 import tsundokuapp.features.settings.presentation.generated.resources.settings_sign_out
 import tsundokuapp.features.settings.presentation.generated.resources.settings_theme_dark
 import tsundokuapp.features.settings.presentation.generated.resources.settings_theme_light
@@ -85,6 +88,7 @@ fun SettingsRoot(
     onDeleteAccount: () -> Unit,
     onAbout: () -> Unit,
     onLicenses: () -> Unit,
+    onExport: () -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
@@ -114,6 +118,7 @@ fun SettingsRoot(
         onDeleteAccount = onDeleteAccount,
         onAbout = onAbout,
         onLicenses = onLicenses,
+        onExport = onExport,
         modifier = modifier,
     )
 }
@@ -129,6 +134,7 @@ internal fun SettingsScreen(
     onDeleteAccount: () -> Unit,
     onAbout: () -> Unit,
     onLicenses: () -> Unit,
+    onExport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -188,6 +194,14 @@ internal fun SettingsScreen(
                     onAction = onAction,
                 )
             }
+
+            SectionLabel(stringResource(Res.string.settings_section_your_data))
+            SettingsRow(
+                icon = TsundokuIcons.Download,
+                title = stringResource(Res.string.settings_export),
+                subtitle = stringResource(Res.string.settings_export_caption),
+                onClick = onExport,
+            )
 
             SectionLabel(stringResource(Res.string.settings_section_about))
             SettingsRow(
@@ -541,6 +555,7 @@ private fun SettingsScreenPreview() {
                 onDeleteAccount = {},
                 onAbout = {},
                 onLicenses = {},
+                onExport = {},
             )
         }
     }
