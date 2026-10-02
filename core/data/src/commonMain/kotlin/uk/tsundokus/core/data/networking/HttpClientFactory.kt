@@ -15,6 +15,7 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.header
 import io.ktor.client.statement.request
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -51,13 +52,16 @@ class HttpClientFactory(
                 logger =
                     object : Logger {
                         override fun log(message: String) {
-                            tsundokuLogger.debug(TAG, message)
+                            tsundokuLogger.debug(TAG, redactSecrets(message))
                         }
                     }
                 level = if (BuildKonfig.IS_DEBUG) LogLevel.ALL else LogLevel.INFO
+                sanitizeHeader { header ->
+                    header == HttpHeaders.Authorization || header.equals(API_KEY_HEADER, ignoreCase = true)
+                }
             }
             defaultRequest {
-                header("x-api-key", BuildKonfig.API_KEY)
+                header(API_KEY_HEADER, BuildKonfig.API_KEY)
                 contentType(ContentType.Application.Json)
             }
 
