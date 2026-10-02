@@ -91,6 +91,7 @@ import uk.tsundokus.features.orders.presentation.navigation.ReportDelay
 import uk.tsundokus.features.orders.presentation.navigation.ScanToReceive
 import uk.tsundokus.features.orders.presentation.navigation.SeriesDetail
 import uk.tsundokus.features.orders.presentation.navigation.SeriesList
+import uk.tsundokus.features.orders.presentation.navigation.Stats
 import uk.tsundokus.features.orders.presentation.navigation.ordersGraph
 import uk.tsundokus.features.orders.presentation.navigation.ordersSerializersModule
 import uk.tsundokus.features.settings.presentation.navigation.Settings
@@ -236,7 +237,17 @@ fun App() {
                 }
             }
 
-            val topLevelTabs = remember { listOf(Orders, SeriesList, ReadingList, Settings) }
+            val topLevelTabs = remember { listOf(Orders, SeriesList, ReadingList, Stats, Settings) }
+
+            // Drop the whole current tab section, not just the tab key — otherwise its detail
+            // entries outlive it and resurface full-screen when backing out of the new tab.
+            fun openTab(tab: NavKey) {
+                val tabIndex = backStack.indexOfLast { it is TopLevelTab }
+                if (tabIndex >= 0) {
+                    while (backStack.size > tabIndex) backStack.removeLastOrNull()
+                }
+                backStack.add(tab)
+            }
             val snackbarHostState = remember { SnackbarHostState() }
             // Lives with the shell, not with a screen, so a screen can post a message on its way out.
             val snackbar = rememberSnackbarController(snackbarHostState)
@@ -300,16 +311,7 @@ fun App() {
                             val selected = activeTab == tab
                             NavigationSuiteItem(
                                 selected = selected,
-                                onClick = {
-                                    // Drop the whole current tab section, not just the tab key —
-                                    // otherwise its detail entries outlive it and resurface
-                                    // full-screen when backing out of the new tab.
-                                    val tabIndex = backStack.indexOfLast { it is TopLevelTab }
-                                    if (tabIndex >= 0) {
-                                        while (backStack.size > tabIndex) backStack.removeLastOrNull()
-                                    }
-                                    backStack.add(tab)
-                                },
+                                onClick = { openTab(tab) },
                                 icon = {
                                     Icon(
                                         imageVector = if (selected) tab.selectedIcon else tab.icon,
@@ -366,6 +368,7 @@ fun App() {
                                         onOpenSeries = { backStack.add(SeriesDetail(it)) },
                                         onEditOrder = { backStack.add(EditOrder(it)) },
                                         onReportDelay = { backStack.add(ReportDelay(it)) },
+                                        onOpenReading = { openTab(ReadingList) },
                                         onBack = { backStack.removeLastOrNull() },
                                         snackbar = snackbar,
                                     )

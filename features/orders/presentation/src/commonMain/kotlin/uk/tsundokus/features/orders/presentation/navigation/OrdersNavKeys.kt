@@ -10,6 +10,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.nav_reading
 import tsundokuapp.features.orders.presentation.generated.resources.nav_report_delay
 import tsundokuapp.features.orders.presentation.generated.resources.nav_scan_to_receive
 import tsundokuapp.features.orders.presentation.generated.resources.nav_series
+import tsundokuapp.features.orders.presentation.generated.resources.nav_stats
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.presentation.navigation.FabAction
 import uk.tsundokus.core.presentation.navigation.LoggableNavKey
@@ -54,6 +55,17 @@ data object SeriesList : LoggableNavKey(), TopLevelTab {
         @Composable
         get() = TsundokuIcons.LibraryBooks
     override val label: UiText = UiText.Resource(Res.string.nav_series)
+}
+
+@Serializable
+data object Stats : LoggableNavKey(), TopLevelTab {
+    override val icon: ImageVector
+        @Composable
+        get() = TsundokuIcons.BarChart
+    override val selectedIcon: ImageVector
+        @Composable
+        get() = TsundokuIcons.BarChart
+    override val label: UiText = UiText.Resource(Res.string.nav_stats)
 }
 
 /** One series, by its key (see seriesKey): the title with case, punctuation and volume number dropped. */

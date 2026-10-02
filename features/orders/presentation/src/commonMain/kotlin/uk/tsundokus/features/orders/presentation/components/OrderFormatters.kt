@@ -13,6 +13,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_row_or
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_received
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_received_on
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_releases
+import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.presentation.date.formatMediumDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
@@ -37,8 +38,14 @@ fun fmtDate(iso: String): String {
     return formatMediumDate(year, month, day)
 }
 
-/** The amount in its currency, with that currency's decimals and symbol: `19.99 €`, `$19.99`, `¥1200`. */
-fun priceLabel(order: Order): String = order.currency.format(formatAmount(order.price, order.currency.decimals))
+/** The order's price in its currency; see [amountLabel]. */
+fun priceLabel(order: Order): String = amountLabel(order.price, order.currency)
+
+/** [amount] with [currency]'s decimals and symbol: `19.99 €`, `$19.99`, `¥1200`. */
+fun amountLabel(
+    amount: Double,
+    currency: AppCurrency,
+): String = currency.format(formatAmount(amount, currency.decimals))
 
 /** [value] with exactly [decimals] fraction digits, rounded; no grouping, "." as the separator. */
 internal fun formatAmount(
