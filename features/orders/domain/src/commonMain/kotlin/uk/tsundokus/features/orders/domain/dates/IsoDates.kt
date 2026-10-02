@@ -65,6 +65,17 @@ fun isoPlusDays(
     return epochMillisFromIso(iso)?.let { isoFromEpochMillis(it + days * MILLIS_PER_DAY) }
 }
 
+/** Whole days from [from] to [to] (negative when [to] comes first), or null unless both are real dates. */
+fun daysBetween(
+    from: String,
+    to: String,
+): Int? {
+    if (parseIsoDate(from) == null || parseIsoDate(to) == null) return null
+    val start = epochMillisFromIso(from) ?: return null
+    val end = epochMillisFromIso(to) ?: return null
+    return ((end - start) / MILLIS_PER_DAY).toInt()
+}
+
 /** Current epoch milliseconds — the [uk.tsundokus.features.orders.domain.models.Order] RECENT sort key. */
 fun nowEpochMillis(): Long = Clock.System.now().toEpochMilliseconds()
 
