@@ -75,6 +75,8 @@ object TsundokuIcons {
                 "9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z",
         )
 
+    val BarChart: ImageVector = icon("BarChart", "M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z")
+
     val Search: ImageVector =
         icon(
             "Search",
