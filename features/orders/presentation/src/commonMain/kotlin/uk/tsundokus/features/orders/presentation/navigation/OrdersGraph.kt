@@ -16,6 +16,7 @@ import uk.tsundokus.features.orders.presentation.reportdelay.ReportDelayRoot
 import uk.tsundokus.features.orders.presentation.scantoreceive.ScanToReceiveRoot
 import uk.tsundokus.features.orders.presentation.seriesdetail.SeriesDetailRoot
 import uk.tsundokus.features.orders.presentation.serieslist.SeriesListRoot
+import uk.tsundokus.features.orders.presentation.stats.StatsRoot
 
 val ordersSerializersModule =
     SerializersModule {
@@ -24,6 +25,7 @@ val ordersSerializersModule =
             subclass(ReadingList::class)
             subclass(SeriesList::class)
             subclass(SeriesDetail::class)
+            subclass(Stats::class)
             subclass(OrderDetail::class)
             subclass(AddOrder::class)
             subclass(EditOrder::class)
@@ -44,6 +46,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     onOpenSeries: (String) -> Unit,
     onEditOrder: (String) -> Unit,
     onReportDelay: (String) -> Unit,
+    onOpenReading: () -> Unit,
     onBack: () -> Unit,
     snackbar: SnackbarController,
 ) {
@@ -69,6 +72,13 @@ fun EntryProviderScope<NavKey>.ordersGraph(
             onOpenSeries = onOpenSeries,
             onOpenOrder = onOpenOrder,
             onOrderVolume = { prefill -> onAddOrder(AddOrder(prefill = prefill)) },
+            snackbar = snackbar,
+        )
+    }
+
+    entry<Stats> {
+        StatsRoot(
+            onOpenReading = onOpenReading,
             snackbar = snackbar,
         )
     }

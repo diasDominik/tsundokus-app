@@ -1,10 +1,10 @@
-package uk.tsundokus.features.orders.presentation.components
+package uk.tsundokus.features.orders.domain.dates
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class OrderFormattersDateTest {
+class EpochMillisTest {
     @Test
     fun `epoch millis round trips through iso`() {
         val dates = listOf("1970-01-01", "2000-02-29", "2026-08-23", "2026-12-31", "2100-03-01")

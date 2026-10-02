@@ -21,3 +21,21 @@ private fun toLocaleDateString(
         "new Date(year, monthIndex, day).toLocaleDateString(undefined, " +
             "{ year: 'numeric', month: 'short', day: 'numeric' })",
     )
+
+actual fun formatShortMonthYear(
+    year: Int,
+    month: Int,
+): String = toLocaleMonthYearString(year, month - 1)
+
+actual fun formatNarrowMonth(month: Int): String = toLocaleNarrowMonthString(month - 1)
+
+@Suppress("UNUSED_PARAMETER")
+private fun toLocaleMonthYearString(
+    year: Int,
+    monthIndex: Int,
+): String = js("new Date(year, monthIndex, 1).toLocaleDateString(undefined, { year: 'numeric', month: 'short' })")
+
+// Any year will do: only the month is shown.
+@Suppress("UNUSED_PARAMETER")
+private fun toLocaleNarrowMonthString(monthIndex: Int): String =
+    js("new Date(2000, monthIndex, 1).toLocaleDateString(undefined, { month: 'narrow' })")

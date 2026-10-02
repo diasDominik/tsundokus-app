@@ -13,16 +13,15 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_row_or
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_received
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_received_on
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_releases
+import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.presentation.date.formatMediumDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import kotlin.math.abs
 import kotlin.math.round
-import kotlin.time.Clock
 
-// Date / price formatting. Dates are stored and compared as ISO `yyyy-MM-dd` strings, which sort
-// lexicographically in chronological order, so `<` / `>` work directly; only display goes through
-// the platform formatter.
+// Date / price formatting. Dates are stored and compared as ISO `yyyy-MM-dd` strings (see
+// uk.tsundokus.features.orders.domain.dates); only display goes through the platform formatter.
 
 /**
  * Formats an ISO `yyyy-MM-dd` string in the viewer's locale (`7 Mar 2026`, `Mar 7, 2026`,
@@ -39,81 +38,14 @@ fun fmtDate(iso: String): String {
     return formatMediumDate(year, month, day)
 }
 
-/** Today as an ISO `yyyy-MM-dd` string (UTC), used for "releases/expected" comparisons. */
-fun todayIso(): String = isoFromEpochMillis(Clock.System.now().toEpochMilliseconds())
+/** The order's price in its currency; see [amountLabel]. */
+fun priceLabel(order: Order): String = amountLabel(order.price, order.currency)
 
-/**
- * ISO `yyyy-MM-dd` for a UTC epoch-millis instant — the form the Material date picker hands back.
- */
-fun isoFromEpochMillis(millis: Long): String = isoFromEpochDay(millis.floorDiv(MILLIS_PER_DAY))
-
-/**
- * UTC epoch millis for midnight on an ISO `yyyy-MM-dd` date, or null when the string is blank or
- * malformed. Used to seed the Material date picker from a stored date.
- */
-fun epochMillisFromIso(iso: String): Long? {
-    val parts = iso.split("-")
-    if (parts.size != 3) return null
-    val year = parts[0].toLongOrNull() ?: return null
-    val month = parts[1].toIntOrNull() ?: return null
-    val day = parts[2].toIntOrNull() ?: return null
-    if (month !in 1..12 || day !in 1..31) return null
-    return epochDayFromIso(year, month, day) * MILLIS_PER_DAY
-}
-
-/**
- * [iso] moved by [days] (negative goes back), or null when [iso] is not a real date. Checked with
- * [parseIsoDate] first: [epochMillisFromIso] alone would read "2026-02-29" as 1 March.
- */
-fun isoPlusDays(
-    iso: String,
-    days: Int,
-): String? {
-    if (parseIsoDate(iso) == null) return null
-    return epochMillisFromIso(iso)?.let { isoFromEpochMillis(it + days * MILLIS_PER_DAY) }
-}
-
-/** Current epoch milliseconds — the [uk.tsundokus.features.orders.domain.models.Order] RECENT sort key. */
-fun nowEpochMillis(): Long = Clock.System.now().toEpochMilliseconds()
-
-private const val MILLIS_PER_DAY = 86_400_000L
-
-// Howard Hinnant's days-from-civil algorithm (y/m/d -> days since 1970-01-01).
-private fun epochDayFromIso(
-    year: Long,
-    month: Int,
-    day: Int,
-): Long {
-    val y = if (month <= 2) year - 1 else year
-    val era = (if (y >= 0) y else y - 399) / 400
-    val yoe = y - era * 400
-    val mp = if (month > 2) month - 3 else month + 9
-    val doy = (153 * mp + 2) / 5 + day - 1
-    val doe = yoe * 365 + yoe / 4 - yoe / 100 + doy
-    return era * 146_097 + doe - 719_468
-}
-
-// Howard Hinnant's civil-from-days algorithm (days since 1970-01-01 -> y/m/d).
-private fun isoFromEpochDay(epochDay: Long): String {
-    val z = epochDay + 719_468
-    val era = (if (z >= 0) z else z - 146_096) / 146_097
-    val doe = z - era * 146_097
-    val yoe = (doe - doe / 1_460 + doe / 36_524 - doe / 146_096) / 365
-    val y = yoe + era * 400
-    val doy = doe - (365 * yoe + yoe / 4 - yoe / 100)
-    val mp = (5 * doy + 2) / 153
-    val day = (doy - (153 * mp + 2) / 5 + 1).toInt()
-    val month = (if (mp < 10) mp + 3 else mp - 9).toInt()
-    val year = if (month <= 2) y + 1 else y
-    return "${pad4(year)}-${pad2(month)}-${pad2(day)}"
-}
-
-private fun pad2(value: Int): String = value.toString().padStart(2, '0')
-
-private fun pad4(value: Long): String = value.toString().padStart(4, '0')
-
-/** The amount in its currency, with that currency's decimals and symbol: `19.99 €`, `$19.99`, `¥1200`. */
-fun priceLabel(order: Order): String = order.currency.format(formatAmount(order.price, order.currency.decimals))
+/** [amount] with [currency]'s decimals and symbol: `19.99 €`, `$19.99`, `¥1200`. */
+fun amountLabel(
+    amount: Double,
+    currency: AppCurrency,
+): String = currency.format(formatAmount(amount, currency.decimals))
 
 /** [value] with exactly [decimals] fraction digits, rounded; no grouping, "." as the separator. */
 internal fun formatAmount(

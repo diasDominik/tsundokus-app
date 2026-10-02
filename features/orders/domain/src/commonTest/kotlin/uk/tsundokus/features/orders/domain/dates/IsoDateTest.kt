@@ -1,4 +1,4 @@
-package uk.tsundokus.features.orders.presentation.components
+package uk.tsundokus.features.orders.domain.dates
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -68,5 +68,18 @@ class IsoDateTest {
     fun `an invalid date cannot be moved`() {
         assertNull(isoPlusDays("", 3))
         assertNull(isoPlusDays("soon", 3))
+    }
+
+    @Test
+    fun `days between counts forwards and backwards`() {
+        assertEquals(30, daysBetween("2026-09-02", "2026-10-02"))
+        assertEquals(-1, daysBetween("2026-01-01", "2025-12-31"))
+        assertEquals(366, daysBetween("2028-01-01", "2029-01-01"))
+    }
+
+    @Test
+    fun `days between needs two real dates`() {
+        assertNull(daysBetween("", "2026-10-02"))
+        assertNull(daysBetween("2026-02-29", "2026-03-01"))
     }
 }
