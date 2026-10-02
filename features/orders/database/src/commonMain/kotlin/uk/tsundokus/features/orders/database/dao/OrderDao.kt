@@ -28,6 +28,9 @@ interface OrderDao {
     @Query("DELETE FROM orders WHERE id = :id")
     suspend fun deleteById(id: String)
 
+    @Query("DELETE FROM orders WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<String>)
+
     @Query("DELETE FROM orders")
     suspend fun clear()
 

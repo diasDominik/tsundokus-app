@@ -12,6 +12,9 @@ interface PendingOrderOpDao {
     @Upsert
     suspend fun upsert(op: PendingOrderOpEntity)
 
+    @Upsert
+    suspend fun upsertAll(ops: List<PendingOrderOpEntity>)
+
     @Query("SELECT * FROM pending_order_ops ORDER BY createdAt ASC")
     suspend fun getAll(): List<PendingOrderOpEntity>
 
