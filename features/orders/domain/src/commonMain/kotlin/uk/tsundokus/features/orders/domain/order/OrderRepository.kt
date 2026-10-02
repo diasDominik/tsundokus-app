@@ -25,6 +25,14 @@ interface OrderRepository {
 
     suspend fun deleteOrder(id: String): EmptyResult<DataError.Remote>
 
+    /**
+     * Saves every order in [orders] as given, in one go: for acting on a selection, and for undoing
+     * that by saving the orders as they were.
+     */
+    suspend fun updateOrders(orders: List<Order>): EmptyResult<DataError.Remote>
+
+    suspend fun deleteOrders(ids: Collection<String>): EmptyResult<DataError.Remote>
+
     suspend fun setStatus(
         id: String,
         status: OrderStatus,

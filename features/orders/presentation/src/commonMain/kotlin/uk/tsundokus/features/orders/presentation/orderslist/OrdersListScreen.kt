@@ -84,6 +84,13 @@ import tsundokuapp.features.orders.presentation.generated.resources.orders_list_
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_time_minutes
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_title
 import tsundokuapp.features.orders.presentation.generated.resources.orders_list_unsynced_changes
+import tsundokuapp.features.orders.presentation.generated.resources.selection_delete
+import tsundokuapp.features.orders.presentation.generated.resources.selection_mark_cancelled
+import tsundokuapp.features.orders.presentation.generated.resources.selection_mark_received
+import tsundokuapp.features.orders.presentation.generated.resources.selection_mark_shipped
+import tsundokuapp.features.orders.presentation.generated.resources.selection_more_cd
+import tsundokuapp.features.orders.presentation.generated.resources.selection_start
+import tsundokuapp.features.orders.presentation.generated.resources.selection_undo
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
@@ -91,8 +98,10 @@ import uk.tsundokus.core.designsystem.preview.PreviewScreenSizes
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
+import uk.tsundokus.core.presentation.navigation.HideFab
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.SnackbarController
+import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
 import uk.tsundokus.core.presentation.util.rememberSnackbarController
 import uk.tsundokus.features.orders.domain.dates.nowEpochMillis
@@ -106,7 +115,13 @@ import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
 import uk.tsundokus.features.orders.presentation.components.labelRes
+import uk.tsundokus.features.orders.presentation.navigation.Orders
 import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
+import uk.tsundokus.features.orders.presentation.selection.DeleteSelectedConfirmDialog
+import uk.tsundokus.features.orders.presentation.selection.ReadStateMenuButton
+import uk.tsundokus.features.orders.presentation.selection.SelectionBackHandler
+import uk.tsundokus.features.orders.presentation.selection.SelectionChange
+import uk.tsundokus.features.orders.presentation.selection.SelectionHeader
 
 @Composable
 fun OrdersListRoot(
@@ -121,7 +136,15 @@ fun OrdersListRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is OrdersListEvent.ShowMessage -> snackbar.show(event.message)
+            is OrdersListEvent.ShowMessage -> {
+                snackbar.show(event.message)
+            }
+
+            is OrdersListEvent.ShowUndoableMessage -> {
+                snackbar.show(event.message, UiText.Resource(Res.string.selection_undo)) {
+                    viewModel.onAction(OrdersListAction.OnUndo)
+                }
+            }
         }
     }
 
@@ -157,16 +180,32 @@ private fun OrdersListScreen(
         )
     val searchFocusRequester = remember { FocusRequester() }
     // Ctrl/Cmd+F jumps to search. Handled as a *preview* event so it works even while a text field
-    // holds focus, and only when the modifier is down so ordinary typing is untouched.
+    // holds focus, and only when the modifier is down so ordinary typing is untouched. Escape leaves
+    // picking: the shell only acts on it where there is a screen to go back to.
     val shortcuts =
         Modifier.onPreviewKeyEvent { event ->
-            if (event.type == KeyEventType.KeyDown && event.isCommandOrControlPressed && event.key == Key.F) {
-                searchFocusRequester.requestFocus()
-                true
-            } else {
-                false
+            when {
+                event.type != KeyEventType.KeyDown -> {
+                    false
+                }
+
+                event.isCommandOrControlPressed && event.key == Key.F -> {
+                    searchFocusRequester.requestFocus()
+                    true
+                }
+
+                event.key == Key.Escape && state.isPicking -> {
+                    onAction(OrdersListAction.OnStopPicking)
+                    true
+                }
+
+                else -> {
+                    false
+                }
             }
         }
+    SelectionBackHandler(isSelecting = state.isPicking, onClear = { onAction(OrdersListAction.OnStopPicking) })
+    if (state.isPicking) HideFab(Orders)
     if (isExpanded) {
         Row(modifier = modifier.fillMaxSize().then(shortcuts)) {
             Column(
@@ -248,22 +287,33 @@ private fun ListHeader(
     searchFocusRequester: FocusRequester,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(Res.string.orders_list_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1f),
-            )
-            IconButton(onClick = onScanToReceive) {
-                Icon(
-                    imageVector = TsundokuIcons.BarcodeScanner,
-                    contentDescription = stringResource(Res.string.orders_list_scan_cd),
+        val picked = state.picked
+        if (picked != null) {
+            PickingHeader(count = picked.size, onAction = onAction)
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(Res.string.orders_list_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f),
                 )
+                IconButton(onClick = { onAction(OrdersListAction.OnStartPicking) }) {
+                    Icon(
+                        imageVector = TsundokuIcons.Checklist,
+                        contentDescription = stringResource(Res.string.selection_start),
+                    )
+                }
+                IconButton(onClick = onScanToReceive) {
+                    Icon(
+                        imageVector = TsundokuIcons.BarcodeScanner,
+                        contentDescription = stringResource(Res.string.orders_list_scan_cd),
+                    )
+                }
+                SortMenu(state = state, onAction = onAction)
             }
-            SortMenu(state = state, onAction = onAction)
+            SyncStatusLine(state = state, onAction = onAction)
         }
-        SyncStatusLine(state = state, onAction = onAction)
         VerticalSpacer(8.dp)
         OutlinedTextField(
             value = state.searchQuery,
@@ -286,6 +336,82 @@ private fun ListHeader(
         )
         VerticalSpacer(8.dp)
         FilterChipsRow(state = state, onAction = onAction)
+    }
+}
+
+/**
+ * The title row while picking. Marking received is the one action on its own button — it is what a
+ * parcel of several volumes calls for; the rest sit in the reading-state and overflow menus.
+ */
+@Composable
+private fun PickingHeader(
+    count: Int,
+    onAction: (OrdersListAction) -> Unit,
+) {
+    var confirmDelete by remember { mutableStateOf(false) }
+    var moreExpanded by remember { mutableStateOf(false) }
+    val hasPicks = count > 0
+    SelectionHeader(
+        count = count,
+        onClose = { onAction(OrdersListAction.OnStopPicking) },
+        onSelectAll = { onAction(OrdersListAction.OnPickAllShown) },
+    ) {
+        IconButton(
+            onClick = { onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.RECEIVED))) },
+            enabled = hasPicks,
+        ) {
+            Icon(
+                TsundokuIcons.CheckCircle,
+                contentDescription = stringResource(Res.string.selection_mark_received),
+            )
+        }
+        ReadStateMenuButton(
+            onSelect = { onAction(OrdersListAction.OnChangePicked(SelectionChange.Reading(it))) },
+            enabled = hasPicks,
+        )
+        Box {
+            IconButton(onClick = { moreExpanded = true }, enabled = hasPicks) {
+                Icon(TsundokuIcons.MoreVert, contentDescription = stringResource(Res.string.selection_more_cd))
+            }
+            DropdownMenu(expanded = moreExpanded, onDismissRequest = { moreExpanded = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.selection_mark_shipped)) },
+                    onClick = {
+                        moreExpanded = false
+                        onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.SHIPPED)))
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.selection_mark_cancelled)) },
+                    onClick = {
+                        moreExpanded = false
+                        onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.CANCELLED)))
+                    },
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(Res.string.selection_delete),
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    },
+                    onClick = {
+                        moreExpanded = false
+                        confirmDelete = true
+                    },
+                )
+            }
+        }
+    }
+    if (confirmDelete) {
+        DeleteSelectedConfirmDialog(
+            count = count,
+            onConfirm = {
+                confirmDelete = false
+                onAction(OrdersListAction.OnDeletePicked)
+            },
+            onDismiss = { confirmDelete = false },
+        )
     }
 }
 
@@ -513,17 +639,19 @@ private fun OrdersListBody(
         onRefresh = { onAction(OrdersListAction.OnRefresh) },
         modifier = modifier.fillMaxSize(),
     ) {
-        OrdersLazyColumn(state = state, today = today, onOrderClick = onOrderClick)
+        OrdersLazyColumn(state = state, today = today, onAction = onAction, onOrderClick = onOrderClick)
     }
 }
 
 /**
- * Arrow keys walk the list and Enter opens the highlighted row — but only while the list itself
- * holds focus, so arrows still move the caret when the user is in the search field.
+ * Arrow keys walk the list and Enter opens the highlighted row; Space picks it and Ctrl/Cmd+A picks
+ * everything shown — but only while the list itself holds focus, so the same keys still edit text
+ * when the user is in the search field.
  */
 @Composable
 private fun Modifier.listKeyboardNavigation(
     state: OrdersListState,
+    onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
 ): Modifier {
     val focusRequester = remember { FocusRequester() }
@@ -550,6 +678,16 @@ private fun Modifier.listKeyboardNavigation(
                     displayed.getOrNull(index)?.let { onOrderClick(it.id) } != null
                 }
 
+                // Space picks the highlighted order, starting picking if needed.
+                Key.Spacebar -> {
+                    displayed.getOrNull(index)?.let { onAction(OrdersListAction.OnTogglePicked(it.id)) } != null
+                }
+
+                Key.A -> {
+                    if (event.isCommandOrControlPressed) onAction(OrdersListAction.OnPickAllShown)
+                    event.isCommandOrControlPressed
+                }
+
                 else -> {
                     false
                 }
@@ -561,14 +699,17 @@ private fun Modifier.listKeyboardNavigation(
 private fun OrdersLazyColumn(
     state: OrdersListState,
     today: String,
+    onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
 ) {
+    val picked = state.picked
     LazyColumn(
-        modifier = Modifier.fillMaxSize().listKeyboardNavigation(state, onOrderClick),
+        modifier = Modifier.fillMaxSize().listKeyboardNavigation(state, onAction, onOrderClick),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        state.nextArrival?.let { hero ->
+        // A shortcut to one order, not part of the list: nothing to pick there.
+        state.nextArrival?.takeIf { picked == null }?.let { hero ->
             item(key = "hero") {
                 NextArrivalHero(
                     order = hero,
@@ -586,8 +727,16 @@ private fun OrdersLazyColumn(
                 OrderRow(
                     order = order,
                     today = today,
-                    onClick = { onOrderClick(order.id) },
+                    onClick = {
+                        if (picked != null) {
+                            onAction(OrdersListAction.OnTogglePicked(order.id))
+                        } else {
+                            onOrderClick(order.id)
+                        }
+                    },
                     selected = order.id == state.selectedOrderId,
+                    checked = picked?.let { order.id in it },
+                    onLongClick = { onAction(OrdersListAction.OnTogglePicked(order.id)) },
                 )
             }
         }

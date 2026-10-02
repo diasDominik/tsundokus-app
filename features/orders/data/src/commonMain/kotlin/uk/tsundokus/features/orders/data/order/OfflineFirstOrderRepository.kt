@@ -67,6 +67,27 @@ class OfflineFirstOrderRepository(
         return Result.Success(Unit)
     }
 
+    override suspend fun updateOrders(orders: List<Order>): EmptyResult<DataError.Remote> {
+        if (orders.isEmpty()) return Result.Success(Unit)
+        val queuedAt = now()
+        orderDao.upsertAll(orders.map { it.toEntity(pendingSync = true) })
+        outboxDao.upsertAll(
+            orders.map { PendingOrderOpEntity(it.id, PendingOrderOpEntity.Type.UPSERT.name, queuedAt) },
+        )
+        // One sync for the lot: a trigger per order would pull the server delta once per order.
+        triggerSync()
+        return Result.Success(Unit)
+    }
+
+    override suspend fun deleteOrders(ids: Collection<String>): EmptyResult<DataError.Remote> {
+        if (ids.isEmpty()) return Result.Success(Unit)
+        val queuedAt = now()
+        orderDao.deleteByIds(ids.toList())
+        outboxDao.upsertAll(ids.map { PendingOrderOpEntity(it, PendingOrderOpEntity.Type.DELETE.name, queuedAt) })
+        triggerSync()
+        return Result.Success(Unit)
+    }
+
     override suspend fun setStatus(
         id: String,
         status: OrderStatus,

@@ -49,6 +49,10 @@ private class StubOrderRepository : OrderRepository {
 
     override suspend fun deleteOrder(id: String): EmptyResult<DataError.Remote> = Result.Success(Unit)
 
+    override suspend fun updateOrders(orders: List<Order>): EmptyResult<DataError.Remote> = error("unused")
+
+    override suspend fun deleteOrders(ids: Collection<String>): EmptyResult<DataError.Remote> = error("unused")
+
     override suspend fun setStatus(
         id: String,
         status: OrderStatus,

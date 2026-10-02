@@ -286,7 +286,7 @@ fun App() {
                             event.isCommandOrControlPressed && event.key == Key.N -> {
                                 // Only where the FAB offers the same thing, so the shortcut never
                                 // stacks a second Add-order screen on top of the first.
-                                val fabScreen = currentKey as? ScreenWithFab
+                                val fabScreen = (currentKey as? ScreenWithFab)?.takeUnless { topBarActions.isFabHiddenFor(currentKey) }
                                 if (fabScreen?.fabAction == FabAction.AddOrder) {
                                     backStack.add(AddOrder())
                                     true
@@ -323,7 +323,7 @@ fun App() {
                         }
                     },
                     primaryActionContent = {
-                        val fabScreen = currentKey as? ScreenWithFab
+                        val fabScreen = (currentKey as? ScreenWithFab)?.takeUnless { topBarActions.isFabHiddenFor(currentKey) }
                         if (fabScreen != null) {
                             FloatingActionButton(
                                 modifier = Modifier.padding(start = 16.dp),
