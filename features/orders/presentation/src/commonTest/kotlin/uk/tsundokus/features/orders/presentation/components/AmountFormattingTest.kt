@@ -2,6 +2,7 @@ package uk.tsundokus.features.orders.presentation.components
 
 import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.formatAmount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

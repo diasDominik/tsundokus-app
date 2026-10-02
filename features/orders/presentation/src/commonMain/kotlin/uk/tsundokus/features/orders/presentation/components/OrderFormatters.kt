@@ -17,8 +17,7 @@ import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.core.presentation.date.formatMediumDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
-import kotlin.math.abs
-import kotlin.math.round
+import uk.tsundokus.features.orders.domain.models.formatAmount
 
 // Date / price formatting. Dates are stored and compared as ISO `yyyy-MM-dd` strings (see
 // uk.tsundokus.features.orders.domain.dates); only display goes through the platform formatter.
@@ -46,22 +45,6 @@ fun amountLabel(
     amount: Double,
     currency: AppCurrency,
 ): String = currency.format(formatAmount(amount, currency.decimals))
-
-/** [value] with exactly [decimals] fraction digits, rounded; no grouping, "." as the separator. */
-internal fun formatAmount(
-    value: Double,
-    decimals: Int,
-): String {
-    var scale = 1L
-    repeat(decimals) { scale *= 10 }
-    val minor = round(value * scale).toLong()
-    val sign = if (minor < 0) "-" else ""
-    val magnitude = abs(minor)
-    val whole = magnitude / scale
-    if (decimals == 0) return "$sign$whole"
-    val fraction = (magnitude % scale).toString().padStart(decimals, '0')
-    return "$sign$whole.$fraction"
-}
 
 /** Status-aware secondary label for a row (mirrors the design JS). */
 @Composable
