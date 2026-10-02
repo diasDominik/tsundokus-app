@@ -24,16 +24,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import tsundokuapp.features.orders.presentation.generated.resources.Res
-import tsundokuapp.features.orders.presentation.generated.resources.stats_month_initials
-import tsundokuapp.features.orders.presentation.generated.resources.stats_month_names
 import tsundokuapp.features.orders.presentation.generated.resources.stats_spend_bar
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.domain.preferences.AppCurrency
+import uk.tsundokus.core.presentation.date.formatNarrowMonth
+import uk.tsundokus.core.presentation.date.formatShortMonthYear
 import uk.tsundokus.features.orders.domain.stats.SpendBucket
 import uk.tsundokus.features.orders.presentation.components.amountLabel
 
@@ -51,10 +50,8 @@ internal fun SpendBarChart(
     var selected by remember(buckets) {
         mutableIntStateOf(buckets.indexOfLast { it.amount > 0.0 }.takeIf { it >= 0 } ?: buckets.lastIndex)
     }
-    val monthNames = stringArrayResource(Res.array.stats_month_names)
-    val monthInitials = stringArrayResource(Res.array.stats_month_initials)
     val bucketName = { bucket: SpendBucket ->
-        bucket.month?.let { "${monthNames[it - 1]} ${bucket.year}" } ?: bucket.year.toString()
+        bucket.month?.let { formatShortMonthYear(bucket.year, it) } ?: bucket.year.toString()
     }
     val description =
         buckets
@@ -120,7 +117,7 @@ internal fun SpendBarChart(
         Row(modifier = Modifier.fillMaxWidth()) {
             buckets.forEachIndexed { index, bucket ->
                 Text(
-                    text = bucket.month?.let { monthInitials[it - 1] } ?: "’${bucket.year % 100}",
+                    text = bucket.month?.let(::formatNarrowMonth) ?: bucket.year.toString(),
                     style = MaterialTheme.typography.labelSmall,
                     color =
                         if (index == selected) {
