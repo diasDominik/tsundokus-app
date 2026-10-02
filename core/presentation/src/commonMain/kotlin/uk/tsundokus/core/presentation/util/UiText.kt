@@ -1,8 +1,11 @@
 package uk.tsundokus.core.presentation.util
 
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 sealed interface UiText {
@@ -10,6 +13,13 @@ sealed interface UiText {
 
     class Resource(
         val id: StringResource,
+        val args: Array<Any> = arrayOf(),
+    ) : UiText
+
+    /** A plural string picked by [quantity]; [args] fill its placeholders, the count usually first. */
+    class PluralResource(
+        val id: PluralStringResource,
+        val quantity: Int,
         val args: Array<Any> = arrayOf(),
     ) : UiText
 
@@ -26,6 +36,10 @@ sealed interface UiText {
                     *args,
                 )
             }
+
+            is PluralResource -> {
+                pluralStringResource(id, quantity, *args)
+            }
         }
     }
 
@@ -40,6 +54,10 @@ sealed interface UiText {
                     resource = id,
                     *args,
                 )
+            }
+
+            is PluralResource -> {
+                getPluralString(id, quantity, *args)
             }
         }
     }

@@ -233,6 +233,21 @@
         <item quantity="other">%1$d unsynced changes</item>
     </plurals>
 
+    <!-- Selecting orders to act on together -->
+    <string name="selection_start">Select</string>
+    <string name="selection_close_cd">Stop selecting</string>
+    <string name="selection_select_all">Select all shown</string>
+    <string name="selection_mark_received">Mark received</string>
+    <string name="selection_mark_shipped">Mark in transit</string>
+    <string name="selection_mark_cancelled">Mark cancelled</string>
+    <string name="selection_read_state">Set reading state</string>
+    <string name="selection_mark_read">Mark read</string>
+    <string name="selection_more_cd">More actions</string>
+    <string name="selection_delete">Delete</string>
+    <string name="selection_nothing_to_change">Nothing to change: the selected orders are already like that.</string>
+    <string name="selection_undo">Undo</string>
+    <string name="selection_delete_confirm_message">They will be removed from all your devices. This can't be undone.</string>
+
     <!-- Stats -->
     <string name="stats_title">Stats</string>
     <string name="stats_period_12_months">12 months</string>
@@ -287,5 +302,50 @@
     <plurals name="stats_reliability_slip">
         <item quantity="one">usually %1$d day late</item>
         <item quantity="other">usually %1$d days late</item>
+    </plurals>
+
+    <plurals name="selection_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+
+    <plurals name="selection_marked_received">
+        <item quantity="one">%1$d order marked received</item>
+        <item quantity="other">%1$d orders marked received</item>
+    </plurals>
+
+    <plurals name="selection_marked_shipped">
+        <item quantity="one">%1$d order marked in transit</item>
+        <item quantity="other">%1$d orders marked in transit</item>
+    </plurals>
+
+    <plurals name="selection_marked_cancelled">
+        <item quantity="one">%1$d order marked cancelled</item>
+        <item quantity="other">%1$d orders marked cancelled</item>
+    </plurals>
+
+    <plurals name="selection_marked_want">
+        <item quantity="one">%1$d volume moved to Want to read</item>
+        <item quantity="other">%1$d volumes moved to Want to read</item>
+    </plurals>
+
+    <plurals name="selection_marked_reading">
+        <item quantity="one">%1$d volume marked as reading</item>
+        <item quantity="other">%1$d volumes marked as reading</item>
+    </plurals>
+
+    <plurals name="selection_marked_read">
+        <item quantity="one">%1$d volume marked read</item>
+        <item quantity="other">%1$d volumes marked read</item>
+    </plurals>
+
+    <plurals name="selection_deleted">
+        <item quantity="one">%1$d order deleted</item>
+        <item quantity="other">%1$d orders deleted</item>
+    </plurals>
+
+    <plurals name="selection_delete_confirm_title">
+        <item quantity="one">Delete %1$d order?</item>
+        <item quantity="other">Delete %1$d orders?</item>
     </plurals>
 </resources>

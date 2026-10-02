@@ -24,7 +24,11 @@ data class OrdersListState(
     // (epoch millis, null = never). Drives the header sync indicator.
     val pendingSyncCount: Int = 0,
     val lastSyncedAt: Long? = null,
+    /** The orders picked to act on together; null while not picking. Only ids still in [allOrders]. */
+    val picked: Set<String>? = null,
 ) {
+    val isPicking: Boolean get() = picked != null
+
     val selectedOrder: Order?
         get() = allOrders.firstOrNull { it.id == selectedOrderId }
 
