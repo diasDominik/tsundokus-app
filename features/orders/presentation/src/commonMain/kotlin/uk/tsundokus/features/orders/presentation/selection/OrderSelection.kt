@@ -144,6 +144,7 @@ class OrderSelection(
     /** Saves the orders changed last back as they were. Does nothing once undone, or after a delete. */
     suspend fun undo(): EmptyResult<DataError.Remote> {
         val before = beforeLastChange
+        if (before.isEmpty()) return Result.Success(Unit)
         beforeLastChange = emptyList()
         return orderRepository.updateOrders(before)
     }
