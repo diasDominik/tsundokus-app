@@ -17,6 +17,9 @@ import uk.tsundokus.core.presentation.util.UiText
  * - [TopBarActions]: trailing actions appended to the declarative top bar (e.g. Save).
  * - [OverrideTopBar]: a full top bar (title + nav icon + actions) that *replaces* the declarative
  *   one while present — used for in-screen sub-views like the split editor.
+ *
+ * It also carries the one piece of shell chrome below the top bar a screen may need to switch off:
+ * [HideFab], for a [ScreenWithFab] in a mode where its primary action doesn't apply.
  */
 class TopBarActionsController {
     private val actions = mutableStateMapOf<NavKey, @Composable () -> Unit>()
@@ -47,6 +50,18 @@ class TopBarActionsController {
     }
 
     fun overrideFor(key: NavKey?): ScreenTopBarSpec? = key?.let { overrides[it] }
+
+    private val fabHidden = mutableStateMapOf<NavKey, Boolean>()
+
+    fun hideFab(key: NavKey) {
+        fabHidden[key] = true
+    }
+
+    fun showFab(key: NavKey) {
+        fabHidden.remove(key)
+    }
+
+    fun isFabHiddenFor(key: NavKey?): Boolean = key != null && fabHidden[key] == true
 }
 
 /** A full top-bar specification a screen can install over the declarative one. */
@@ -98,5 +113,18 @@ fun OverrideTopBar(
     }
     DisposableEffect(controller, key) {
         onDispose { controller.clearOverride(key) }
+    }
+}
+
+/**
+ * Hides [key]'s floating action button while in composition — e.g. while a list is in selection
+ * mode, where adding an order is not what the screen is offering. Shown again on dispose.
+ */
+@Composable
+fun HideFab(key: NavKey) {
+    val controller = LocalTopBarActionsController.current ?: return
+    DisposableEffect(controller, key) {
+        controller.hideFab(key)
+        onDispose { controller.showFab(key) }
     }
 }

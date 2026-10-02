@@ -1,6 +1,8 @@
 package uk.tsundokus.core.presentation.util
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,6 +31,27 @@ class SnackbarController(
 
     fun show(message: String) {
         show(UiText.DynamicString(message))
+    }
+
+    /**
+     * Shows [message] with an [actionLabel] button — "Undo" — that runs [onAction] when tapped. It
+     * stays longer than a plain message, so there is time to reach the button.
+     */
+    fun show(
+        message: UiText,
+        actionLabel: UiText,
+        onAction: () -> Unit,
+    ) {
+        scope.launch {
+            hostState.currentSnackbarData?.dismiss()
+            val result =
+                hostState.showSnackbar(
+                    message = message.asStringAsync(),
+                    actionLabel = actionLabel.asStringAsync(),
+                    duration = SnackbarDuration.Long,
+                )
+            if (result == SnackbarResult.ActionPerformed) onAction()
+        }
     }
 }
 
