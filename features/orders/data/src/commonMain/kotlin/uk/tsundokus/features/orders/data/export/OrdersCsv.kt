@@ -41,7 +41,7 @@ internal fun ordersToCsv(orders: List<Order>): String =
         orders.forEach { appendCsvRow(it.csvCells()) }
     }
 
-private const val BYTE_ORDER_MARK = '﻿'
+private const val BYTE_ORDER_MARK = '\uFEFF'
 
 private fun Order.csvCells(): List<String> =
     listOf(
