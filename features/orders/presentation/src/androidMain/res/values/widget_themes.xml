@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The widget settings screen draws over the home screen's own wallpaper, so the preview shows
+         the widget, transparent background included, as it will look there. -->
+    <style name="Theme.Tsundoku.WidgetSettings" parent="@android:style/Theme.Material.Wallpaper.NoTitleBar">
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+</resources>

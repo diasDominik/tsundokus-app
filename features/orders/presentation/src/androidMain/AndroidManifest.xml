@@ -12,6 +12,43 @@
                 <action android:name="android.intent.action.TIME_SET" />
             </intent-filter>
         </receiver>
+
+        <!-- A placed widget's settings: background, colours and what it shows. The launcher opens
+             it, so it is exported, but only for the configure action. -->
+        <activity
+            android:name="uk.tsundokus.features.orders.presentation.widgets.WidgetSettingsActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Tsundoku.WidgetSettings">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Home-screen widgets. They only read the snapshot the app writes (GlanceWidgetPublisher). -->
+        <receiver
+            android:name="uk.tsundokus.features.orders.presentation.widgets.NextArrivalsWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_next_arrivals_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_arrivals_info" />
+        </receiver>
+        <receiver
+            android:name="uk.tsundokus.features.orders.presentation.widgets.PileWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_pile_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_pile_info" />
+        </receiver>
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.domain.sync.LocalDataResetter
 import uk.tsundokus.features.orders.data.sync.OrderRealtimeSync
 import uk.tsundokus.features.orders.presentation.reminders.ReminderSync
+import uk.tsundokus.features.orders.presentation.widgets.WidgetSync
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emitAll
@@ -31,6 +32,7 @@ class MainViewModel(
     appPreferencesRepository: AppPreferencesRepository,
     orderRealtimeSync: OrderRealtimeSync,
     reminderSync: ReminderSync,
+    widgetSync: WidgetSync,
     currencySync: CurrencySync,
 ) : ViewModel() {
     init {
@@ -41,6 +43,8 @@ class MainViewModel(
         orderRealtimeSync.start()
         // Keeps the scheduled reminders in step with the orders and the reminder settings.
         reminderSync.start()
+        // Keeps the home-screen widgets in step with the orders, and clears them on sign-out.
+        widgetSync.start()
     }
 
     // Stays Loading until the cache-aware restore resolves, so the UI never

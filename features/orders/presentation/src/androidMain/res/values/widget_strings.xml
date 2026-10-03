@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shown in the launcher's widget picker, which reads Android resources only. -->
+    <string name="widget_next_arrivals_label">Next arrivals</string>
+    <string name="widget_next_arrivals_description">The orders arriving next, and when</string>
+    <string name="widget_pile_label">Your pile</string>
+    <string name="widget_pile_description">How many arrived volumes are waiting to be read</string>
+</resources>

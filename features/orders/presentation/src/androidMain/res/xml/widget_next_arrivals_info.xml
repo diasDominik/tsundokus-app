@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2x2 to start, any size up to 5x4. Redrawn every 6 hours, so "tomorrow" becomes "today" and a
+     past release drops off even while the app isn't opened. -->
+<!-- Settings are optional when placing (Android 12+) and reopen from the widget's long press. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="uk.tsundokus.features.orders.presentation.widgets.WidgetSettingsActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:description="@string/widget_next_arrivals_description"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="110dp"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="21600000"
+    android:widgetCategory="home_screen" />
