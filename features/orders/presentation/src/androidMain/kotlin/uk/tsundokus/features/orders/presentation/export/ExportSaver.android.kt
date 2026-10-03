@@ -29,7 +29,7 @@ actual fun rememberExportSaver(): ExportSaver {
 // The same on Android, iOS and desktop; the web has no save dialog and so has its own.
 internal suspend fun saveWithDialog(file: ExportedFile): ExportSaveResult {
     val target =
-        FileKit.openFileSaver(suggestedName = file.baseName, extension = file.format.extension)
+        FileKit.openFileSaver(suggestedName = file.baseName, defaultExtension = file.format.extension)
             ?: return ExportSaveResult.Cancelled
     return try {
         target.write(file.bytes)
