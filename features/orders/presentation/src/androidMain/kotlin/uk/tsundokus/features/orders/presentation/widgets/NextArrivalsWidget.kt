@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -22,6 +23,7 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
+import androidx.glance.layout.padding
 import androidx.glance.semantics.semantics
 import androidx.glance.semantics.testTag
 import androidx.glance.text.FontWeight
@@ -87,6 +89,7 @@ class NextArrivalsWidget : GlanceAppWidget() {
         /** One arrival: a line of title and a line of detail, with the gap before the next. */
         val ARRIVAL_HEIGHT = 46.dp
 
+        /** The most shown however tall: what the snapshot keeps, and well inside Glance's 10 child slots. */
         const val MAX_SHOWN = 5
     }
 }
@@ -144,9 +147,13 @@ internal fun NextArrivalsContent(ui: NextArrivalsUi) {
         }
         // A lone arrival gets two lines of title; in a list, each keeps to one.
         val titleLines = if (room == 1) 2 else 1
-        ui.lines.take(room).forEachIndexed { index, line ->
-            if (index > 0) Spacer(GlanceModifier.height(8.dp))
-            ArrivalLineView(line, titleLines, context)
+        // Glance lays a Row, Column or Box out in 10 pre-generated child slots and drops what
+        // doesn't fit. The arrivals get a column of their own, spaced by padding rather than
+        // spacers, so neither column comes near that whatever the count.
+        Column {
+            ui.lines.take(room).forEachIndexed { index, line ->
+                ArrivalLineView(line, titleLines, context, topGap = if (index == 0) 0.dp else 8.dp)
+            }
         }
     }
 }
@@ -156,10 +163,12 @@ private fun ArrivalLineView(
     line: ArrivalLine,
     titleLines: Int,
     context: Context,
+    topGap: Dp,
 ) {
     Column(
         GlanceModifier
             .fillMaxWidth()
+            .padding(top = topGap)
             .clickable(actionStartActivity(openAppIntent(context, orderDeepLink(line.id))))
             .semantics { testTag = "arrival-${line.id}" },
     ) {
