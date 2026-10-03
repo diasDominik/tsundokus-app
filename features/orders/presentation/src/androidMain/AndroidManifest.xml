@@ -13,6 +13,19 @@
             </intent-filter>
         </receiver>
 
+        <!-- A placed widget's settings: background, colours and what it shows. The launcher opens
+             it, so it is exported, but only for the configure action. -->
+        <activity
+            android:name="uk.tsundokus.features.orders.presentation.widgets.WidgetSettingsActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Tsundoku.WidgetSettings">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <!-- Home-screen widgets. They only read the snapshot the app writes (GlanceWidgetPublisher). -->
         <receiver
             android:name="uk.tsundokus.features.orders.presentation.widgets.NextArrivalsWidgetReceiver"

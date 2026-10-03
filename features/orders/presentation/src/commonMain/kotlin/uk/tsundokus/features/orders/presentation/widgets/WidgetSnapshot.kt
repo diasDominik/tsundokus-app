@@ -56,8 +56,11 @@ data class WidgetArrival(
     val status: String,
 )
 
-/** How many arrivals the snapshot keeps: enough for the tallest widget, and a few to drop off. */
-private const val MAX_ARRIVALS = 5
+/**
+ * How many arrivals the snapshot keeps. Twice what the tallest widget shows: some drop off as their
+ * release passes, and a widget set to leave out releases still has parcels to show.
+ */
+private const val MAX_ARRIVALS = 10
 
 private val snapshotJson = Json { ignoreUnknownKeys = true }
 

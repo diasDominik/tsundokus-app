@@ -272,6 +272,28 @@
     <string name="widget_overdue">Was due %1$s</string>
     <string name="widget_all_caught_up">All caught up</string>
 
+    <!-- Home-screen widget settings -->
+    <string name="widget_settings_title">Widget settings</string>
+    <string name="widget_settings_close_cd">Close without saving</string>
+    <string name="widget_settings_background">Background</string>
+    <string name="widget_settings_background_solid">Solid</string>
+    <string name="widget_settings_background_translucent">Translucent</string>
+    <string name="widget_settings_background_none">None</string>
+    <string name="widget_settings_text">Text colour</string>
+    <string name="widget_settings_text_caption">Pick what reads best on your wallpaper.</string>
+    <string name="widget_settings_text_automatic">Automatic</string>
+    <string name="widget_settings_text_light">Light</string>
+    <string name="widget_settings_text_dark">Dark</string>
+    <string name="widget_settings_colours">Colours</string>
+    <string name="widget_settings_colours_wallpaper">Wallpaper</string>
+    <string name="widget_settings_colours_tsundoku">Tsundoku</string>
+    <string name="widget_settings_heading">Show heading</string>
+    <string name="widget_settings_releases">Show upcoming releases</string>
+    <string name="widget_settings_releases_caption">Pre-orders still waiting for their release, not only parcels on the way.</string>
+    <string name="widget_settings_detail">Show reading details</string>
+    <string name="widget_settings_detail_caption">How many are being read and how long the oldest has waited.</string>
+    <string name="widget_settings_done">Done</string>
+
     <!-- Stats -->
     <string name="stats_title">Stats</string>
     <string name="stats_period_12_months">12 months</string>

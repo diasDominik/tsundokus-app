@@ -13,5 +13,6 @@ class GlanceWidgetPublisher(
         withContext(Dispatchers.IO) { WidgetSnapshotStore.write(context, snapshot) }
         NextArrivalsWidget().updateAll(context)
         PileWidget().updateAll(context)
+        WidgetPreviews.publishOnce(context)
     }
 }

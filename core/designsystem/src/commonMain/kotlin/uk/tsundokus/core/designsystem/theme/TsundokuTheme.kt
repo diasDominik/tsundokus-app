@@ -34,7 +34,8 @@ private val DarkExtendedColors =
         positive = extended_dark_positive,
     )
 
-private val lightColorScheme =
+/** The app's light colours; public so Android home-screen widgets can wear them too. */
+val TsundokuLightColorScheme =
     lightColorScheme(
         primary = md_theme_light_primary,
         onPrimary = md_theme_light_onPrimary,
@@ -74,7 +75,8 @@ private val lightColorScheme =
         scrim = md_theme_light_scrim,
     )
 
-private val darkColorScheme =
+/** The app's dark colours; public so Android home-screen widgets can wear them too. */
+val TsundokuDarkColorScheme =
     darkColorScheme(
         primary = md_theme_dark_primary,
         onPrimary = md_theme_dark_onPrimary,
@@ -119,7 +121,7 @@ fun TsundokuTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = if (darkTheme) darkColorScheme else lightColorScheme
+    val colorScheme = if (darkTheme) TsundokuDarkColorScheme else TsundokuLightColorScheme
     val extendedScheme = if (darkTheme) DarkExtendedColors else LightExtendedColors
 
     CompositionLocalProvider(LocalExtendedColors provides extendedScheme) {

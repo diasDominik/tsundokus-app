@@ -5,15 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
-import androidx.glance.appwidget.appWidgetBackground
-import androidx.glance.appwidget.cornerRadius
-import androidx.glance.background
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -25,15 +18,6 @@ import uk.tsundokus.features.orders.domain.dates.parseIsoDate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-/** The widget's card: the launcher's widget background, rounded, with room around the content. */
-@Composable
-internal fun GlanceModifier.widgetCard(): GlanceModifier =
-    fillMaxSize()
-        .appWidgetBackground()
-        .background(GlanceTheme.colors.widgetBackground)
-        .cornerRadius(20.dp)
-        .padding(12.dp)
 
 @Composable
 internal fun WidgetHeading(text: String) {

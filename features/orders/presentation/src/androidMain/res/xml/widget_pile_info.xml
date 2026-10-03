@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 2x1 to start. Redrawn every 6 hours, so how long the oldest volume has waited keeps counting. -->
+<!-- Settings are optional when placing (Android 12+) and reopen from the widget's long press. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="uk.tsundokus.features.orders.presentation.widgets.WidgetSettingsActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
     android:description="@string/widget_pile_description"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:minWidth="110dp"

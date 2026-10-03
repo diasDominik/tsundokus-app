@@ -8,6 +8,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.Preferences
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -19,6 +20,7 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.provideContent
+import androidx.glance.currentState
 import androidx.glance.layout.Column
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxWidth
@@ -53,12 +55,22 @@ internal data class ArrivalLine(
     val phrase: ArrivalPhrase,
 )
 
-/** Everything the widget draws: [message] stands in for the list when there is nothing to list. */
+/**
+ * Everything the widget draws, words resolved. Which lines show depends on the widget's settings, so
+ * that choice is made while drawing, and both messages are ready for it.
+ */
 internal data class NextArrivalsUi(
     val heading: String,
     val lines: List<ArrivalLine>,
-    val message: String?,
-)
+    /** Signed out: shown instead of any list. */
+    val signedOutMessage: String?,
+    /** Shown when no line is left to show. */
+    val nothingMessage: String,
+) {
+    /** The lines a widget with [style] shows: releases only if it asks for them. */
+    fun linesFor(style: WidgetStyle): List<ArrivalLine> =
+        if (style.showReleases) lines else lines.filter { it.phrase != ArrivalPhrase.RELEASES }
+}
 
 /**
  * The orders arriving next: as many as fit the widget's height, up to five. Launchers give a 2x2
@@ -68,6 +80,9 @@ internal data class NextArrivalsUi(
 class NextArrivalsWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
+    // The picker's preview at a typical 2x2, not the minimum: there it shows a single arrival.
+    override val previewSizeMode = SizeMode.Responsive(setOf(WidgetKind.NEXT_ARRIVALS.defaultSize))
+
     override suspend fun provideGlance(
         context: Context,
         id: GlanceId,
@@ -75,16 +90,30 @@ class NextArrivalsWidget : GlanceAppWidget() {
         val snapshots = withContext(Dispatchers.IO) { WidgetSnapshotStore.snapshots(context) }
         val first = nextArrivalsUi(snapshots.value, todayIso())
         provideContent {
-            // Collected here, not read above: an open session redraws with each new snapshot.
+            // Both collected here, not read above: an open session redraws with each new snapshot,
+            // and with each change saved in the widget's settings.
+            val style = WidgetStyle.from(currentState<Preferences>())
             val snapshot by snapshots.collectAsState()
             val ui by produceState(first, snapshot) { value = nextArrivalsUi(snapshot, todayIso()) }
-            GlanceTheme { NextArrivalsContent(ui) }
+            WidgetTheme(style) { NextArrivalsContent(ui, style) }
         }
     }
 
+    /** The widget picker's preview: made-up orders in the default look. */
+    override suspend fun providePreview(
+        context: Context,
+        widgetCategory: Int,
+    ) {
+        val ui = nextArrivalsUi(previewSnapshot(todayIso()), todayIso())
+        provideContent { WidgetTheme(WidgetStyle()) { NextArrivalsContent(ui) } }
+    }
+
     internal companion object {
-        /** The heading and the card's padding. */
-        val CHROME_HEIGHT = 40.dp
+        /** The card's padding. */
+        val PADDING_HEIGHT = 24.dp
+
+        /** The heading and the gap under it. */
+        val HEADING_HEIGHT = 16.dp
 
         /** One arrival: a line of title and a line of detail, with the gap before the next. */
         val ARRIVAL_HEIGHT = 46.dp
@@ -103,7 +132,15 @@ internal suspend fun nextArrivalsUi(
     today: String,
 ): NextArrivalsUi {
     val heading = getString(Res.string.widget_next_arrivals_title)
-    if (!snapshot.signedIn) return NextArrivalsUi(heading, emptyList(), getString(Res.string.widget_sign_in))
+    val nothing = getString(Res.string.widget_nothing_on_the_way)
+    if (!snapshot.signedIn) {
+        return NextArrivalsUi(
+            heading,
+            emptyList(),
+            getString(Res.string.widget_sign_in),
+            nothing,
+        )
+    }
     val lines =
         snapshot.arrivalsOn(today).map { arrival ->
             val phrase = arrival.phraseOn(today)
@@ -122,24 +159,30 @@ internal suspend fun nextArrivalsUi(
                 phrase = phrase,
             )
         }
-    val message = if (lines.isEmpty()) getString(Res.string.widget_nothing_on_the_way) else null
-    return NextArrivalsUi(heading, lines, message)
+    return NextArrivalsUi(heading, lines, signedOutMessage = null, nothingMessage = nothing)
 }
 
 @Composable
-internal fun NextArrivalsContent(ui: NextArrivalsUi) {
+internal fun NextArrivalsContent(
+    ui: NextArrivalsUi,
+    style: WidgetStyle = WidgetStyle(),
+) {
     val context = LocalContext.current
     val size = LocalSize.current
     val room =
-        ((size.height - NextArrivalsWidget.CHROME_HEIGHT) / NextArrivalsWidget.ARRIVAL_HEIGHT)
+        ((size.height - chromeHeight(style)) / NextArrivalsWidget.ARRIVAL_HEIGHT)
             .toInt()
             .coerceIn(1, NextArrivalsWidget.MAX_SHOWN)
-    Column(GlanceModifier.widgetCard().clickable(actionStartActivity(openAppIntent(context)))) {
-        WidgetHeading(ui.heading)
-        Spacer(GlanceModifier.height(6.dp))
-        if (ui.message != null) {
+    Column(GlanceModifier.widgetCard(style).clickable(actionStartActivity(openAppIntent(context)))) {
+        if (style.showHeading) {
+            WidgetHeading(ui.heading)
+            Spacer(GlanceModifier.height(6.dp))
+        }
+        val shown = ui.linesFor(style).take(room)
+        val message = ui.signedOutMessage ?: ui.nothingMessage.takeIf { shown.isEmpty() }
+        if (message != null) {
             Text(
-                text = ui.message,
+                text = message,
                 style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
                 modifier = GlanceModifier.semantics { testTag = "message" },
             )
@@ -151,7 +194,7 @@ internal fun NextArrivalsContent(ui: NextArrivalsUi) {
         // doesn't fit. The arrivals get a column of their own, spaced by padding rather than
         // spacers, so neither column comes near that whatever the count.
         Column {
-            ui.lines.take(room).forEachIndexed { index, line ->
+            shown.forEachIndexed { index, line ->
                 ArrivalLineView(line, titleLines, context, topGap = if (index == 0) 0.dp else 8.dp)
             }
         }
@@ -198,3 +241,7 @@ private fun ArrivalPhrase.tint(): ColorProvider =
         ArrivalPhrase.ARRIVES -> GlanceTheme.colors.primary
         ArrivalPhrase.DELAYED_TO, ArrivalPhrase.OVERDUE -> GlanceTheme.colors.error
     }
+
+/** What the card uses before the first arrival: its padding, and the heading when shown. */
+private fun chromeHeight(style: WidgetStyle) =
+    NextArrivalsWidget.PADDING_HEIGHT + if (style.showHeading) NextArrivalsWidget.HEADING_HEIGHT else 0.dp

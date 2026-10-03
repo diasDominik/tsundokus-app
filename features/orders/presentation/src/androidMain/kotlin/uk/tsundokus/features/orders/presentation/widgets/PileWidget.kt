@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.Preferences
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -18,6 +19,7 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.provideContent
+import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
@@ -59,6 +61,9 @@ internal data class PileUi(
 class PileWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
+    // The picker's preview at a typical 2x1, not the minimum: there it has no heading or details.
+    override val previewSizeMode = SizeMode.Responsive(setOf(WidgetKind.PILE.defaultSize))
+
     override suspend fun provideGlance(
         context: Context,
         id: GlanceId,
@@ -66,11 +71,22 @@ class PileWidget : GlanceAppWidget() {
         val snapshots = withContext(Dispatchers.IO) { WidgetSnapshotStore.snapshots(context) }
         val first = pileUi(snapshots.value, todayIso())
         provideContent {
-            // Collected here, not read above: an open session redraws with each new snapshot.
+            // Both collected here, not read above: an open session redraws with each new snapshot,
+            // and with each change saved in the widget's settings.
+            val style = WidgetStyle.from(currentState<Preferences>())
             val snapshot by snapshots.collectAsState()
             val ui by produceState(first, snapshot) { value = pileUi(snapshot, todayIso()) }
-            GlanceTheme { PileContent(ui) }
+            WidgetTheme(style) { PileContent(ui, style) }
         }
+    }
+
+    /** The widget picker's preview: a made-up pile in the default look. */
+    override suspend fun providePreview(
+        context: Context,
+        widgetCategory: Int,
+    ) {
+        val ui = pileUi(previewSnapshot(todayIso()), todayIso())
+        provideContent { WidgetTheme(WidgetStyle()) { PileContent(ui) } }
     }
 
     internal companion object {
@@ -113,14 +129,17 @@ internal suspend fun pileUi(
 }
 
 @Composable
-internal fun PileContent(ui: PileUi) {
+internal fun PileContent(
+    ui: PileUi,
+    style: WidgetStyle = WidgetStyle(),
+) {
     val context = LocalContext.current
     val height = LocalSize.current.height
     Column(
-        modifier = GlanceModifier.widgetCard().clickable(actionStartActivity(openAppIntent(context))),
+        modifier = GlanceModifier.widgetCard(style).clickable(actionStartActivity(openAppIntent(context))),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (height >= PileWidget.HEADING_FROM) WidgetHeading(ui.heading)
+        if (style.showHeading && height >= PileWidget.HEADING_FROM) WidgetHeading(ui.heading)
         if (ui.count == null) {
             Text(
                 text = ui.message.orEmpty(),
@@ -147,7 +166,7 @@ internal fun PileContent(ui: PileUi) {
                 maxLines = 1,
             )
         }
-        if (ui.detail != null && height >= PileWidget.DETAIL_FROM) {
+        if (style.showDetail && ui.detail != null && height >= PileWidget.DETAIL_FROM) {
             Text(
                 text = ui.detail,
                 style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
