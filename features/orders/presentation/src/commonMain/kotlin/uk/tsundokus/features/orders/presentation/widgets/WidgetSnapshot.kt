@@ -63,7 +63,16 @@ data class WidgetArrival(
  */
 private const val MAX_ARRIVALS = 50
 
-private val snapshotJson = Json { ignoreUnknownKeys = true }
+/**
+ * The snapshot's JSON is also read by the iOS widget, in Swift, so it is a contract: every field is
+ * always written, defaults included, and a test pins the exact shape. Unknown keys are ignored so a
+ * newer app's file still reads in an older widget, and the other way round.
+ */
+private val snapshotJson =
+    Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
 /** The widgets' view of [this] cached list of orders on [today], for a signed-in user. */
 fun List<Order>.toWidgetSnapshot(today: String): WidgetSnapshot {
