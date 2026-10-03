@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.tsundoku.convention.cmp.application)
     alias(libs.plugins.tsundoku.convention.buildkonfig)
     alias(libs.plugins.tsundoku.convention.koin)
+    alias(libs.plugins.aboutlibraries)
 }
 
 kotlin {
@@ -64,4 +65,19 @@ kotlin {
             implementation(libs.junit)
         }
     }
+}
+
+// The open-source licenses screen lists every library the app ships. This module depends on every
+// other one, so it is the one that sees them all. The list is regenerated before compose resources
+// are processed, so a new dependency can't be left off it.
+aboutLibraries {
+    export {
+        outputFile = file("src/commonMain/composeResources/files/aboutlibraries.json")
+    }
+}
+
+val composeResourceTasks =
+    Regex("(copyNonXmlValueResources|convertXmlValueResources|generateResourceAccessors|prepareComposeResourcesTask).*")
+tasks.matching { composeResourceTasks.matches(it.name) }.configureEach {
+    dependsOn("exportLibraryDefinitions")
 }
