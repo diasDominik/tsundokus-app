@@ -6,11 +6,47 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5311D554ED5DA9ADC677897C /* TsundokuWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1262EB5954CBB85BF7003641 /* TsundokuWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A1197D1EAD56C6CE1251EA13 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 806E4ABFAD122295F42EBAF6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 90B78AAE9AC162CEB200C942;
+			remoteInfo = TsundokuWidgetsExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		52B79DAAB0C404932DAE2B7E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5311D554ED5DA9ADC677897C /* TsundokuWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1262EB5954CBB85BF7003641 /* TsundokuWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TsundokuWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D643D6045C11FE74F5CE1290 /* TsundokuApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TsundokuApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		843A494009F28A30BB0EEABC /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 90B78AAE9AC162CEB200C942 /* TsundokuWidgetsExtension */;
+		};
 		C664E81CA26059FD72300A3C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -21,6 +57,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		DB31D9C8EBA68A10B11AAF63 /* TsundokuWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				843A494009F28A30BB0EEABC /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			path = TsundokuWidgets;
+			sourceTree = "<group>";
+		};
 		5E43DC0339B52D7C54DD99F7 /* Configuration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Configuration;
@@ -37,6 +81,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		62972F5F186942C2631FE0DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		571CDFA6FA00392F60F8A005 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -52,6 +103,7 @@
 			children = (
 				5E43DC0339B52D7C54DD99F7 /* Configuration */,
 				A3D7212BD3A772AA9C8E6237 /* iosApp */,
+				DB31D9C8EBA68A10B11AAF63 /* TsundokuWidgets */,
 				A812E87C7ABF334E17AF133A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				D643D6045C11FE74F5CE1290 /* TsundokuApp.app */,
+				1262EB5954CBB85BF7003641 /* TsundokuWidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +120,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		90B78AAE9AC162CEB200C942 /* TsundokuWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4FB157D747B19077046ED1B5 /* Build configuration list for PBXNativeTarget "TsundokuWidgetsExtension" */;
+			buildPhases = (
+				58AC5EF4B0C1BF681A1DFE95 /* Sources */,
+				62972F5F186942C2631FE0DE /* Frameworks */,
+				8898FF534C851DF7F9AC363D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DB31D9C8EBA68A10B11AAF63 /* TsundokuWidgets */,
+			);
+			name = TsundokuWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = TsundokuWidgetsExtension;
+			productReference = 1262EB5954CBB85BF7003641 /* TsundokuWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		59E03DE79306B66118C3C3EE /* iosApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC482006B4324B2455D42759 /* Build configuration list for PBXNativeTarget "iosApp" */;
@@ -75,10 +150,12 @@
 				D9B656750A957320B791295B /* Sources */,
 				571CDFA6FA00392F60F8A005 /* Frameworks */,
 				1286C03B2E2E030CAFA72CED /* Resources */,
+				52B79DAAB0C404932DAE2B7E /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DFD28E0F8F93B91D251E7E76 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A3D7212BD3A772AA9C8E6237 /* iosApp */,
@@ -103,6 +180,9 @@
 					59E03DE79306B66118C3C3EE = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					90B78AAE9AC162CEB200C942 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 				};
 			};
 			buildConfigurationList = 539AB6A0241A12287A2E6F85 /* Build configuration list for PBXProject "iosApp" */;
@@ -120,11 +200,19 @@
 			projectRoot = "";
 			targets = (
 				59E03DE79306B66118C3C3EE /* iosApp */,
+				90B78AAE9AC162CEB200C942 /* TsundokuWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8898FF534C851DF7F9AC363D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1286C03B2E2E030CAFA72CED /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -157,6 +245,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		58AC5EF4B0C1BF681A1DFE95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D9B656750A957320B791295B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -166,7 +261,69 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		DFD28E0F8F93B91D251E7E76 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 90B78AAE9AC162CEB200C942 /* TsundokuWidgetsExtension */;
+			targetProxy = A1197D1EAD56C6CE1251EA13 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		92D034F547D04223D40CB0A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = TsundokuWidgets/TsundokuWidgets.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TsundokuWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Tsundoku;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BAA8F082B263ED87CB152247 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = TsundokuWidgets/TsundokuWidgets.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TsundokuWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Tsundoku;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		77EDE9BC3353503F1E3B25FD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -181,6 +338,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Tsundoku;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -210,6 +368,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Tsundoku;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -351,6 +510,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4FB157D747B19077046ED1B5 /* Build configuration list for PBXNativeTarget "TsundokuWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92D034F547D04223D40CB0A5 /* Debug */,
+				BAA8F082B263ED87CB152247 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		539AB6A0241A12287A2E6F85 /* Build configuration list for PBXProject "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

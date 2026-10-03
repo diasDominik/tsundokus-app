@@ -1,0 +1,54 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ · %@": {},
+    "%lld": {
+      "shouldTranslate": false
+    },
+    "%lld being read": {},
+    "%lld to read": {},
+    "All caught up": {},
+    "Arrives %@": {},
+    "Colours": {},
+    "Delayed to %@": {},
+    "How many arrived volumes are waiting to be read.": {},
+    "Next arrivals": {},
+    "Nothing on the way": {},
+    "Releases %@": {},
+    "Show heading": {},
+    "Show reading details": {},
+    "Show upcoming releases": {},
+    "Sign in to Tsundoku": {},
+    "System": {},
+    "The orders arriving next, and when.": {},
+    "Tsundoku": {},
+    "Was due %@": {},
+    "Your pile": {},
+    "oldest %lld days": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "oldest %lld day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "oldest %lld days"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "to read": {},
+    "today": {},
+    "tomorrow": {}
+  },
+  "version": "1.0"
+}

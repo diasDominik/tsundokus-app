@@ -11,6 +11,11 @@
 		     in the server repo's deploy secrets. -->
 		<string>webcredentials:tsundokus.uk</string>
 	</array>
+	<!-- Shared with the widget extension: the app writes the widget snapshot there. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>$(TSUNDOKU_APP_GROUP)</string>
+	</array>
 </dict>
 </plist>
 
