@@ -24,10 +24,8 @@ private fun line(
     phrase = phrase,
 )
 
-// 2x2 on a small launcher grid, 2x2 on a Pixel, and the largest a phone offers.
-private val SHORT = DpSize(110.dp, 110.dp)
+// A 2x2 on a Pixel.
 private val PIXEL_2X2 = DpSize(150.dp, 200.dp)
-private val LARGE = DpSize(300.dp, 400.dp)
 
 private val fiveArrivals =
     NextArrivalsUi(
@@ -46,44 +44,23 @@ class NextArrivalsWidgetTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun `a short widget shows the next arrival only`() =
+    fun `every arrival is listed for the list to scroll through`() =
         runGlanceAppWidgetUnitTest {
-            setContext(context)
-            setAppWidgetSize(SHORT)
-            provideComposable { NextArrivalsContent(fiveArrivals) }
-
-            onNode(hasTestTag("arrival-1")).assertExists()
-            onNode(hasText("Berserk 1")).assertExists()
-            onNode(hasTestTag("arrival-2")).assertDoesNotExist()
-        }
-
-    @Test
-    fun `as many arrivals as fit the height are shown`() =
-        runGlanceAppWidgetUnitTest {
+            val twelve = fiveArrivals.copy(lines = (1..12).map { line("$it") })
             setContext(context)
             setAppWidgetSize(PIXEL_2X2)
-            provideComposable { NextArrivalsContent(fiveArrivals) }
+            provideComposable { NextArrivalsContent(twelve) }
 
-            onNode(hasTestTag("arrival-3")).assertExists()
-            onNode(hasTestTag("arrival-4")).assertDoesNotExist()
-        }
-
-    @Test
-    fun `no more than five are shown however tall`() =
-        runGlanceAppWidgetUnitTest {
-            setContext(context)
-            setAppWidgetSize(LARGE)
-            provideComposable { NextArrivalsContent(fiveArrivals + line("6")) }
-
-            onNode(hasTestTag("arrival-5")).assertExists()
-            onNode(hasTestTag("arrival-6")).assertDoesNotExist()
+            // More than the ten child slots of a plain Column: only a lazy list keeps the twelfth.
+            onNode(hasTestTag("arrival-1")).assertExists()
+            onNode(hasTestTag("arrival-12")).assertExists()
         }
 
     @Test
     fun `a tap on an arrival opens that order`() =
         runGlanceAppWidgetUnitTest {
             setContext(context)
-            setAppWidgetSize(SHORT)
+            setAppWidgetSize(PIXEL_2X2)
             provideComposable { NextArrivalsContent(fiveArrivals) }
 
             onNode(
@@ -95,7 +72,7 @@ class NextArrivalsWidgetTest {
     fun `with nothing to list the message stands in`() =
         runGlanceAppWidgetUnitTest {
             setContext(context)
-            setAppWidgetSize(SHORT)
+            setAppWidgetSize(PIXEL_2X2)
             provideComposable {
                 NextArrivalsContent(
                     NextArrivalsUi(
@@ -114,7 +91,7 @@ class NextArrivalsWidgetTest {
     fun `without its heading the widget starts with the first arrival`() =
         runGlanceAppWidgetUnitTest {
             setContext(context)
-            setAppWidgetSize(SHORT)
+            setAppWidgetSize(PIXEL_2X2)
             provideComposable { NextArrivalsContent(fiveArrivals, WidgetStyle(showHeading = false)) }
 
             onNode(hasText("Next arrivals")).assertDoesNotExist()

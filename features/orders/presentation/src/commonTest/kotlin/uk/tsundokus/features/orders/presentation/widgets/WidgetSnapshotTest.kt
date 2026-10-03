@@ -1,5 +1,6 @@
 package uk.tsundokus.features.orders.presentation.widgets
 
+import uk.tsundokus.features.orders.domain.dates.isoPlusDays
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
@@ -63,10 +64,17 @@ class WidgetSnapshotTest {
     }
 
     @Test
-    fun `at most ten arrivals are kept`() {
-        val snapshot = (10..21).map { order("o$it", releaseDate = "2026-11-$it") }.toWidgetSnapshot(TODAY)
+    fun `at most fifty arrivals are kept soonest first`() {
+        val snapshot =
+            (1..60)
+                .map {
+                    order(
+                        "o$it",
+                        releaseDate = isoPlusDays(TODAY, it)!!,
+                    )
+                }.toWidgetSnapshot(TODAY)
 
-        assertEquals((10..19).map { "o$it" }, snapshot.arrivals.map { it.id })
+        assertEquals((1..50).map { "o$it" }, snapshot.arrivals.map { it.id })
     }
 
     @Test

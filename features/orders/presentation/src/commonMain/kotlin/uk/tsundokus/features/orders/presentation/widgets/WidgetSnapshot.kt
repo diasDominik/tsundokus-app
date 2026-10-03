@@ -57,10 +57,11 @@ data class WidgetArrival(
 )
 
 /**
- * How many arrivals the snapshot keeps. Twice what the tallest widget shows: some drop off as their
- * release passes, and a widget set to leave out releases still has parcels to show.
+ * How many arrivals the snapshot keeps. More than anyone scrolls through on a widget; the bound is
+ * there because a lazy list on Android 12+ sends all its rows to the launcher in one Binder
+ * transaction (about 1 MB), and fifty rows of text are a small fraction of that.
  */
-private const val MAX_ARRIVALS = 10
+private const val MAX_ARRIVALS = 50
 
 private val snapshotJson = Json { ignoreUnknownKeys = true }
 

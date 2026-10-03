@@ -13,12 +13,13 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.LocalContext
-import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.appwidget.provideContent
 import androidx.glance.currentState
 import androidx.glance.layout.Column
@@ -73,14 +74,14 @@ internal data class NextArrivalsUi(
 }
 
 /**
- * The orders arriving next: as many as fit the widget's height, up to five. Launchers give a 2x2
- * cell very different heights, so the widget is drawn for its exact size rather than for fixed
- * steps. A tap on an order opens it, anywhere else opens the app.
+ * The orders arriving next, soonest first, in a list that scrolls under the heading. A tap on an
+ * order opens it, anywhere else opens the app. The layout doesn't depend on the widget's size — the
+ * list just shows more when it is taller — so one layout serves every size.
  */
 class NextArrivalsWidget : GlanceAppWidget() {
-    override val sizeMode = SizeMode.Exact
+    override val sizeMode = SizeMode.Single
 
-    // The picker's preview at a typical 2x2, not the minimum: there it shows a single arrival.
+    // The picker's preview at a typical 2x2, not the minimum: there only one arrival would show.
     override val previewSizeMode = SizeMode.Responsive(setOf(WidgetKind.NEXT_ARRIVALS.defaultSize))
 
     override suspend fun provideGlance(
@@ -106,20 +107,6 @@ class NextArrivalsWidget : GlanceAppWidget() {
     ) {
         val ui = nextArrivalsUi(previewSnapshot(todayIso()), todayIso())
         provideContent { WidgetTheme(WidgetStyle()) { NextArrivalsContent(ui) } }
-    }
-
-    internal companion object {
-        /** The card's padding. */
-        val PADDING_HEIGHT = 24.dp
-
-        /** The heading and the gap under it. */
-        val HEADING_HEIGHT = 16.dp
-
-        /** One arrival: a line of title and a line of detail, with the gap before the next. */
-        val ARRIVAL_HEIGHT = 46.dp
-
-        /** The most shown however tall: what the snapshot keeps, and well inside Glance's 10 child slots. */
-        const val MAX_SHOWN = 5
     }
 }
 
@@ -168,17 +155,12 @@ internal fun NextArrivalsContent(
     style: WidgetStyle = WidgetStyle(),
 ) {
     val context = LocalContext.current
-    val size = LocalSize.current
-    val room =
-        ((size.height - chromeHeight(style)) / NextArrivalsWidget.ARRIVAL_HEIGHT)
-            .toInt()
-            .coerceIn(1, NextArrivalsWidget.MAX_SHOWN)
     Column(GlanceModifier.widgetCard(style).clickable(actionStartActivity(openAppIntent(context)))) {
         if (style.showHeading) {
             WidgetHeading(ui.heading)
             Spacer(GlanceModifier.height(6.dp))
         }
-        val shown = ui.linesFor(style).take(room)
+        val shown = ui.linesFor(style)
         val message = ui.signedOutMessage ?: ui.nothingMessage.takeIf { shown.isEmpty() }
         if (message != null) {
             Text(
@@ -188,14 +170,11 @@ internal fun NextArrivalsContent(
             )
             return@Column
         }
-        // A lone arrival gets two lines of title; in a list, each keeps to one.
-        val titleLines = if (room == 1) 2 else 1
-        // Glance lays a Row, Column or Box out in 10 pre-generated child slots and drops what
-        // doesn't fit. The arrivals get a column of their own, spaced by padding rather than
-        // spacers, so neither column comes near that whatever the count.
-        Column {
-            shown.forEachIndexed { index, line ->
-                ArrivalLineView(line, titleLines, context, topGap = if (index == 0) 0.dp else 8.dp)
+        // A lazy list, not a Column: Glance builds a plain Row, Column or Box from ten pre-generated
+        // child slots, while a lazy list becomes a scrolling collection with no such limit.
+        LazyColumn {
+            itemsIndexed(shown, itemId = { _, line -> line.id.hashCode().toLong() }) { index, line ->
+                ArrivalLineView(line, context, topGap = if (index == 0) 0.dp else 8.dp)
             }
         }
     }
@@ -204,7 +183,6 @@ internal fun NextArrivalsContent(
 @Composable
 private fun ArrivalLineView(
     line: ArrivalLine,
-    titleLines: Int,
     context: Context,
     topGap: Dp,
 ) {
@@ -223,7 +201,7 @@ private fun ArrivalLineView(
                     fontWeight = FontWeight.Bold,
                     color = GlanceTheme.colors.onSurface,
                 ),
-            maxLines = titleLines,
+            maxLines = 1,
         )
         Text(
             text = line.detail,
@@ -241,7 +219,3 @@ private fun ArrivalPhrase.tint(): ColorProvider =
         ArrivalPhrase.ARRIVES -> GlanceTheme.colors.primary
         ArrivalPhrase.DELAYED_TO, ArrivalPhrase.OVERDUE -> GlanceTheme.colors.error
     }
-
-/** What the card uses before the first arrival: its padding, and the heading when shown. */
-private fun chromeHeight(style: WidgetStyle) =
-    NextArrivalsWidget.PADDING_HEIGHT + if (style.showHeading) NextArrivalsWidget.HEADING_HEIGHT else 0.dp
