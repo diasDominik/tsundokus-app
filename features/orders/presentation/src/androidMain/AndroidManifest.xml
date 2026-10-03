@@ -12,6 +12,30 @@
                 <action android:name="android.intent.action.TIME_SET" />
             </intent-filter>
         </receiver>
+
+        <!-- Home-screen widgets. They only read the snapshot the app writes (GlanceWidgetPublisher). -->
+        <receiver
+            android:name="uk.tsundokus.features.orders.presentation.widgets.NextArrivalsWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_next_arrivals_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_arrivals_info" />
+        </receiver>
+        <receiver
+            android:name="uk.tsundokus.features.orders.presentation.widgets.PileWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_pile_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_pile_info" />
+        </receiver>
     </application>
 
 </manifest>

@@ -42,6 +42,9 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.work.runtime)
                 implementation(libs.kscan)
+                // Home-screen widgets.
+                implementation(libs.glance.appwidget)
+                implementation(libs.glance.material3)
             }
         }
 
@@ -52,6 +55,7 @@ kotlin {
                 implementation(libs.robolectric)
                 implementation(libs.androidx.test.ext.junit)
                 implementation(libs.androidx.work.testing)
+                implementation(libs.glance.appwidget.testing)
             }
         }
 

@@ -260,6 +260,18 @@
     <string name="export_failed">Couldn't save the file. Try again.</string>
     <string name="export_empty">No orders to export yet.</string>
 
+    <!-- Home-screen widgets -->
+    <string name="widget_next_arrivals_title">Next arrivals</string>
+    <string name="widget_nothing_on_the_way">Nothing on the way</string>
+    <string name="widget_sign_in">Sign in to Tsundoku</string>
+    <string name="widget_today">today</string>
+    <string name="widget_tomorrow">tomorrow</string>
+    <string name="widget_arrives">Arrives %1$s</string>
+    <string name="widget_delayed_to">Delayed to %1$s</string>
+    <string name="widget_releases">Releases %1$s</string>
+    <string name="widget_overdue">Was due %1$s</string>
+    <string name="widget_all_caught_up">All caught up</string>
+
     <!-- Stats -->
     <string name="stats_title">Stats</string>
     <string name="stats_period_12_months">12 months</string>
@@ -369,5 +381,10 @@
     <plurals name="export_summary_with_cancelled">
         <item quantity="one">%1$d order, including %2$d cancelled</item>
         <item quantity="other">%1$d orders, including %2$d cancelled</item>
+    </plurals>
+
+    <plurals name="widget_oldest_waiting">
+        <item quantity="one">oldest %1$d day</item>
+        <item quantity="other">oldest %1$d days</item>
     </plurals>
 </resources>
