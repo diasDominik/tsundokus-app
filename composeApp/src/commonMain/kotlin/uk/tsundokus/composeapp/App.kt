@@ -84,6 +84,7 @@ import uk.tsundokus.features.authentication.presentation.navigation.authGraph
 import uk.tsundokus.features.authentication.presentation.navigation.authSerializersModule
 import uk.tsundokus.features.orders.presentation.navigation.AddOrder
 import uk.tsundokus.features.orders.presentation.navigation.EditOrder
+import uk.tsundokus.features.orders.presentation.navigation.ExportOrders
 import uk.tsundokus.features.orders.presentation.navigation.OrderDetail
 import uk.tsundokus.features.orders.presentation.navigation.Orders
 import uk.tsundokus.features.orders.presentation.navigation.ReadingList
@@ -379,6 +380,7 @@ fun App() {
                                             backStack.clear()
                                             backStack.add(SignIn)
                                         },
+                                        onOpenExport = { backStack.add(ExportOrders) },
                                         onBack = { backStack.removeLastOrNull() },
                                         snackbarHostState = snackbarHostState,
                                         accountName = accountName,

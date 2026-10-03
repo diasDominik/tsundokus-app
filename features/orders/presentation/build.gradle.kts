@@ -21,6 +21,8 @@ kotlin {
                 implementation(libs.jetbrains.navigationevent.compose)
                 implementation(libs.jetbrains.lifecycle.viewmodel.navigation3)
                 implementation(libs.coil.compose)
+                // The platform save dialog for exporting orders; on the web, a download.
+                implementation(libs.filekit.dialogs.compose)
             }
         }
 

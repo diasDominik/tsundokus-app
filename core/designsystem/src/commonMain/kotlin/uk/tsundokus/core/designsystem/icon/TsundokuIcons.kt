@@ -108,6 +108,8 @@ object TsundokuIcons {
                 "6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z",
         )
 
+    val Download: ImageVector = icon("Download", "M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z")
+
     val Search: ImageVector =
         icon(
             "Search",

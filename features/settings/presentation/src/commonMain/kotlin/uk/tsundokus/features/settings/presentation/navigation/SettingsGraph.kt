@@ -33,6 +33,7 @@ val settingsSerializersModule =
 fun EntryProviderScope<NavKey>.settingsGraph(
     backStack: NavBackStack<NavKey>,
     onSignedOut: () -> Unit,
+    onOpenExport: () -> Unit,
     onBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
     accountName: String,
@@ -50,6 +51,7 @@ fun EntryProviderScope<NavKey>.settingsGraph(
             onDeleteAccount = { backStack.add(DeleteAccount) },
             onAbout = { backStack.add(About) },
             onLicenses = { backStack.add(Licenses) },
+            onExport = onOpenExport,
             snackbarHostState = snackbarHostState,
         )
     }

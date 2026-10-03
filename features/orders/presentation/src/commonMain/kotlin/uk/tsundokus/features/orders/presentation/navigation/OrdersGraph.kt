@@ -9,6 +9,7 @@ import kotlinx.serialization.modules.subclass
 import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.presentation.addeditorder.AddEditOrderArgs
 import uk.tsundokus.features.orders.presentation.addeditorder.AddEditOrderRoot
+import uk.tsundokus.features.orders.presentation.export.ExportRoot
 import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
 import uk.tsundokus.features.orders.presentation.orderslist.OrdersListRoot
 import uk.tsundokus.features.orders.presentation.readinglist.ReadingListRoot
@@ -26,6 +27,7 @@ val ordersSerializersModule =
             subclass(SeriesList::class)
             subclass(SeriesDetail::class)
             subclass(Stats::class)
+            subclass(ExportOrders::class)
             subclass(OrderDetail::class)
             subclass(AddOrder::class)
             subclass(EditOrder::class)
@@ -81,6 +83,10 @@ fun EntryProviderScope<NavKey>.ordersGraph(
             onOpenReading = onOpenReading,
             snackbar = snackbar,
         )
+    }
+
+    entry<ExportOrders> {
+        ExportRoot(snackbar = snackbar)
     }
 
     entry<SeriesDetail> { route ->
