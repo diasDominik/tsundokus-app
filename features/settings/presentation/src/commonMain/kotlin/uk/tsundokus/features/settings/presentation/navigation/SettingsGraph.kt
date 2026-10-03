@@ -34,6 +34,7 @@ fun EntryProviderScope<NavKey>.settingsGraph(
     backStack: NavBackStack<NavKey>,
     onSignedOut: () -> Unit,
     onOpenExport: () -> Unit,
+    loadLicenses: suspend () -> String,
     onBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
     accountName: String,
@@ -96,6 +97,6 @@ fun EntryProviderScope<NavKey>.settingsGraph(
     }
 
     entry<Licenses> {
-        LicensesRoot()
+        LicensesRoot(loadLibraries = loadLicenses)
     }
 }

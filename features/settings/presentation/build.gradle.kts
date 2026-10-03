@@ -1,14 +1,5 @@
 plugins {
     alias(libs.plugins.tsundoku.convention.cmp.feature)
-    alias(libs.plugins.aboutlibraries)
-}
-
-// Collect OSS dependency metadata into this module's compose resources so the licenses screen can
-// render it. CMP targets don't auto-generate, so run :exportLibraryDefinitions to (re)create the file.
-aboutLibraries {
-    export {
-        outputFile = file("src/commonMain/composeResources/files/aboutlibraries.json")
-    }
 }
 
 kotlin {

@@ -381,6 +381,8 @@ fun App() {
                                             backStack.add(SignIn)
                                         },
                                         onOpenExport = { backStack.add(ExportOrders) },
+                                        // Generated into this module: it is the one that depends on every library.
+                                        loadLicenses = { Res.readBytes("files/aboutlibraries.json").decodeToString() },
                                         onBack = { backStack.removeLastOrNull() },
                                         snackbarHostState = snackbarHostState,
                                         accountName = accountName,
