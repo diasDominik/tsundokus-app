@@ -17,5 +17,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>TsundokuAppGroup</key>
+	<string>$(TSUNDOKU_APP_GROUP)</string>
 </dict>
 </plist>

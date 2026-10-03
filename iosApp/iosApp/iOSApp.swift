@@ -1,5 +1,6 @@
 import SwiftUI
 import UserNotifications
+import WidgetKit
 import ComposeApp
 
 /// Receives taps on reminders (local notifications scheduled by the shared code) and hands their
@@ -10,6 +11,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        // WidgetKit has no Objective-C API, so the shared code can't reach it: hand it the reload call.
+        WidgetBridgeKt.installWidgetReloader { WidgetCenter.shared.reloadAllTimelines() }
         return true
     }
 
