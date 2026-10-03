@@ -51,7 +51,9 @@ internal fun Project.configureKotlinMultiplatform() {
             }.configure {
                 instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
-            withHostTest { }
+            // Android resources in host tests: libraries such as Glance read their own (theme colours)
+            // and fail without them under Robolectric.
+            withHostTest { isIncludeAndroidResources = true }
         }
 
         @OptIn(ExperimentalWasmDsl::class)
