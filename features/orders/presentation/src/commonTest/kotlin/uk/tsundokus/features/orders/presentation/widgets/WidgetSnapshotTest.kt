@@ -63,10 +63,10 @@ class WidgetSnapshotTest {
     }
 
     @Test
-    fun `at most five arrivals are kept`() {
-        val snapshot = (1..8).map { order("o$it", releaseDate = "2026-11-0$it") }.toWidgetSnapshot(TODAY)
+    fun `at most ten arrivals are kept`() {
+        val snapshot = (10..21).map { order("o$it", releaseDate = "2026-11-$it") }.toWidgetSnapshot(TODAY)
 
-        assertEquals(listOf("o1", "o2", "o3", "o4", "o5"), snapshot.arrivals.map { it.id })
+        assertEquals((10..19).map { "o$it" }, snapshot.arrivals.map { it.id })
     }
 
     @Test

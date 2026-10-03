@@ -62,4 +62,16 @@ class PileWidgetTest {
             onNode(hasTestTag("message")).assert(hasText("All caught up"))
             onNode(hasTestTag("count")).assertDoesNotExist()
         }
+
+    @Test
+    fun `the heading and the details line can each be turned off`() =
+        runGlanceAppWidgetUnitTest {
+            setContext(context)
+            setAppWidgetSize(PIXEL_2X1)
+            provideComposable { PileContent(pile, WidgetStyle(showHeading = false, showDetail = false)) }
+
+            onNode(hasText("Your pile")).assertDoesNotExist()
+            onNode(hasTestTag("detail")).assertDoesNotExist()
+            onNode(hasTestTag("count")).assert(hasText("12"))
+        }
 }
