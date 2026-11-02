@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.internal.Actions.with
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
+import uk.tsundokus.convention.appVersion
 import uk.tsundokus.convention.findPluginId
 import uk.tsundokus.convention.libs
 import uk.tsundokus.convention.pathToPackageName
@@ -30,12 +31,8 @@ class BuildKonfigConventionPlugin : Plugin<Project> {
                             "or in local.properties.",
                     )
 
-            // App version exposed cross-platform for the in-app update check.
-            val appVersion: String =
-                System.getenv("APP_VERSION")
-                    ?: localProperties.getProperty("APP_VERSION")
-                    ?: findProperty("APP_VERSION")?.toString()
-                    ?: "0.1.0"
+            // App version exposed cross-platform, from the git tag only.
+            val appVersion = appVersion()
 
             extensions.configure<BuildKonfigExtension> {
                 packageName = target.pathToPackageName()

@@ -5,11 +5,13 @@ name: Release
 #
 #   git tag v0.2.0 && git push origin v0.2.0
 #
-# The tag is the version: v1.2.3 -> versionName 1.2.3, versionCode 10203. Play rejects a
-# versionCode it has seen before, so every release needs a higher tag than the last one.
+# The tag is the version, and nothing else sets it: Gradle reads it from git (appVersion in
+# build-logic), so v1.2.3 builds versionName 1.2.3, versionCode 10203. Play rejects a versionCode
+# it has seen before, so every release needs a higher tag than the last one.
 #
-# Run it from the Actions tab instead (workflow_dispatch) for a dry run: same build and checks,
-# the bundle is kept as a workflow artifact, nothing is released or uploaded.
+# Run it from the Actions tab instead (workflow_dispatch) for a dry run: same build and signature
+# check on an untagged commit (version "<latest tag>-dev"), the bundle is kept as a workflow
+# artifact, nothing is released or uploaded.
 #
 # Repository secrets:
 #   ANDROID_UPLOAD_KEYSTORE_BASE64   upload_keystore.jks, base64-encoded
@@ -21,11 +23,6 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to build for the dry run (x.y.z)"
-        required: true
-        default: "0.0.1"
 
 concurrency:
   group: release
@@ -47,8 +44,11 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
+      # Full history with tags: the version comes from git describe.
       - name: Checkout Repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 25 (Temurin)
         uses: actions/setup-java@v6
@@ -63,12 +63,11 @@ jobs:
 
       - name: Resolve version
         id: version
-        env:
-          RAW_VERSION: ${{ github.event_name == 'push' && github.ref_name || inputs.version }}
+        if: github.event_name == 'push'
         run: |
-          version="${RAW_VERSION#v}"
+          version="${GITHUB_REF_NAME#v}"
           if [[ ! "$version" =~ ^(0|[1-9][0-9]?)\.(0|[1-9][0-9]?)\.(0|[1-9][0-9]?)$ ]]; then
-            echo "::error::'$RAW_VERSION' is not a version like v1.2.3 (each part 0-99, it becomes the versionCode)"
+            echo "::error::'$GITHUB_REF_NAME' is not a version like v1.2.3 (each part 0-99, it becomes the versionCode)"
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
@@ -97,8 +96,6 @@ jobs:
 
       - name: Build App Bundle
         env:
-          APP_VERSION: ${{ steps.version.outputs.version }}
-          ORG_GRADLE_PROJECT_APP_VERSION: ${{ steps.version.outputs.version }}
           API_KEY: ${{ secrets.API_KEY }}
           SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
           SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
@@ -115,18 +112,22 @@ jobs:
             echo "::error::Bundle is signed with $signer, not the upload certificate"
             exit 1
           fi
-          # The bundle manifest is protobuf: the versionName shows up as a string with binary
-          # bytes around it, so match it as a version not embedded in a longer one.
-          manifest=$(unzip -p "$aab" base/manifest/AndroidManifest.xml | strings)
-          grep -qE "(^|[^0-9.])${VERSION//./\\.}([^0-9.]|$)" <<< "$manifest" \
-            || { echo "::error::versionName $VERSION not found in the bundle"; exit 1; }
-          echo "Signed with the upload certificate, version $VERSION"
+          echo "Signed with the upload certificate"
+          # Tag runs only: Gradle must have picked the version up from the tag. The bundle
+          # manifest is protobuf, so the versionName shows up as a string with binary bytes
+          # around it; match it as a version not embedded in a longer one.
+          if [[ -n "$VERSION" ]]; then
+            manifest=$(unzip -p "$aab" base/manifest/AndroidManifest.xml | strings)
+            grep -qE "(^|[^0-9.])${VERSION//./\\.}([^0-9.]|$)" <<< "$manifest" \
+              || { echo "::error::versionName $VERSION not found in the bundle"; exit 1; }
+            echo "versionName $VERSION"
+          fi
           rm -f androidApp/keystore/upload_keystore.jks
 
       - name: Upload bundle
         uses: actions/upload-artifact@v7
         with:
-          name: tsundoku-${{ steps.version.outputs.version }}
+          name: tsundoku-${{ steps.version.outputs.version || 'dry-run' }}
           path: |
             androidApp/build/outputs/bundle/release/androidApp-release.aab
             androidApp/build/outputs/mapping/release/mapping.txt
