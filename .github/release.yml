@@ -1,0 +1,13 @@
+# Categories for the generated GitHub release notes (gh release create --generate-notes).
+changelog:
+  categories:
+    - title: 🚀 New Features
+      labels: [feature]
+    - title: 🐛 Bugs fixed
+      labels: [bug]
+    - title: 🧪 Updated Translations
+      labels: [translations]
+    - title: 💬 Minor Changes
+      labels: ["cleanup / restructuring", dependencies]
+    - title: Other Changes
+      labels: ["*"]

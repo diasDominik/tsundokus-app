@@ -1,28 +1,22 @@
+import uk.tsundokus.convention.appVersion
+import uk.tsundokus.convention.versionCodeOf
+
 plugins {
     alias(libs.plugins.tsundoku.convention.android.application.compose)
-}
-
-// Derive a monotonically increasing versionCode from the version name (e.g. "1.2.3" -> 10203)
-// so every Play Store upload gets a unique, higher code without manual bumping.
-fun versionNameToCode(name: String): Int {
-    val (major, minor, patch) =
-        (name.split(".") + listOf("0", "0", "0"))
-            .take(3)
-            .map { it.toIntOrNull() ?: 0 }
-    return major * 10_000 + minor * 100 + patch
 }
 
 android {
     namespace = "uk.tsundokus.androidapp"
 
-    val appVersion = providers.gradleProperty("APP_VERSION").get()
+    // From the git tag only (see appVersion in build-logic).
+    val appVersion = appVersion()
 
     // Release builds in CI are signed with the upload keystore; local builds fall back to debug.
     val runsCIReleaseBuild = System.getenv("SIGNING_STORE_PASSWORD") != null
 
     defaultConfig {
         applicationId = "uk.tsundokus"
-        versionCode = versionNameToCode(appVersion)
+        versionCode = versionCodeOf(appVersion)
         versionName = appVersion
     }
 

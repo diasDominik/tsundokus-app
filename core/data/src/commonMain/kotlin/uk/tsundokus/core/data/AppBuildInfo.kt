@@ -2,7 +2,7 @@ package uk.tsundokus.core.data
 
 /** Public re-export of build-time app metadata. [BuildKonfig] itself is internal to this module. */
 object AppBuildInfo {
-    /** The installed app version (e.g. "1.2.0"), used by the app-update check. */
+    /** The installed app version: "1.2.0" for a build of tag v1.2.0, "1.2.0-dev" for any later commit. */
     val version: String = BuildKonfig.APP_VERSION
 
     /** Backend HTTP base URL (e.g. "https://api.tsundokus.uk"). */
