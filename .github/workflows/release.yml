@@ -17,6 +17,8 @@ name: Release
 #   ANDROID_UPLOAD_KEYSTORE_BASE64   upload_keystore.jks, base64-encoded
 #   ANDROID_UPLOAD_KEYSTORE_PASSWORD keystore + key password (alias "upload")
 #   API_KEY                          production API key the app sends as x-api-key
+#   BASE_URL_HTTP                    server base URL the app talks to
+#   BASE_URL_WS                      WebSocket base URL (passed to the build, not read by it yet)
 #   PLAY_SERVICE_ACCOUNT_JSON        Google Play service account key (release only)
 on:
   push:
@@ -29,7 +31,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  BASE_URL_HTTP: https://tsundokus.uk
+  API_KEY: ${{ secrets.API_KEY }}
+  BASE_URL_HTTP: ${{ secrets.BASE_URL_HTTP }}
+  BASE_URL_WS: ${{ secrets.BASE_URL_WS }}
   # SHA-256 of the upload certificate. The release build falls back to the debug key when the
   # signing secrets are missing, so the bundle's certificate is checked before anything ships.
   UPLOAD_CERT_SHA256: "CF:12:35:9B:1B:4F:78:18:2F:8E:D2:EE:8B:40:44:D6:BF:D3:8F:8A:10:CE:17:EA:49:0F:51:A8:A4:6C:74:5A"
@@ -76,12 +80,12 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
-          API_KEY: ${{ secrets.API_KEY }}
         run: |
           missing=()
           [[ -n "$KEYSTORE" ]] || missing+=(ANDROID_UPLOAD_KEYSTORE_BASE64)
           [[ -n "$KEYSTORE_PASSWORD" ]] || missing+=(ANDROID_UPLOAD_KEYSTORE_PASSWORD)
           [[ -n "$API_KEY" ]] || missing+=(API_KEY)
+          [[ -n "$BASE_URL_HTTP" ]] || missing+=(BASE_URL_HTTP)
           if (( ${#missing[@]} )); then
             echo "::error::Missing repository secrets: ${missing[*]}"
             exit 1
@@ -96,7 +100,6 @@ jobs:
 
       - name: Build App Bundle
         env:
-          API_KEY: ${{ secrets.API_KEY }}
           SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
           SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: upload
