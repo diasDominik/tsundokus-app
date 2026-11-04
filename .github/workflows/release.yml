@@ -1,7 +1,11 @@
 name: Release
 
-# Builds the signed Android App Bundle for a version tag, uploads it to the Play Store internal
-# track and, once Play has accepted it, publishes it as a GitHub release.
+# Builds the Android App Bundle and APK for a version tag and uploads the bundle to the Play Store
+# internal track. Once Play has accepted it, the APK is published as a GitHub release.
+#
+# The two are signed differently. The bundle uses the upload key and Play re-signs it for its users;
+# the APK uses the distribution key. Android only updates an app with the certificate it was
+# installed with, so moving between a Play install and an APK install means uninstalling first.
 #
 #   git tag v0.2.0 && git push origin v0.2.0
 #
@@ -9,16 +13,18 @@ name: Release
 # build-logic), so v1.2.3 builds versionName 1.2.3, versionCode 10203. Play rejects a versionCode
 # it has seen before, so every release needs a higher tag than the last one.
 #
-# Run it from the Actions tab instead (workflow_dispatch) for a dry run: same build and signature
-# check on an untagged commit (version "<latest tag>-dev"), the bundle is kept as a workflow
+# Run it from the Actions tab instead (workflow_dispatch) for a dry run: same builds and signature
+# checks on an untagged commit (version "<latest tag>-dev"), the outputs are kept as a workflow
 # artifact, nothing is released or uploaded.
 #
 # Repository secrets:
-#   ANDROID_UPLOAD_KEYSTORE_BASE64   upload_keystore.jks, base64-encoded
-#   ANDROID_UPLOAD_KEYSTORE_PASSWORD keystore + key password (alias "upload")
-#   API_KEY                          production API key the app sends as x-api-key
-#   BASE_URL_HTTP                    server base URL the app talks to
-#   PLAY_SERVICE_ACCOUNT_JSON        Google Play service account key (release only)
+#   ANDROID_UPLOAD_KEYSTORE_BASE64         upload_keystore.jks, base64-encoded
+#   ANDROID_UPLOAD_KEYSTORE_PASSWORD       keystore + key password (alias "upload")
+#   ANDROID_DISTRIBUTION_KEYSTORE_BASE64   distribution_keystore.jks, base64-encoded
+#   ANDROID_DISTRIBUTION_KEYSTORE_PASSWORD keystore + key password (alias "distribution")
+#   API_KEY                                production API key the app sends as x-api-key
+#   BASE_URL_HTTP                          server base URL the app talks to
+#   PLAY_SERVICE_ACCOUNT_JSON              Google Play service account key (release only)
 on:
   push:
     tags:
@@ -32,9 +38,10 @@ concurrency:
 env:
   API_KEY: ${{ secrets.API_KEY }}
   BASE_URL_HTTP: ${{ secrets.BASE_URL_HTTP }}
-  # SHA-256 of the upload certificate. The release build falls back to the debug key when the
-  # signing secrets are missing, so the bundle's certificate is checked before anything ships.
+  # SHA-256 of the signing certificates. The release build falls back to the debug key when the
+  # signing secrets are missing, so each output's certificate is checked before anything ships.
   UPLOAD_CERT_SHA256: "CF:12:35:9B:1B:4F:78:18:2F:8E:D2:EE:8B:40:44:D6:BF:D3:8F:8A:10:CE:17:EA:49:0F:51:A8:A4:6C:74:5A"
+  DISTRIBUTION_CERT_SHA256: "A4:CA:0C:57:06:D3:36:44:1B:E9:CA:D2:A8:D1:A4:AC:78:BF:AB:C0:D9:CC:9E:F3:53:C0:07:78:37:56:D2:46"
 
 jobs:
   build:
@@ -78,10 +85,14 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          DISTRIBUTION_KEYSTORE: ${{ secrets.ANDROID_DISTRIBUTION_KEYSTORE_BASE64 }}
+          DISTRIBUTION_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_DISTRIBUTION_KEYSTORE_PASSWORD }}
         run: |
           missing=()
           [[ -n "$KEYSTORE" ]] || missing+=(ANDROID_UPLOAD_KEYSTORE_BASE64)
           [[ -n "$KEYSTORE_PASSWORD" ]] || missing+=(ANDROID_UPLOAD_KEYSTORE_PASSWORD)
+          [[ -n "$DISTRIBUTION_KEYSTORE" ]] || missing+=(ANDROID_DISTRIBUTION_KEYSTORE_BASE64)
+          [[ -n "$DISTRIBUTION_KEYSTORE_PASSWORD" ]] || missing+=(ANDROID_DISTRIBUTION_KEYSTORE_PASSWORD)
           [[ -n "$API_KEY" ]] || missing+=(API_KEY)
           [[ -n "$BASE_URL_HTTP" ]] || missing+=(BASE_URL_HTTP)
           if (( ${#missing[@]} )); then
@@ -89,12 +100,14 @@ jobs:
             exit 1
           fi
 
-      - name: Decode keystore
+      - name: Decode keystores
         env:
           KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          DISTRIBUTION_KEYSTORE: ${{ secrets.ANDROID_DISTRIBUTION_KEYSTORE_BASE64 }}
         run: |
           mkdir -p androidApp/keystore
           base64 --decode <<< "$KEYSTORE" > androidApp/keystore/upload_keystore.jks
+          base64 --decode <<< "$DISTRIBUTION_KEYSTORE" > androidApp/keystore/distribution_keystore.jks
 
       - name: Build App Bundle
         env:
@@ -103,7 +116,15 @@ jobs:
           SIGNING_KEY_ALIAS: upload
         run: ./gradlew :androidApp:bundleRelease --no-daemon --no-configuration-cache --no-build-cache
 
-      - name: Verify signature and version
+      - name: Build APK
+        env:
+          SIGNING_STORE_FILE: keystore/distribution_keystore.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_DISTRIBUTION_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_DISTRIBUTION_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: distribution
+        run: ./gradlew :androidApp:assembleRelease --no-daemon --no-configuration-cache --no-build-cache
+
+      - name: Verify signatures and version
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
@@ -113,7 +134,21 @@ jobs:
             echo "::error::Bundle is signed with $signer, not the upload certificate"
             exit 1
           fi
-          echo "Signed with the upload certificate"
+          echo "Bundle signed with the upload certificate"
+          # An APK may carry only v2+ signatures, which keytool can't read.
+          apk=androidApp/build/outputs/apk/release/androidApp-release.apk
+          build_tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          apk_certs=$("$build_tools/apksigner" verify --print-certs "$apk")
+          echo "$apk_certs"
+          # Every signer must be the distribution certificate, so more than one digest also fails.
+          apk_signer=$(grep -oE 'certificate SHA-256 digest: [0-9a-f]{64}' <<< "$apk_certs" \
+            | sed 's/.*: //' | sort -u || true)
+          expected=$(tr -d ':' <<< "$DISTRIBUTION_CERT_SHA256" | tr 'A-F' 'a-f')
+          if [[ "$apk_signer" != "$expected" ]]; then
+            echo "::error::APK is signed with $apk_signer, not the distribution certificate"
+            exit 1
+          fi
+          echo "APK signed with the distribution certificate"
           # Tag runs only: Gradle must have picked the version up from the tag. The bundle
           # manifest is protobuf, so the versionName shows up as a string with binary bytes
           # around it; match it as a version not embedded in a longer one.
@@ -121,16 +156,19 @@ jobs:
             manifest=$(unzip -p "$aab" base/manifest/AndroidManifest.xml | strings)
             grep -qE "(^|[^0-9.])${VERSION//./\\.}([^0-9.]|$)" <<< "$manifest" \
               || { echo "::error::versionName $VERSION not found in the bundle"; exit 1; }
+            "$build_tools/aapt2" dump badging "$apk" | grep -qF "versionName='$VERSION'" \
+              || { echo "::error::versionName $VERSION not found in the APK"; exit 1; }
             echo "versionName $VERSION"
           fi
-          rm -f androidApp/keystore/upload_keystore.jks
+          rm -f androidApp/keystore/upload_keystore.jks androidApp/keystore/distribution_keystore.jks
 
-      - name: Upload bundle
+      - name: Upload build outputs
         uses: actions/upload-artifact@v7
         with:
           name: tsundoku-${{ steps.version.outputs.version || 'dry-run' }}
           path: |
             androidApp/build/outputs/bundle/release/androidApp-release.aab
+            androidApp/build/outputs/apk/release/androidApp-release.apk
             androidApp/build/outputs/mapping/release/mapping.txt
           if-no-files-found: error
           retention-days: 30
@@ -155,7 +193,7 @@ jobs:
           packageName: uk.tsundokus
           releaseFiles: bundle/release/androidApp-release.aab
           mappingFile: mapping/release/mapping.txt
-          track: internal
+          tracks: internal
 
   github-release:
     name: GitHub release
@@ -165,7 +203,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download bundle
+      - name: Download build outputs
         uses: actions/download-artifact@v8
         with:
           name: tsundoku-${{ needs.build.outputs.version }}
@@ -175,6 +213,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.build.outputs.version }}
         run: |
-          mv bundle/release/androidApp-release.aab "tsundoku-$VERSION.aab"
-          gh release create "$GITHUB_REF_NAME" "tsundoku-$VERSION.aab" \
-            --repo "$GITHUB_REPOSITORY" --title "$VERSION" --generate-notes --verify-tag
+          mv apk/release/androidApp-release.apk "tsundoku-$VERSION.apk"
+          # The release already exists when the tag came from publishing it on GitHub, or when this
+          # job is re-run: attach the APK and leave its title and notes alone.
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "tsundoku-$VERSION.apk" \
+              --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "tsundoku-$VERSION.apk" \
+              --repo "$GITHUB_REPOSITORY" --title "$VERSION" --generate-notes --verify-tag
+          fi

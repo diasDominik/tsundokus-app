@@ -11,7 +11,8 @@ android {
     // From the git tag only (see appVersion in build-logic).
     val appVersion = appVersion()
 
-    // Release builds in CI are signed with the upload keystore; local builds fall back to debug.
+    // Release builds in CI are signed with the keystore they name: the upload keystore for Play, the
+    // distribution keystore for the APK published elsewhere. Local builds fall back to debug.
     val runsCIReleaseBuild = System.getenv("SIGNING_STORE_PASSWORD") != null
 
     defaultConfig {
@@ -22,7 +23,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("keystore/upload_keystore.jks")
+            storeFile = file(System.getenv("SIGNING_STORE_FILE") ?: "keystore/upload_keystore.jks")
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
             keyAlias = System.getenv("SIGNING_KEY_ALIAS")
             keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
