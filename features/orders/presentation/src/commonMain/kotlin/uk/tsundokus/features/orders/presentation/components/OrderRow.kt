@@ -1,6 +1,7 @@
 package uk.tsundokus.features.orders.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,7 +81,7 @@ fun OrderRow(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.basicMarquee(),
                 )
                 if (order.subtitle.isNotBlank()) {
                     Text(
