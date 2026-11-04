@@ -138,8 +138,11 @@ jobs:
           # An APK may carry only v2+ signatures, which keytool can't read.
           apk=androidApp/build/outputs/apk/release/androidApp-release.apk
           build_tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
-          apk_signer=$("$build_tools/apksigner" verify --print-certs "$apk" \
-            | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')
+          apk_certs=$("$build_tools/apksigner" verify --print-certs "$apk")
+          echo "$apk_certs"
+          # Every signer must be the distribution certificate, so more than one digest also fails.
+          apk_signer=$(grep -oE 'certificate SHA-256 digest: [0-9a-f]{64}' <<< "$apk_certs" \
+            | sed 's/.*: //' | sort -u || true)
           expected=$(tr -d ':' <<< "$DISTRIBUTION_CERT_SHA256" | tr 'A-F' 'a-f')
           if [[ "$apk_signer" != "$expected" ]]; then
             echo "::error::APK is signed with $apk_signer, not the distribution certificate"
