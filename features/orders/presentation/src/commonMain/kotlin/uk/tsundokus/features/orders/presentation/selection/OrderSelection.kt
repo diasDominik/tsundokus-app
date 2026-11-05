@@ -74,7 +74,7 @@ private val MOVES_AWAY_FROM_RECEIVED = setOf(OrderStatus.SHIPPED, OrderStatus.CA
 
 /**
  * The orders picked on a list, and acting on them together. [picked] is null while the list is not
- * in selection mode, and can be empty in it (just started, nothing picked yet).
+ * in selection mode.
  *
  * The last change is remembered as the orders were before it, so it can be undone by saving them
  * back. Deleting is not undoable: the list asks before it deletes.
@@ -86,10 +86,6 @@ class OrderSelection(
     val picked: StateFlow<Set<String>?> = pickedIds.asStateFlow()
 
     private var beforeLastChange: List<Order> = emptyList()
-
-    fun start() {
-        if (pickedIds.value == null) pickedIds.value = emptySet()
-    }
 
     /** Picks or unpicks [id], starting selection mode if needed; unpicking the last one ends it. */
     fun toggle(id: String) {

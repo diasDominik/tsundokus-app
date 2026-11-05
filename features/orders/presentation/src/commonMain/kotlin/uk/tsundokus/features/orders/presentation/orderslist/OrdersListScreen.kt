@@ -89,7 +89,6 @@ import tsundokuapp.features.orders.presentation.generated.resources.selection_ma
 import tsundokuapp.features.orders.presentation.generated.resources.selection_mark_received
 import tsundokuapp.features.orders.presentation.generated.resources.selection_mark_shipped
 import tsundokuapp.features.orders.presentation.generated.resources.selection_more_cd
-import tsundokuapp.features.orders.presentation.generated.resources.selection_start
 import tsundokuapp.features.orders.presentation.generated.resources.selection_undo
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
@@ -298,12 +297,6 @@ private fun ListHeader(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f),
                 )
-                IconButton(onClick = { onAction(OrdersListAction.OnStartPicking) }) {
-                    Icon(
-                        imageVector = TsundokuIcons.Checklist,
-                        contentDescription = stringResource(Res.string.selection_start),
-                    )
-                }
                 IconButton(onClick = onScanToReceive) {
                     Icon(
                         imageVector = TsundokuIcons.BarcodeScanner,
@@ -361,7 +354,7 @@ private fun PickingHeader(
             enabled = hasPicks,
         ) {
             Icon(
-                TsundokuIcons.CheckCircle,
+                TsundokuIcons.CheckCircleOutline,
                 contentDescription = stringResource(Res.string.selection_mark_received),
             )
         }

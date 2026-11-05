@@ -3,13 +3,11 @@ package uk.tsundokus.features.orders.presentation.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -30,9 +28,9 @@ import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.features.orders.domain.models.Order
 
 /**
- * A single order row: status tile, title + subtitle, trailing price/date/read-state. [checked] is
- * null outside selection mode; in it, the row shows a checkbox and a tap toggles it. [onLongClick]
- * starts selection mode.
+ * A single order row: status tile, then title and price, subtitle, date and read-state. Only the
+ * price shares the title's line, so a long title keeps the room. [checked] is null outside selection
+ * mode; in it, the row shows a checkbox and a tap toggles it. [onLongClick] starts selection mode.
  */
 @Composable
 fun OrderRow(
@@ -53,12 +51,6 @@ fun OrderRow(
                 selected -> BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
             },
-        colors =
-            if (checked == true) {
-                CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-            } else {
-                CardDefaults.outlinedCardColors()
-            },
         modifier =
             modifier
                 .fillMaxWidth()
@@ -76,13 +68,21 @@ fun OrderRow(
             OrderThumbnail(isbn = order.isbn, hasCover = order.hasCover, status = order.status)
             HorizontalSpacer(12.dp)
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = order.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    modifier = Modifier.basicMarquee(),
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = order.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f).basicMarquee(),
+                    )
+                    HorizontalSpacer(8.dp)
+                    Text(
+                        text = priceLabel(order),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
                 if (order.subtitle.isNotBlank()) {
                     Text(
                         text = order.subtitle,
@@ -92,24 +92,19 @@ fun OrderRow(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-            }
-            HorizontalSpacer(8.dp)
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    text = priceLabel(order),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = dateLabel(order, today),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = order.status.accentColor(),
-                )
-                VerticalSpacer(2.dp)
-                ReadStateBadge(readState = order.readState)
+                VerticalSpacer(4.dp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = dateLabel(order, today),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = order.status.accentColor(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    HorizontalSpacer(8.dp)
+                    ReadStateBadge(readState = order.readState)
+                }
             }
         }
     }

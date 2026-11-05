@@ -99,7 +99,6 @@ class ReadingListSelectionTest {
     fun `stopping clears the picked volumes`() =
         runTest {
             sut.state.test {
-                sut.onStartPicking()
                 sut.onTogglePicked("a")
                 expectMostRecentItem()
 

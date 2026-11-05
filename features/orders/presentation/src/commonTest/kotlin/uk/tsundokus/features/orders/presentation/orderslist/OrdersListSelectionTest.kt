@@ -77,12 +77,12 @@ class OrdersListSelectionTest {
     }
 
     @Test
-    fun `the select button starts picking with nothing picked`() =
+    fun `a long press starts picking with that order`() =
         runTest {
             sut.state.test {
-                sut.onAction(OrdersListAction.OnStartPicking)
+                sut.onAction(OrdersListAction.OnTogglePicked("a"))
 
-                assertEquals(emptySet(), expectMostRecentItem().picked)
+                assertEquals(setOf("a"), expectMostRecentItem().picked)
             }
         }
 
