@@ -40,6 +40,7 @@
     <string name="add_edit_order_isbn_label">ISBN</string>
     <string name="add_edit_order_isbn_error_required">ISBN is required</string>
     <string name="add_edit_order_isbn_error_invalid">Not a valid ISBN. Check the digits</string>
+    <string name="add_edit_order_isbn_error_taken">You already have an order with this ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Scan the barcode</string>
     <string name="add_edit_order_isbn_looking_up">Looking up the book</string>
     <string name="add_edit_order_author_label">Author</string>
