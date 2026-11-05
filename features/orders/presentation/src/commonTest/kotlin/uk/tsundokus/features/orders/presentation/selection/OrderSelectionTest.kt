@@ -28,12 +28,8 @@ class OrderSelectionTest {
     private val sut = OrderSelection(repository)
 
     @Test
-    fun `nothing is picked until picking starts`() {
+    fun `nothing is picked at first`() {
         assertNull(sut.picked.value)
-
-        sut.start()
-
-        assertEquals(emptySet(), sut.picked.value)
     }
 
     @Test

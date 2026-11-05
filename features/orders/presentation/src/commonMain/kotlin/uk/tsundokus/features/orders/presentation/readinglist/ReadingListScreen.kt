@@ -48,7 +48,6 @@ import tsundokuapp.features.orders.presentation.generated.resources.orders_list_
 import tsundokuapp.features.orders.presentation.generated.resources.reading_list_empty
 import tsundokuapp.features.orders.presentation.generated.resources.reading_list_title
 import tsundokuapp.features.orders.presentation.generated.resources.selection_mark_read
-import tsundokuapp.features.orders.presentation.generated.resources.selection_start
 import tsundokuapp.features.orders.presentation.generated.resources.selection_undo
 import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
@@ -98,7 +97,6 @@ fun ReadingListRoot(
         onOpenOrder = onOpenOrder,
         picking =
             ShelfPicking(
-                onStart = viewModel::onStartPicking,
                 onToggle = viewModel::onTogglePicked,
                 onPickAllShown = viewModel::onPickAllShown,
                 onStop = viewModel::onStopPicking,
@@ -107,16 +105,15 @@ fun ReadingListRoot(
     )
 }
 
-/** What picking on the shelf can do; grouped so the screen doesn't take five more callbacks. */
+/** What picking on the shelf can do; grouped so the screen doesn't take four more callbacks. */
 private class ShelfPicking(
-    val onStart: () -> Unit,
     val onToggle: (String) -> Unit,
     val onPickAllShown: () -> Unit,
     val onStop: () -> Unit,
     val onSetReadState: (ReadState) -> Unit,
 )
 
-private val NoShelfPicking = ShelfPicking({}, {}, {}, {}, {})
+private val NoShelfPicking = ShelfPicking({}, {}, {}, {})
 
 private val SHELF_MAX_WIDTH = 600.dp
 
@@ -165,23 +162,12 @@ private fun ReadingListScreen(
                     ReadStateMenuButton(onSelect = picking.onSetReadState, enabled = picked.isNotEmpty())
                 }
             } else {
-                Row(
-                    modifier = Modifier.padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(Res.string.reading_list_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.weight(1f).padding(vertical = 8.dp),
-                    )
-                    IconButton(onClick = picking.onStart) {
-                        Icon(
-                            TsundokuIcons.Checklist,
-                            contentDescription = stringResource(Res.string.selection_start),
-                        )
-                    }
-                }
+                Text(
+                    text = stringResource(Res.string.reading_list_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
             }
             OutlinedTextField(
                 value = state.searchQuery,
@@ -267,12 +253,6 @@ private fun ReadingRow(
                 BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
             } else {
                 CardDefaults.outlinedCardBorder()
-            },
-        colors =
-            if (checked == true) {
-                CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-            } else {
-                CardDefaults.outlinedCardColors()
             },
         modifier =
             modifier

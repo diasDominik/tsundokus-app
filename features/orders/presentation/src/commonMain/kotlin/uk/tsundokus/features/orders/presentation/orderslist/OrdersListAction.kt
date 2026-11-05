@@ -16,11 +16,10 @@ sealed interface OrdersListAction {
 
     data class OnOrderSelected(val orderId: String) : OrdersListAction
 
-    // Picking orders to act on together. "Selected" above is the order shown in the detail pane;
-    // these are the ones picked, which is why they say so.
-    data object OnStartPicking : OrdersListAction
-
-    /** Picks or unpicks an order; a long press starts picking with it. */
+    /**
+     * Picks or unpicks an order to act on together; a long press starts picking with it. "Selected"
+     * above is the order shown in the detail pane; these are the ones picked, which is why they say so.
+     */
     data class OnTogglePicked(val orderId: String) : OrdersListAction
 
     data object OnPickAllShown : OrdersListAction

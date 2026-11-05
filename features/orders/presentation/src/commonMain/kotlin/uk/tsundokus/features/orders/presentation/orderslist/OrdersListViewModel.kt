@@ -104,7 +104,6 @@ class OrdersListViewModel(
             OrdersListAction.OnRefresh -> refresh()
             is OrdersListAction.OnStatusFilterSelected -> statusFilter.value = action.status
             is OrdersListAction.OnOrderSelected -> selectedOrderId.value = action.orderId
-            OrdersListAction.OnStartPicking -> selection.start()
             is OrdersListAction.OnTogglePicked -> selection.toggle(action.orderId)
             OrdersListAction.OnPickAllShown -> selection.selectAll(state.value.displayed.map(Order::id))
             OrdersListAction.OnStopPicking -> selection.clear()

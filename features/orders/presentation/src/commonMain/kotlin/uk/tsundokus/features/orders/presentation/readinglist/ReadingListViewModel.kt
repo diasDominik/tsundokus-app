@@ -73,10 +73,6 @@ class ReadingListViewModel(
         searchQuery.value = query
     }
 
-    fun onStartPicking() {
-        selection.start()
-    }
-
     /** Picks or unpicks an order; a long press starts picking with it. */
     fun onTogglePicked(orderId: String) {
         selection.toggle(orderId)

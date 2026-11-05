@@ -236,7 +236,6 @@
     </plurals>
 
     <!-- Selecting orders to act on together -->
-    <string name="selection_start">Select</string>
     <string name="selection_close_cd">Stop selecting</string>
     <string name="selection_select_all">Select all shown</string>
     <string name="selection_mark_received">Mark received</string>
