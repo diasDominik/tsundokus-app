@@ -59,6 +59,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_eta_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_invalid
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_required
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_taken
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_looking_up
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_scan_cd
@@ -414,10 +415,13 @@ private fun AddEditOrderState.errorFor(field: OrderFormField): String? =
                 }
 
                 OrderFormField.ISBN -> {
-                    if (isbn.isBlank()) {
-                        Res.string.add_edit_order_isbn_error_required
-                    } else {
-                        Res.string.add_edit_order_isbn_error_invalid
+                    when {
+                        isbn.isBlank() -> Res.string.add_edit_order_isbn_error_required
+
+                        Isbn.normalize(isbn) == null -> Res.string.add_edit_order_isbn_error_invalid
+
+                        // A real ISBN is only ever flagged for belonging to another order.
+                        else -> Res.string.add_edit_order_isbn_error_taken
                     }
                 }
 

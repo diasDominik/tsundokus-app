@@ -1,6 +1,8 @@
 package uk.tsundokus.features.orders.domain.validation
 
 import uk.tsundokus.features.orders.domain.models.Isbn
+import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderStatus
 
 object OrderValidator {
     private const val DEFAULT_DECIMALS = 2
@@ -12,6 +14,18 @@ object OrderValidator {
 
     /** A required ISBN must be a real one: ISBN-13 or ISBN-10 with a correct check digit. */
     fun isIsbnValid(isbn: String): Boolean = Isbn.normalize(isbn) != null
+
+    /**
+     * Whether one of [orders] already stands for the book [isbn] names, however it was typed. A
+     * cancelled order does not count: the volume never came, so ordering it again is no duplicate.
+     */
+    fun isIsbnTaken(
+        isbn: String,
+        orders: List<Order>,
+    ): Boolean {
+        val normalized = Isbn.normalize(isbn) ?: return false
+        return orders.any { it.isbn == normalized && it.status != OrderStatus.CANCELLED }
+    }
 
     /** A required date must be set; the picker guarantees the format, so presence is enough. */
     fun isRequiredDateValid(isoDate: String): Boolean = isoDate.isNotBlank()

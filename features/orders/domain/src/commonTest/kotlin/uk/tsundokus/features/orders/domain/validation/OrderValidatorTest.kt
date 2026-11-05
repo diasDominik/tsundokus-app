@@ -1,7 +1,11 @@
 package uk.tsundokus.features.orders.domain.validation
 
+import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class OrderValidatorTest {
     @Test
@@ -49,5 +53,28 @@ class OrderValidatorTest {
     @Test
     fun `a currency with three decimals keeps three`() {
         assertEquals("1.250", OrderValidator.sanitizePrice("1.2509", maxDecimals = 3))
+    }
+
+    @Test
+    fun `an ISBN is taken by an order in any status but cancelled`() {
+        val isbn = "9784088820453"
+        OrderStatus.entries.forEach { status ->
+            val orders = listOf(Order(id = "1", title = "t", isbn = isbn, status = status))
+            assertEquals(status != OrderStatus.CANCELLED, OrderValidator.isIsbnTaken(isbn, orders))
+        }
+    }
+
+    @Test
+    fun `an ISBN is matched in any of its spellings`() {
+        val orders = listOf(Order(id = "1", title = "t", isbn = "9784088820453"))
+        assertTrue(OrderValidator.isIsbnTaken("978-4-08-882045-3", orders))
+        assertTrue(OrderValidator.isIsbnTaken("4088820452", orders))
+    }
+
+    @Test
+    fun `a blank or invalid ISBN is never taken`() {
+        val orders = listOf(Order(id = "1", title = "t"))
+        assertFalse(OrderValidator.isIsbnTaken("", orders))
+        assertFalse(OrderValidator.isIsbnTaken("123", orders))
     }
 }

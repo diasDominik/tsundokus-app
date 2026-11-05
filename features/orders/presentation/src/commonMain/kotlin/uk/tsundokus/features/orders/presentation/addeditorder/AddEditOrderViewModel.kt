@@ -96,6 +96,13 @@ class AddEditOrderViewModel(
 ) : ViewModel() {
     private val orderId = args.orderId
 
+    /**
+     * The id this form saves under. A new order's is minted up front, so the cache echoing the order
+     * back after a save is recognised as this order rather than as another one with the same ISBN.
+     */
+    @OptIn(ExperimentalUuidApi::class)
+    private val ownId = args.orderId ?: Uuid.random().toString()
+
     // A new order started from a scan arrives with its ISBN already read; it counts as part of the
     // blank form, so leaving without touching anything else asks nothing.
     private val _state = MutableStateFlow(initialState(args))
@@ -118,6 +125,7 @@ class AddEditOrderViewModel(
     private var publishers = emptyList<String>()
     private var stores = emptyList<String>()
     private var latestByTitle = emptyMap<String, Order>()
+    private var otherOrders = emptyList<Order>()
 
     /**
      * The form as it was last handed to the user — on open, and again after a successful save.
@@ -173,14 +181,14 @@ class AddEditOrderViewModel(
             }
 
             is AddEditOrderAction.OnIsbnChange -> {
-                updateForm { it.copy(isbn = Isbn.sanitize(action.value)).clearing(OrderFormField.ISBN) }
+                updateForm { it.withIsbn(action.value) }
                 // Typed digit by digit: wait for a pause, since the first ten digits of an ISBN-13
                 // can pass as an ISBN-10 of some other book.
                 lookUpBook(delayMillis = TYPED_ISBN_PAUSE_MILLIS)
             }
 
             is AddEditOrderAction.OnIsbnScanned -> {
-                updateForm { it.copy(isbn = Isbn.sanitize(action.isbn)).clearing(OrderFormField.ISBN) }
+                updateForm { it.withIsbn(action.isbn) }
                 lookUpBook(delayMillis = 0)
             }
 
@@ -273,6 +281,30 @@ class AddEditOrderViewModel(
      */
     private fun AddEditOrderState.clearingDates(): AddEditOrderState = copy(errors = errors - DATE_FIELDS)
 
+    private fun AddEditOrderState.withIsbn(raw: String): AddEditOrderState =
+        copy(isbn = Isbn.sanitize(raw)).clearing(OrderFormField.ISBN).checkingIsbnTaken()
+
+    /**
+     * Whether the form's ISBN belongs to another order. An edit that leaves the ISBN as it was passes:
+     * orders from before this check can already share one, and they must stay editable.
+     */
+    private fun AddEditOrderState.isIsbnTaken(): Boolean {
+        val unchanged = isEdit && Isbn.normalize(isbn) == Isbn.normalize(pristine.isbn)
+        return !unchanged && OrderValidator.isIsbnTaken(isbn, otherOrders)
+    }
+
+    /**
+     * Flags a taken ISBN as soon as it is known, rather than after the whole form has been filled in.
+     * Re-run when the orders change too, since a sync can take the ISBN or free it. An ISBN that does
+     * not parse is left alone: that error belongs to saving.
+     */
+    private fun AddEditOrderState.checkingIsbnTaken(): AddEditOrderState =
+        when {
+            isIsbnTaken() -> copy(errors = errors + OrderFormField.ISBN)
+            OrderValidator.isIsbnValid(isbn) -> clearing(OrderFormField.ISBN)
+            else -> this
+        }
+
     /**
      * Applies a user edit and re-derives [AddEditOrderState.isDirty] from it. Comparing against
      * [pristine] rather than latching a flag means undoing an edit by hand — retyping the original
@@ -296,7 +328,8 @@ class AddEditOrderViewModel(
      * user the value they are currently changing is never a useful suggestion.
      */
     private fun indexSuggestions(orders: List<Order>) {
-        val others = orders.filter { it.id != orderId }
+        val others = orders.filter { it.id != ownId }
+        otherOrders = others
         titles = rank(others.map(Order::title))
         authors = rank(others.map(Order::author))
         publishers = rank(others.map(Order::publisher))
@@ -310,7 +343,7 @@ class AddEditOrderViewModel(
                 .sortedByDescending { it.value }
                 .map { it.key }
                 .take(MAX_SUGGESTED_CURRENCIES)
-        _state.update { it.copy(suggestedCurrencies = currencies) }
+        _state.update { it.copy(suggestedCurrencies = currencies).checkingIsbnTaken() }
         // Ascending by creation, so the newest order for a title wins the key.
         latestByTitle = others.sortedBy(Order::createdAt).associateBy { it.title.trim().lowercase() }
 
@@ -469,7 +502,7 @@ class AddEditOrderViewModel(
     private fun AddEditOrderState.validate(): Set<OrderFormField> =
         buildSet {
             if (!OrderValidator.isTitleValid(title)) add(OrderFormField.TITLE)
-            if (!OrderValidator.isIsbnValid(isbn)) add(OrderFormField.ISBN)
+            if (!OrderValidator.isIsbnValid(isbn) || isIsbnTaken()) add(OrderFormField.ISBN)
             if (!OrderValidator.isRequiredTextValid(author)) add(OrderFormField.AUTHOR)
             if (!OrderValidator.isRequiredTextValid(publisher)) add(OrderFormField.PUBLISHER)
             if (!OrderValidator.isRequiredTextValid(store)) add(OrderFormField.STORE)
@@ -577,14 +610,13 @@ class AddEditOrderViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun AddEditOrderState.toOrder(): Order {
         val resolvedReceivedDate =
             if (status == OrderStatus.RECEIVED && receivedDate.isBlank()) todayIso() else receivedDate.trim()
         return Order(
             // A new order gets a client-minted UUID so its create is an idempotent upsert the outbox
             // can safely replay; an edit keeps the existing id.
-            id = id.ifBlank { Uuid.random().toString() },
+            id = id.ifBlank { ownId },
             title = title.trim(),
             author = author.trim(),
             publisher = publisher.trim(),
