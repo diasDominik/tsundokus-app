@@ -13,6 +13,9 @@ name: Release
 # build-logic), so v1.2.3 builds versionName 1.2.3, versionCode 10203. Play rejects a versionCode
 # it has seen before, so every release needs a higher tag than the last one.
 #
+# Update distribution/whatsnew/whatsnew-en-US before tagging: it becomes the Play release notes, and
+# the release fails if it hasn't changed since the last tag.
+#
 # Run it from the Actions tab instead (workflow_dispatch) for a dry run: same builds and signature
 # checks on an untagged commit (version "<latest tag>-dev"), the outputs are kept as a workflow
 # artifact, nothing is released or uploaded.
@@ -80,6 +83,27 @@ jobs:
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Fails before the long builds. A dry run checks the file but has no release to compare it for.
+      - name: Check Play release notes
+        run: |
+          notes=distribution/whatsnew/whatsnew-en-US
+          if [[ ! -s "$notes" ]]; then
+            echo "::error::$notes is missing or empty"
+            exit 1
+          fi
+          length=$(LC_ALL=C.UTF-8 wc -m < "$notes")
+          if (( length > 500 )); then
+            echo "::error::$notes has $length characters, Play allows 500"
+            exit 1
+          fi
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            previous=$(git describe --tags --abbrev=0 --match 'v*' "${GITHUB_SHA}^" 2>/dev/null || true)
+            if [[ -n "$previous" ]] && git diff --quiet "$previous" "$GITHUB_SHA" -- "$notes"; then
+              echo "::error::$notes has not changed since $previous"
+              exit 1
+            fi
+          fi
 
       - name: Check secrets
         env:
@@ -181,6 +205,11 @@ jobs:
     permissions:
       contents: read
     steps:
+      # For the release notes. Not part of the artifact: a path outside build/outputs would move
+      # everything in it under androidApp/.
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
       - name: Download bundle
         uses: actions/download-artifact@v8
         with:
@@ -194,6 +223,7 @@ jobs:
           releaseFiles: bundle/release/androidApp-release.aab
           mappingFile: mapping/release/mapping.txt
           tracks: internal
+          whatsNewDirectory: distribution/whatsnew
 
   github-release:
     name: GitHub release
