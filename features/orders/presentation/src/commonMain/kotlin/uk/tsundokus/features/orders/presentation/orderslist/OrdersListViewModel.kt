@@ -24,6 +24,7 @@ import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.core.presentation.util.toUiText
 import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
@@ -33,7 +34,6 @@ import uk.tsundokus.features.orders.domain.preferences.OrderSortPreference
 import uk.tsundokus.features.orders.domain.preferences.OrdersPreferences
 import uk.tsundokus.features.orders.presentation.components.arrivalDate
 import uk.tsundokus.features.orders.presentation.selection.OrderSelection
-import uk.tsundokus.features.orders.presentation.selection.SelectionChange
 import uk.tsundokus.features.orders.presentation.selection.deletedMessage
 import uk.tsundokus.features.orders.presentation.selection.doneMessage
 import kotlin.time.Duration.Companion.seconds
@@ -113,7 +113,7 @@ class OrdersListViewModel(
         }
     }
 
-    private fun changePicked(change: SelectionChange) {
+    private fun changePicked(change: OrderChange) {
         viewModelScope.launch {
             selection
                 .apply(change, state.value.allOrders, todayIso())

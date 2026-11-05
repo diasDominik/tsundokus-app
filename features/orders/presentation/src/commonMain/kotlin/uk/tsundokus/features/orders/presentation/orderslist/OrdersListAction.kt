@@ -1,8 +1,8 @@
 package uk.tsundokus.features.orders.presentation.orderslist
 
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
-import uk.tsundokus.features.orders.presentation.selection.SelectionChange
 
 sealed interface OrdersListAction {
     data class OnSearchQueryChange(val query: String) : OrdersListAction
@@ -26,7 +26,7 @@ sealed interface OrdersListAction {
 
     data object OnStopPicking : OrdersListAction
 
-    data class OnChangePicked(val change: SelectionChange) : OrdersListAction
+    data class OnChangePicked(val change: OrderChange) : OrdersListAction
 
     data object OnDeletePicked : OrdersListAction
 

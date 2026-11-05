@@ -21,13 +21,13 @@ import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.core.presentation.util.toUiText
 import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.domain.models.matchesQuery
 import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.presentation.components.fullLabelRes
 import uk.tsundokus.features.orders.presentation.selection.OrderSelection
-import uk.tsundokus.features.orders.presentation.selection.SelectionChange
 import uk.tsundokus.features.orders.presentation.selection.doneMessage
 import kotlin.time.Duration.Companion.seconds
 
@@ -87,7 +87,7 @@ class ReadingListViewModel(
     }
 
     fun onSetPickedReadState(readState: ReadState) {
-        val change = SelectionChange.Reading(readState)
+        val change = OrderChange.Reading(readState)
         viewModelScope.launch {
             selection
                 .apply(change, state.value.shelf, todayIso())

@@ -14,11 +14,11 @@ import kotlinx.coroutines.test.setMain
 import uk.tsundokus.core.domain.sync.LastServerContactStore
 import uk.tsundokus.core.domain.sync.PendingWrites
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.preferences.OrderSortPreference
 import uk.tsundokus.features.orders.domain.preferences.OrdersPreferences
 import uk.tsundokus.features.orders.presentation.selection.RecordingOrderRepository
-import uk.tsundokus.features.orders.presentation.selection.SelectionChange
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -121,7 +121,7 @@ class OrdersListSelectionTest {
                 expectMostRecentItem()
 
                 sut.events.test {
-                    sut.onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.RECEIVED)))
+                    sut.onAction(OrdersListAction.OnChangePicked(OrderChange.Status(OrderStatus.RECEIVED)))
                     assertIs<OrdersListEvent.ShowUndoableMessage>(awaitItem())
                 }
                 val afterChange = expectMostRecentItem()
@@ -142,7 +142,7 @@ class OrdersListSelectionTest {
                 expectMostRecentItem()
 
                 sut.events.test {
-                    sut.onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.RECEIVED)))
+                    sut.onAction(OrdersListAction.OnChangePicked(OrderChange.Status(OrderStatus.RECEIVED)))
                     assertIs<OrdersListEvent.ShowMessage>(awaitItem())
                 }
                 // Nothing changed, so there is no new state to await.

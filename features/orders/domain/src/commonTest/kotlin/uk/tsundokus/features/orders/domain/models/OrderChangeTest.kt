@@ -1,8 +1,5 @@
-package uk.tsundokus.features.orders.presentation.selection
+package uk.tsundokus.features.orders.domain.models
 
-import uk.tsundokus.features.orders.domain.models.Order
-import uk.tsundokus.features.orders.domain.models.OrderStatus
-import uk.tsundokus.features.orders.domain.models.ReadState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -23,11 +20,11 @@ private fun order(
     receivedDate = receivedDate,
 )
 
-private val receive = SelectionChange.Status(OrderStatus.RECEIVED)
-private val ship = SelectionChange.Status(OrderStatus.SHIPPED)
-private val cancel = SelectionChange.Status(OrderStatus.CANCELLED)
+private val receive = OrderChange.Status(OrderStatus.RECEIVED)
+private val ship = OrderChange.Status(OrderStatus.SHIPPED)
+private val cancel = OrderChange.Status(OrderStatus.CANCELLED)
 
-class SelectionChangeTest {
+class OrderChangeTest {
     @Test
     fun `receiving fills in today when no date is set`() {
         val received = receive.applyTo(order(status = OrderStatus.SHIPPED), TODAY)
@@ -52,7 +49,7 @@ class SelectionChangeTest {
     @Test
     fun `an order already in the state is left alone`() {
         assertNull(receive.applyTo(order(status = OrderStatus.RECEIVED), TODAY))
-        assertNull(SelectionChange.Reading(ReadState.READ).applyTo(order(readState = ReadState.READ), TODAY))
+        assertNull(OrderChange.Reading(ReadState.READ).applyTo(order(readState = ReadState.READ), TODAY))
     }
 
     @Test
@@ -77,7 +74,7 @@ class SelectionChangeTest {
 
         assertEquals(
             before.copy(readState = ReadState.READING),
-            SelectionChange.Reading(ReadState.READING).applyTo(before, TODAY),
+            OrderChange.Reading(ReadState.READING).applyTo(before, TODAY),
         )
     }
 }

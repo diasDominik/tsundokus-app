@@ -46,6 +46,7 @@ import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.core.presentation.util.UiText
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.presentation.components.fullLabelRes
@@ -139,9 +140,9 @@ internal fun SelectionBackHandler(
 }
 
 /** What the snackbar says once [count] orders took [this] change. */
-internal fun SelectionChange.doneMessage(count: Int): UiText =
+internal fun OrderChange.doneMessage(count: Int): UiText =
     when (this) {
-        is SelectionChange.Status -> {
+        is OrderChange.Status -> {
             when (status) {
                 OrderStatus.RECEIVED -> {
                     UiText.PluralResource(
@@ -174,7 +175,7 @@ internal fun SelectionChange.doneMessage(count: Int): UiText =
             }
         }
 
-        is SelectionChange.Reading -> {
+        is OrderChange.Reading -> {
             when (readState) {
                 ReadState.WANT -> {
                     UiText.PluralResource(Res.plurals.selection_marked_want, count, arrayOf(count))
