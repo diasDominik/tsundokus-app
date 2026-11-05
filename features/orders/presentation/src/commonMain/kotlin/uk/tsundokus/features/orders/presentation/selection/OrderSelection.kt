@@ -9,68 +9,8 @@ import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.core.domain.util.map
 import uk.tsundokus.core.domain.util.onSuccess
 import uk.tsundokus.features.orders.domain.models.Order
-import uk.tsundokus.features.orders.domain.models.OrderStatus
-import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.order.OrderRepository
-
-/** What a list can do to every picked order at once. */
-sealed interface SelectionChange {
-    data class Status(val status: OrderStatus) : SelectionChange
-
-    data class Reading(val readState: ReadState) : SelectionChange
-}
-
-/**
- * [order] with [change] made, or null when it doesn't apply: the order is already like that, or it
- * can't get there from where it is — a cancelled order is never received, a received one never goes
- * back in transit or gets cancelled. Arriving or shipping fills in today's date when none is set, as
- * scanning a book in does, so the date shows at once and offline.
- */
-fun SelectionChange.applyTo(
-    order: Order,
-    today: String,
-): Order? =
-    when (this) {
-        is SelectionChange.Status -> {
-            when {
-                order.status == status -> {
-                    null
-                }
-
-                order.status == OrderStatus.CANCELLED && status == OrderStatus.RECEIVED -> {
-                    null
-                }
-
-                order.status == OrderStatus.RECEIVED && status in MOVES_AWAY_FROM_RECEIVED -> {
-                    null
-                }
-
-                status == OrderStatus.RECEIVED -> {
-                    order.copy(
-                        status = status,
-                        receivedDate = order.receivedDate.ifBlank { today },
-                    )
-                }
-
-                status == OrderStatus.SHIPPED -> {
-                    order.copy(
-                        status = status,
-                        shipDate = order.shipDate.ifBlank { today },
-                    )
-                }
-
-                else -> {
-                    order.copy(status = status)
-                }
-            }
-        }
-
-        is SelectionChange.Reading -> {
-            if (order.readState == readState) null else order.copy(readState = readState)
-        }
-    }
-
-private val MOVES_AWAY_FROM_RECEIVED = setOf(OrderStatus.SHIPPED, OrderStatus.CANCELLED)
 
 /**
  * The orders picked on a list, and acting on them together. [picked] is null while the list is not
@@ -111,7 +51,7 @@ class OrderSelection(
      * changed; 0 means none of them could, and the selection stays so another action can be tried.
      */
     suspend fun apply(
-        change: SelectionChange,
+        change: OrderChange,
         orders: List<Order>,
         today: String,
     ): Result<Int, DataError.Remote> {

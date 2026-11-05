@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import kotlin.test.Test
@@ -21,7 +22,7 @@ private val cancelled = Order(id = "cancelled", title = "Akira 1", status = Orde
 
 private val allOrders = listOf(ordered, shipped, received, cancelled)
 
-private val receive = SelectionChange.Status(OrderStatus.RECEIVED)
+private val receive = OrderChange.Status(OrderStatus.RECEIVED)
 
 class OrderSelectionTest {
     private val repository = RecordingOrderRepository(allOrders)
@@ -90,7 +91,7 @@ class OrderSelectionTest {
     fun `undo saves the changed orders back as they were`() =
         runTest {
             sut.selectAll(listOf("ordered", "shipped"))
-            sut.apply(SelectionChange.Reading(ReadState.READ), allOrders, TODAY)
+            sut.apply(OrderChange.Reading(ReadState.READ), allOrders, TODAY)
 
             sut.undo()
 

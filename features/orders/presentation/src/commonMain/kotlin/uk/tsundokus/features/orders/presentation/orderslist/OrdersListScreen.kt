@@ -107,6 +107,7 @@ import uk.tsundokus.core.presentation.util.rememberSnackbarController
 import uk.tsundokus.features.orders.domain.dates.nowEpochMillis
 import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderChange
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
@@ -120,7 +121,6 @@ import uk.tsundokus.features.orders.presentation.orderdetail.OrderDetailRoot
 import uk.tsundokus.features.orders.presentation.selection.DeleteSelectedConfirmDialog
 import uk.tsundokus.features.orders.presentation.selection.ReadStateMenuButton
 import uk.tsundokus.features.orders.presentation.selection.SelectionBackHandler
-import uk.tsundokus.features.orders.presentation.selection.SelectionChange
 import uk.tsundokus.features.orders.presentation.selection.SelectionHeader
 
 @Composable
@@ -357,7 +357,7 @@ private fun PickingHeader(
         onSelectAll = { onAction(OrdersListAction.OnPickAllShown) },
     ) {
         IconButton(
-            onClick = { onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.RECEIVED))) },
+            onClick = { onAction(OrdersListAction.OnChangePicked(OrderChange.Status(OrderStatus.RECEIVED))) },
             enabled = hasPicks,
         ) {
             Icon(
@@ -366,7 +366,7 @@ private fun PickingHeader(
             )
         }
         ReadStateMenuButton(
-            onSelect = { onAction(OrdersListAction.OnChangePicked(SelectionChange.Reading(it))) },
+            onSelect = { onAction(OrdersListAction.OnChangePicked(OrderChange.Reading(it))) },
             enabled = hasPicks,
         )
         Box {
@@ -378,14 +378,14 @@ private fun PickingHeader(
                     text = { Text(stringResource(Res.string.selection_mark_shipped)) },
                     onClick = {
                         moreExpanded = false
-                        onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.SHIPPED)))
+                        onAction(OrdersListAction.OnChangePicked(OrderChange.Status(OrderStatus.SHIPPED)))
                     },
                 )
                 DropdownMenuItem(
                     text = { Text(stringResource(Res.string.selection_mark_cancelled)) },
                     onClick = {
                         moreExpanded = false
-                        onAction(OrdersListAction.OnChangePicked(SelectionChange.Status(OrderStatus.CANCELLED)))
+                        onAction(OrdersListAction.OnChangePicked(OrderChange.Status(OrderStatus.CANCELLED)))
                     },
                 )
                 DropdownMenuItem(
