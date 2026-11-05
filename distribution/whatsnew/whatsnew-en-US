@@ -1,0 +1,4 @@
+• The order form now stops you adding an ISBN you already have an order for. A cancelled order can still be ordered again.
+• Long-press an order to start selecting. The Select button is gone.
+• Order rows give long titles more room: the date moved down next to the reading state.
+• Clearer icons while selecting orders.
