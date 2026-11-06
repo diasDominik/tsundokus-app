@@ -54,6 +54,7 @@ import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.formatAmount
 import uk.tsundokus.features.orders.domain.series.Series
 import uk.tsundokus.features.orders.domain.series.SeriesVolume
 import uk.tsundokus.features.orders.domain.series.VolumeState
@@ -103,15 +104,18 @@ fun SeriesDetailRoot(
 }
 
 /** The next volume of [this] series, filled in the way its latest volume was ordered. */
-internal fun Series.nextOrderPrefill(): OrderPrefill =
-    OrderPrefill(
+internal fun Series.nextOrderPrefill(): OrderPrefill {
+    val details = this.details
+    return OrderPrefill(
         title = title,
-        author = author,
-        publisher = publisher,
-        store = latest.store,
+        author = details.author,
+        publisher = details.publisher,
+        store = details.store,
         volume = nextVolumeLabel.orEmpty(),
-        currencyCode = latest.currency.code,
+        currencyCode = details.currency.code,
+        price = details.price?.let { formatAmount(it, details.currency.decimals) }.orEmpty(),
     )
+}
 
 @Composable
 private fun SeriesDetailScreen(

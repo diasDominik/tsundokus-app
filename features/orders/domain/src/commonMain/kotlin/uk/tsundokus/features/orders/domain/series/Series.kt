@@ -1,5 +1,6 @@
 package uk.tsundokus.features.orders.domain.series
 
+import uk.tsundokus.core.domain.preferences.AppCurrency
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.matchesQuery
@@ -40,6 +41,9 @@ data class Series(
 
     val author: String get() = latest.author
     val publisher: String get() = latest.publisher
+
+    /** What the next volume can take over from the orders so far. */
+    val details: SeriesDetails get() = detailsOf(orders)
 
     /** No numbered volume at all: a one-shot, shown as a single book. */
     val isOneShot: Boolean get() = volumes.isEmpty()
@@ -127,3 +131,55 @@ fun List<Order>.toSeries(): List<Series> =
 
 private fun volumeState(orders: List<Order>): VolumeState =
     if (orders.any { it.status == OrderStatus.RECEIVED }) VolumeState.RECEIVED else VolumeState.ON_THE_WAY
+
+/**
+ * What a new volume can take over from earlier orders of its series. A text field is blank when no
+ * order has it. [price] is in [currency]: the two come from the same order, or a price would be read
+ * in the wrong currency. Without any price, [currency] is the newest order's.
+ */
+data class SeriesDetails(
+    val author: String,
+    val publisher: String,
+    val store: String,
+    val price: Double?,
+    val currency: AppCurrency,
+)
+
+/**
+ * The details of the series [title] belongs to, or null when no order is part of it. Cancelled orders
+ * count here, unlike in [toSeries]: they are the last resort, but they still name the right publisher.
+ *
+ * An order with the very same title always matches, even if the [isbn] would read its number otherwise:
+ * "Fahrenheit 451" without an ISBN parses as volume 451, but is still that order's title.
+ */
+fun List<Order>.seriesDetailsFor(
+    title: String,
+    isbn: String,
+): SeriesDetails? {
+    val wholeKey = seriesKey(title)
+    val key = seriesKey(VolumeNumber.parse(Order(id = "", title = title, isbn = isbn)).title)
+    if (key.isEmpty()) return null
+    val sameSeries =
+        filter { order -> seriesKey(VolumeNumber.parse(order).title) == key || seriesKey(order.title) == wholeKey }
+    return if (sameSeries.isEmpty()) null else detailsOf(sameSeries)
+}
+
+/** Each field from the newest of the [orders], which can't be empty, that has it. */
+private fun detailsOf(orders: List<Order>): SeriesDetails {
+    val newestFirst =
+        orders.sortedWith(
+            compareBy<Order> { it.status == OrderStatus.CANCELLED }.thenByDescending(Order::createdAt),
+        )
+
+    fun newestOf(field: (Order) -> String): String =
+        newestFirst.map(field).firstOrNull(String::isNotBlank).orEmpty()
+
+    val priced = newestFirst.firstOrNull { it.price > 0.0 }
+    return SeriesDetails(
+        author = newestOf(Order::author),
+        publisher = newestOf(Order::publisher),
+        store = newestOf(Order::store),
+        price = priced?.price,
+        currency = (priced ?: newestFirst.first()).currency,
+    )
+}

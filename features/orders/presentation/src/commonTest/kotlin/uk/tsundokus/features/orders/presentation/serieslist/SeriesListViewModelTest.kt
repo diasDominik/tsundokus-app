@@ -156,6 +156,7 @@ class SeriesListViewModelTest {
                 author = "Eiichiro Oda",
                 publisher = "Carlsen",
                 store = "Hugendubel",
+                price = 700.0,
                 currency = AppCurrency.fromCode("JPY"),
             )
         val series = listOf(order("One Piece", 11, createdAt = 1), latest).toSeries().single()
@@ -168,6 +169,7 @@ class SeriesListViewModelTest {
                 store = "Hugendubel",
                 volume = "Vol. 13",
                 currencyCode = "JPY",
+                price = "700",
             ),
             series.nextOrderPrefill(),
         )
