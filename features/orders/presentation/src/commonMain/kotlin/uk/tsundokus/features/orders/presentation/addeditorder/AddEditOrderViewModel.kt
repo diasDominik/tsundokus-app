@@ -33,6 +33,8 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.formatAmount
 import uk.tsundokus.features.orders.domain.order.OrderRepository
+import uk.tsundokus.features.orders.domain.series.SeriesDetails
+import uk.tsundokus.features.orders.domain.series.seriesDetailsFor
 import uk.tsundokus.features.orders.domain.validation.OrderValidator
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -82,6 +84,7 @@ private fun initialState(args: AddEditOrderArgs): AddEditOrderState {
         author = prefill.author,
         publisher = prefill.publisher,
         store = prefill.store,
+        price = prefill.price,
         volume = prefill.volume,
         currency = prefill.currencyCode.takeIf(String::isNotBlank)?.let(AppCurrency::fromCode) ?: AppCurrency.EUR,
     )
@@ -117,14 +120,13 @@ class AddEditOrderViewModel(
     private var lookupJob: Job? = null
 
     /**
-     * The values the user has already used, most-used first, and the order each title was last
-     * recorded with. Kept out of the state: only the handful that match what is being typed is UI.
+     * The values the user has already used, most-used first. Kept out of the state: only the handful
+     * that match what is being typed is UI.
      */
     private var titles = emptyList<String>()
     private var authors = emptyList<String>()
     private var publishers = emptyList<String>()
     private var stores = emptyList<String>()
-    private var latestByTitle = emptyMap<String, Order>()
     private var otherOrders = emptyList<Order>()
 
     /**
@@ -150,7 +152,8 @@ class AddEditOrderViewModel(
             if (args.prefill?.currencyCode.isNullOrBlank()) {
                 viewModelScope.launch {
                     val currency = appPreferencesRepository.currency().first()
-                    _state.update { it.copy(currency = currency) }
+                    // A lookup that got here first may have filled in a series' price, in that series' currency.
+                    _state.update { if (it.price.isBlank()) it.copy(currency = currency) else it }
                     markPristine()
                 }
             }
@@ -344,8 +347,6 @@ class AddEditOrderViewModel(
                 .map { it.key }
                 .take(MAX_SUGGESTED_CURRENCIES)
         _state.update { it.copy(suggestedCurrencies = currencies).checkingIsbnTaken() }
-        // Ascending by creation, so the newest order for a title wins the key.
-        latestByTitle = others.sortedBy(Order::createdAt).associateBy { it.title.trim().lowercase() }
 
         // An open list was built from the previous pools; rebuild it so a sync landing mid-typing
         // neither drops a suggestion the user is reaching for nor keeps a stale one.
@@ -415,6 +416,7 @@ class AddEditOrderViewModel(
             OrderFormField.AUTHOR -> author
             OrderFormField.PUBLISHER -> publisher
             OrderFormField.STORE -> store
+            OrderFormField.PRICE -> price
             else -> ""
         }
 
@@ -422,7 +424,7 @@ class AddEditOrderViewModel(
         val field = _state.value.suggestionField ?: return
         updateForm { current ->
             when (field) {
-                OrderFormField.TITLE -> current.copy(title = value).clearing(field).withDetailsOf(value)
+                OrderFormField.TITLE -> current.copy(title = value).clearing(field).withSeriesDetails()
                 OrderFormField.AUTHOR -> current.copy(author = value).clearing(field)
                 OrderFormField.PUBLISHER -> current.copy(publisher = value).clearing(field)
                 OrderFormField.STORE -> current.copy(store = value).clearing(field)
@@ -432,17 +434,31 @@ class AddEditOrderViewModel(
     }
 
     /**
-     * A new volume of a series is usually the same author, publisher and shop as the last one, so
-     * picking a title fills those in from that order — but only where the user has left them empty,
+     * A new volume of a series is usually the same author, publisher, shop and price as the last one,
+     * so the form's title fills those in from the series — but only where the user has left them empty,
      * since what they typed themselves is the better answer.
      */
-    private fun AddEditOrderState.withDetailsOf(title: String): AddEditOrderState {
-        val previous = latestByTitle[title.trim().lowercase()] ?: return this
+    private fun AddEditOrderState.withSeriesDetails(): AddEditOrderState {
+        val details = otherOrders.seriesDetailsFor(title, Isbn.normalize(isbn).orEmpty()) ?: return this
         return copy(
-            author = author.ifBlank { previous.author },
-            publisher = publisher.ifBlank { previous.publisher },
-            store = store.ifBlank { previous.store },
-        ).clearingFilled()
+            author = author.ifBlank { details.author },
+            publisher = publisher.ifBlank { details.publisher },
+            store = store.ifBlank { details.store },
+        ).withSeriesPrice(details).clearingFilled()
+    }
+
+    /**
+     * Only for a new order: an order being edited has its own history, and no price on it may be
+     * deliberate. The price brings its currency along, so a currency the user has picked themselves
+     * keeps the price empty unless the two agree: an amount can't be carried over between currencies.
+     */
+    private fun AddEditOrderState.withSeriesPrice(details: SeriesDetails): AddEditOrderState {
+        val pickedOtherCurrency = currency != pristine.currency && currency != details.currency
+        if (isEdit || price.isNotBlank() || pickedOtherCurrency) return this
+        return copy(
+            currency = details.currency,
+            price = details.price?.let { formatAmount(it, details.currency.decimals) }.orEmpty(),
+        )
     }
 
     /** Drops the "required" errors of fields that have been filled in for the user. */
@@ -473,7 +489,8 @@ class AddEditOrderViewModel(
 
     /**
      * Fills only the blank fields: whatever the user typed — before or while the lookup ran — is the
-     * better answer. Goes through [updateForm] so it counts as an edit like any other.
+     * better answer. What the book databases don't know, the user's orders of that series may. Goes
+     * through [updateForm] so it counts as an edit like any other.
      */
     private fun fillFrom(book: BookInfo) {
         // The ISBN changed while this was on its way; its answer no longer applies.
@@ -488,7 +505,7 @@ class AddEditOrderViewModel(
                     releaseDate = current.releaseDate.ifBlank { book.releaseDate.orEmpty() },
                     coverIsbn = if (book.hasCover) book.isbn else current.coverIsbn,
                 )
-            filled.clearingFilled()
+            filled.withSeriesDetails().clearingFilled()
         }
     }
 
