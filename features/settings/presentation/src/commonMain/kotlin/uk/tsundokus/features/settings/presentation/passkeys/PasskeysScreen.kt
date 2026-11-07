@@ -30,6 +30,7 @@ import io.github.androidpoet.passkeys.compose.rememberPasskeyClient
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.error_passkey_already_saved
 import tsundokuapp.features.settings.presentation.generated.resources.error_passkey_enrolment_failed
 import tsundokuapp.features.settings.presentation.generated.resources.error_passkey_unsupported
 import tsundokuapp.features.settings.presentation.generated.resources.passkeys_add
@@ -103,7 +104,13 @@ fun PasskeysRoot(
 private fun PasskeyException.toUiText(): UiText? =
     when (this) {
         is PasskeyException.UserCanceled -> null
+
         is PasskeyException.Unsupported -> UiText.Resource(Res.string.error_passkey_unsupported)
+
+        // The server lists the account's passkeys as excluded, so the authenticator refuses a second
+        // one in the same place. Trying again would fail the same way.
+        is PasskeyException.CredentialExcluded -> UiText.Resource(Res.string.error_passkey_already_saved)
+
         else -> UiText.Resource(Res.string.error_passkey_enrolment_failed)
     }
 
