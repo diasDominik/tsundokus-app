@@ -99,6 +99,7 @@
     <string name="passkeys_last_used">Last used %1$s</string>
     <string name="passkeys_never_used">Not used yet</string>
     <string name="error_passkey_enrolment_failed">That passkey could not be added. Try again.</string>
+    <string name="error_passkey_already_saved">This device or password manager already has a passkey for your account.</string>
     <string name="error_passkey_unsupported">This device cannot create passkeys.</string>
 
     <string name="settings_reminders">Reminders</string>
