@@ -5,6 +5,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -79,8 +80,11 @@ internal fun GlanceModifier.widgetCard(style: WidgetStyle): GlanceModifier {
                 )
             }
 
+            // Transparent, not left out: the launcher reapplies a new layout onto the views it
+            // already shows when the layout matches, so a card with no background set would keep
+            // the solid or translucent one it had before the user switched to none.
             WidgetBackground.NONE -> {
-                card
+                card.background(Color.Transparent)
             }
         }
     return withBackground.padding(12.dp)
