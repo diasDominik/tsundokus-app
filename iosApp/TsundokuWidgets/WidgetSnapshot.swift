@@ -44,6 +44,11 @@ struct WidgetArrival: Decodable, Identifiable {
     var date: String
     /// ORDERED (a release), SHIPPED or DELAYED.
     var status: String
+    /// `date` was estimated from past deliveries: the order shipped without an ETA. Optional so a
+    /// snapshot written by an older app still reads.
+    var estimated: Bool?
+
+    var isEstimate: Bool { estimated ?? false }
 
     var isRelease: Bool { status == "ORDERED" }
 

@@ -1,5 +1,6 @@
 package uk.tsundokus.features.orders.presentation.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,12 +12,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 
-/** A label/value row used by the order detail facts list. */
+/** A label/value row used by the order detail facts list. [caption] explains the value, under it. */
 @Composable
 fun FactRow(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
+    caption: String? = null,
 ) {
     Row(
         modifier = modifier.fillMaxWidth().padding(vertical = 6.dp),
@@ -27,12 +29,23 @@ fun FactRow(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         HorizontalSpacer(12.dp)
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f),
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (caption != null) {
+                Text(
+                    text = caption,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
     }
 }

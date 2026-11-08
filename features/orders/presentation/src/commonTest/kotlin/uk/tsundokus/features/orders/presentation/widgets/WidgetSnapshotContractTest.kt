@@ -21,7 +21,7 @@ class WidgetSnapshotContractTest {
 
         assertEquals(
             """{"signedIn":true,"arrivals":[{"id":"a1","title":"Frieren","volume":"13","date":"2026-10-03",""" +
-                """"status":"SHIPPED"}],"unread":12,"reading":2,"oldestUnreadSince":"2026-09-03"}""",
+                """"status":"SHIPPED","estimated":false}],"unread":12,"reading":2,"oldestUnreadSince":"2026-09-03"}""",
             snapshot.encode(),
         )
     }

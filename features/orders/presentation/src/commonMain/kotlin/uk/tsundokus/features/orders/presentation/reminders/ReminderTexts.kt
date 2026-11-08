@@ -6,6 +6,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.reminder_delayed_body
 import tsundokuapp.features.orders.presentation.generated.resources.reminder_delayed_title
 import tsundokuapp.features.orders.presentation.generated.resources.reminder_overdue_body
+import tsundokuapp.features.orders.presentation.generated.resources.reminder_overdue_body_estimated
 import tsundokuapp.features.orders.presentation.generated.resources.reminder_overdue_title
 import uk.tsundokus.features.orders.presentation.components.fmtDate
 import uk.tsundokus.features.orders.presentation.navigation.orderDeepLink
@@ -38,7 +39,11 @@ class ResourceReminderTexts : ReminderTexts {
                 when (planned.kind) {
                     ReminderKind.OVERDUE -> {
                         getString(
-                            Res.string.reminder_overdue_body,
+                            if (planned.isEstimate) {
+                                Res.string.reminder_overdue_body_estimated
+                            } else {
+                                Res.string.reminder_overdue_body
+                            },
                             fmtDate(planned.expectedDate),
                         )
                     }

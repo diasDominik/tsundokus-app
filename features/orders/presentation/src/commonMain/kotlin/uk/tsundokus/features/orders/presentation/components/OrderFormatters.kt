@@ -7,6 +7,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_row_ca
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_delayed
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_delayed_to
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_eta
+import tsundokuapp.features.orders.presentation.generated.resources.order_row_eta_estimated
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_in_transit
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_ordered
 import tsundokuapp.features.orders.presentation.generated.resources.order_row_ordered_on
@@ -18,6 +19,7 @@ import uk.tsundokus.core.presentation.date.formatMediumDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.formatAmount
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
 
 // Date / price formatting. Dates are stored and compared as ISO `yyyy-MM-dd` strings (see
 // uk.tsundokus.features.orders.domain.dates); only display goes through the platform formatter.
@@ -37,6 +39,9 @@ fun fmtDate(iso: String): String {
     return formatMediumDate(year, month, day)
 }
 
+/** Put before a date that is estimated rather than known: a symbol, not translated copy. */
+const val ESTIMATE_MARK = "\u2248 "
+
 /** The order's price in its currency; see [amountLabel]. */
 fun priceLabel(order: Order): String = amountLabel(order.price, order.currency)
 
@@ -46,16 +51,22 @@ fun amountLabel(
     currency: AppCurrency,
 ): String = currency.format(formatAmount(amount, currency.decimals))
 
-/** Status-aware secondary label for a row (mirrors the design JS). */
+/**
+ * Status-aware secondary label for a row (mirrors the design JS). [estimate] stands in, marked as
+ * such, for a shipped order's missing ETA.
+ */
 @Composable
 fun dateLabel(
     order: Order,
     today: String,
+    estimate: ArrivalEstimate? = null,
 ): String =
     when (order.status) {
         OrderStatus.SHIPPED -> {
             if (order.eta.isNotBlank()) {
                 stringResource(Res.string.order_row_eta, fmtDate(order.eta))
+            } else if (estimate != null) {
+                stringResource(Res.string.order_row_eta_estimated, fmtDate(estimate.date))
             } else {
                 stringResource(Res.string.order_row_in_transit)
             }
@@ -94,15 +105,17 @@ fun dateLabel(
 
 /**
  * The "expected arrival" date for an order, or null when it has none. Used both for ranking the
- * next-arrival hero and for the hero's subtitle.
+ * next-arrival hero and for the hero's subtitle. A shipped order's own ETA comes first; [estimate]
+ * only fills in for a missing one.
  */
 fun arrivalDate(
     order: Order,
     today: String,
+    estimate: ArrivalEstimate? = null,
 ): String? =
     when (order.status) {
         OrderStatus.SHIPPED -> {
-            order.eta.ifBlank { null }
+            order.eta.ifBlank { estimate?.date }
         }
 
         OrderStatus.DELAYED -> {

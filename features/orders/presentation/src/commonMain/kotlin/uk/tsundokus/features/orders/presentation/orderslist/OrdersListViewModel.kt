@@ -32,6 +32,8 @@ import uk.tsundokus.features.orders.domain.models.matchesQuery
 import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.domain.preferences.OrderSortPreference
 import uk.tsundokus.features.orders.domain.preferences.OrdersPreferences
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
+import uk.tsundokus.features.orders.domain.stats.shippingTimes
 import uk.tsundokus.features.orders.presentation.components.arrivalDate
 import uk.tsundokus.features.orders.presentation.selection.OrderSelection
 import uk.tsundokus.features.orders.presentation.selection.deletedMessage
@@ -190,6 +192,8 @@ private fun buildState(
     current: Narrowing,
 ): OrdersListState {
     val today = todayIso()
+    val shippingTimes = orders.shippingTimes()
+    val estimates = orders.mapNotNull { order -> shippingTimes.estimateFor(order)?.let { order.id to it } }.toMap()
     val searched = orders.filter { it.matchesQuery(current.query) }
     val counts: Map<OrderStatus?, Int> =
         buildMap {
@@ -216,7 +220,8 @@ private fun buildState(
         sort = sortPreference.sort,
         sortDirection = sortPreference.direction,
         statusFilter = filter,
-        nextArrival = orders.nextArrival(today),
+        nextArrival = orders.nextArrival(today, estimates),
+        estimates = estimates,
         grouped = grouped,
         selectedOrderId = current.selectedOrderId ?: sorted.firstOrNull()?.id,
         counts = counts,
@@ -248,7 +253,10 @@ private fun OrderSort.isUnsetFor(order: Order): Boolean =
         OrderSort.RECENT, OrderSort.TITLE, OrderSort.PRICE -> false
     }
 
-private fun List<Order>.nextArrival(today: String): Order? =
-    mapNotNull { order -> arrivalDate(order, today)?.let { order to it } }
+private fun List<Order>.nextArrival(
+    today: String,
+    estimates: Map<String, ArrivalEstimate>,
+): Order? =
+    mapNotNull { order -> arrivalDate(order, today, estimates[order.id])?.let { order to it } }
         .minByOrNull { it.second }
         ?.first

@@ -9,6 +9,7 @@
     "%lld to read": {},
     "All caught up": {},
     "Arrives %@": {},
+    "Arrives around %@": {},
     "Colours": {},
     "Delayed to %@": {},
     "How many arrived volumes are waiting to be read.": {},
@@ -23,6 +24,7 @@
     "The orders arriving next, and when.": {},
     "Tsundoku": {},
     "Was due %@": {},
+    "Was due around %@": {},
     "Your pile": {},
     "oldest %lld days": {
       "localizations": {

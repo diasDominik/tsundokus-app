@@ -137,6 +137,7 @@
     <string name="timeline_date_unset">—</string>
 
     <string name="order_row_eta">ETA %1$s</string>
+    <string name="order_row_eta_estimated">ETA ≈ %1$s</string>
     <string name="order_row_in_transit">In transit</string>
     <string name="order_row_delayed_to">Delayed → %1$s</string>
     <string name="order_row_delayed">Delayed</string>
@@ -149,6 +150,7 @@
 
     <string name="hero_releases">Releases %1$s</string>
     <string name="hero_expected">Expected %1$s</string>
+    <string name="hero_expected_estimated">Expected around %1$s</string>
     <string name="hero_subtitle_with_store">%1$s · %2$s</string>
 
     <string name="report_delay_title">New expected date</string>
@@ -220,6 +222,7 @@
 
     <string name="reminder_overdue_title">Still waiting for %1$s?</string>
     <string name="reminder_overdue_body">It was expected on %1$s. Tap to report a delay or mark it received.</string>
+    <string name="reminder_overdue_body_estimated">It was expected around %1$s, going by your past deliveries. Tap to report a delay or mark it received.</string>
     <string name="reminder_delayed_title">%1$s was due today</string>
     <string name="reminder_delayed_body">Its delivery was moved to today. Tap to check on it.</string>
     <string name="reminder_channel_name">Reminders</string>
@@ -267,9 +270,11 @@
     <string name="widget_today">today</string>
     <string name="widget_tomorrow">tomorrow</string>
     <string name="widget_arrives">Arrives %1$s</string>
+    <string name="widget_arrives_around">Arrives around %1$s</string>
     <string name="widget_delayed_to">Delayed to %1$s</string>
     <string name="widget_releases">Releases %1$s</string>
     <string name="widget_overdue">Was due %1$s</string>
+    <string name="widget_overdue_around">Was due around %1$s</string>
     <string name="widget_all_caught_up">All caught up</string>
 
     <!-- Home-screen widget settings -->
@@ -343,6 +348,21 @@
     <plurals name="stats_delivery_sample">
         <item quantity="one">from %1$d order</item>
         <item quantity="other">from %1$d orders</item>
+    </plurals>
+
+    <plurals name="order_detail_estimate_store">
+        <item quantity="one">Estimated from %1$d delivery from this store</item>
+        <item quantity="other">Estimated from %1$d deliveries from this store</item>
+    </plurals>
+
+    <plurals name="order_detail_estimate_all_stores">
+        <item quantity="one">Estimated from %1$d of your deliveries</item>
+        <item quantity="other">Estimated from %1$d of your deliveries</item>
+    </plurals>
+
+    <plurals name="order_detail_estimate_default">
+        <item quantity="one">Estimated: post usually takes %1$d day</item>
+        <item quantity="other">Estimated: post usually takes %1$d days</item>
     </plurals>
 
     <plurals name="stats_reliability_slip">

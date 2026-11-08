@@ -18,19 +18,25 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.hero_expected
+import tsundokuapp.features.orders.presentation.generated.resources.hero_expected_estimated
 import tsundokuapp.features.orders.presentation.generated.resources.hero_releases
 import tsundokuapp.features.orders.presentation.generated.resources.hero_subtitle_with_store
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
 
-/** "Next arrival" hero card shown at the top of the orders list. */
+/**
+ * "Next arrival" hero card shown at the top of the orders list. [estimate] stands in, marked as
+ * such, for a shipped order's missing ETA.
+ */
 @Composable
 fun NextArrivalHero(
     order: Order,
     today: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    estimate: ArrivalEstimate? = null,
 ) {
     Card(
         onClick = onClick,
@@ -56,7 +62,7 @@ fun NextArrivalHero(
                     modifier = Modifier.basicMarquee(),
                 )
                 Text(
-                    text = heroSubtitle(order, today),
+                    text = heroSubtitle(order, today, estimate),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -73,11 +79,14 @@ private fun heroTitle(order: Order): String =
 private fun heroSubtitle(
     order: Order,
     today: String,
+    estimate: ArrivalEstimate?,
 ): String {
-    val date = fmtDate(arrivalDate(order, today).orEmpty())
+    val date = fmtDate(arrivalDate(order, today, estimate).orEmpty())
     val arrival =
         if (order.status == OrderStatus.ORDERED) {
             stringResource(Res.string.hero_releases, date)
+        } else if (order.status == OrderStatus.SHIPPED && order.eta.isBlank() && estimate != null) {
+            stringResource(Res.string.hero_expected_estimated, date)
         } else {
             stringResource(Res.string.hero_expected, date)
         }

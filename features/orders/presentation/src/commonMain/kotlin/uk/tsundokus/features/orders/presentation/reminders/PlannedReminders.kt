@@ -5,6 +5,8 @@ import uk.tsundokus.features.orders.domain.dates.isoPlusDays
 import uk.tsundokus.features.orders.domain.dates.parseIsoDate
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.stats.ShippingTimes
+import uk.tsundokus.features.orders.domain.stats.shippingTimes
 
 enum class ReminderKind {
     /** Three days past the expected date and still not received. */
@@ -25,6 +27,8 @@ data class PlannedReminder(
     val orderLabel: String,
     /** The date the order was expected on — what an overdue reminder refers to. */
     val expectedDate: String,
+    /** [expectedDate] was estimated from past deliveries, the order having no ETA of its own. */
+    val isEstimate: Boolean = false,
 )
 
 /** How long after the expected date an order counts as overdue: a day or two late is normal post. */
@@ -50,9 +54,10 @@ fun plannedReminders(
 ): List<PlannedReminder> {
     if (!settings.enabled) return emptyList()
     val earliest = isoPlusDays(todayUtc, -1) ?: todayUtc
+    val shippingTimes = orders.shippingTimes()
     return orders
         .filter { it.status in STILL_COMING }
-        .flatMap { order -> remindersFor(order, settings) }
+        .flatMap { order -> remindersFor(order, settings, shippingTimes) }
         .filter { it.date >= earliest }
         .sortedWith(compareBy(PlannedReminder::date, PlannedReminder::id))
         .take(MAX_REMINDERS)
@@ -61,22 +66,33 @@ fun plannedReminders(
 private fun remindersFor(
     order: Order,
     settings: ReminderSettings,
+    shippingTimes: ShippingTimes,
 ): List<PlannedReminder> {
     val label = listOf(order.title, order.volume).filter(String::isNotBlank).joinToString(" ")
-    // A delayed order is expected on its new date; any other on its ETA.
+    // A delayed order is expected on its new date; any other on its ETA, or — shipped without one —
+    // when its past deliveries say.
+    val estimate = shippingTimes.estimateFor(order)
     val expected =
         if (order.status == OrderStatus.DELAYED &&
             order.delayedTo.isNotBlank()
         ) {
             order.delayedTo
         } else {
-            order.eta
+            order.eta.ifBlank { estimate?.date.orEmpty() }
         }
     return listOfNotNull(
         isoPlusDays(expected, OVERDUE_AFTER_DAYS)
             ?.takeIf { settings.overdue }
             ?.let { date ->
-                PlannedReminder("overdue-${order.id}", order.id, ReminderKind.OVERDUE, date, label, expected)
+                PlannedReminder(
+                    id = "overdue-${order.id}",
+                    orderId = order.id,
+                    kind = ReminderKind.OVERDUE,
+                    date = date,
+                    orderLabel = label,
+                    expectedDate = expected,
+                    isEstimate = estimate != null,
+                )
             },
         order.delayedTo
             .takeIf {

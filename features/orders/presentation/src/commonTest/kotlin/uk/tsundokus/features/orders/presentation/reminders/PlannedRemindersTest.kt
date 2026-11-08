@@ -102,6 +102,40 @@ class PlannedRemindersTest {
     }
 
     @Test
+    fun `a shipped order without an ETA is overdue three days after its estimated arrival`() {
+        val thalia = { shipped: String, received: String ->
+            Order(
+                id = "past-$shipped",
+                title = "Frieren",
+                store = "Thalia",
+                status = OrderStatus.RECEIVED,
+                shipDate = shipped,
+                receivedDate = received,
+            )
+        }
+        val orders =
+            listOf(
+                thalia("2026-09-01", "2026-09-03"),
+                thalia("2026-09-05", "2026-09-07"),
+                thalia("2026-09-10", "2026-09-12"),
+                order("9", OrderStatus.SHIPPED).copy(store = "Thalia", shipDate = "2026-10-01"),
+            )
+
+        val planned = plannedReminders(orders, ON, TODAY).single()
+
+        assertEquals("2026-10-03", planned.expectedDate)
+        assertEquals("2026-10-06", planned.date)
+        assertTrue(planned.isEstimate)
+    }
+
+    @Test
+    fun `an order's own ETA is not an estimate`() {
+        val planned = plannedReminders(listOf(order("1", OrderStatus.SHIPPED, eta = "2026-10-02")), ON, TODAY)
+
+        assertEquals(listOf(false), planned.map { it.isEstimate })
+    }
+
+    @Test
     fun `an overdue reminder can fall in the next year`() {
         val planned = plannedReminders(listOf(order("1", OrderStatus.SHIPPED, eta = "2026-12-30")), ON, TODAY)
 

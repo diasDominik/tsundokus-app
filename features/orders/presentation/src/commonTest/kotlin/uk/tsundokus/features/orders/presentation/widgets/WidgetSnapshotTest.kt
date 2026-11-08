@@ -51,6 +51,27 @@ class WidgetSnapshotTest {
     }
 
     @Test
+    fun `a shipped order without an ETA arrives on its estimate marked as one`() {
+        val past = { id: String ->
+            order(id, status = OrderStatus.RECEIVED, receivedDate = "2026-09-04").copy(shipDate = "2026-09-01")
+        }
+        val snapshot =
+            listOf(
+                past("p1"),
+                past("p2"),
+                past("p3"),
+                order("estimated", status = OrderStatus.SHIPPED).copy(shipDate = "2026-10-02"),
+                order("own eta", status = OrderStatus.SHIPPED, eta = "2026-10-04").copy(shipDate = "2026-10-02"),
+            ).toWidgetSnapshot(TODAY)
+
+        assertEquals(
+            listOf("own eta" to false, "estimated" to true),
+            snapshot.arrivals.map { it.id to it.estimated },
+        )
+        assertEquals("2026-10-05", snapshot.arrivals.last().date)
+    }
+
+    @Test
     fun `orders with nothing to wait for are not arrivals`() {
         val snapshot =
             listOf(
