@@ -35,13 +35,16 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.widget_arrives
+import tsundokuapp.features.orders.presentation.generated.resources.widget_arrives_around
 import tsundokuapp.features.orders.presentation.generated.resources.widget_delayed_to
 import tsundokuapp.features.orders.presentation.generated.resources.widget_next_arrivals_title
 import tsundokuapp.features.orders.presentation.generated.resources.widget_nothing_on_the_way
 import tsundokuapp.features.orders.presentation.generated.resources.widget_overdue
+import tsundokuapp.features.orders.presentation.generated.resources.widget_overdue_around
 import tsundokuapp.features.orders.presentation.generated.resources.widget_releases
 import tsundokuapp.features.orders.presentation.generated.resources.widget_sign_in
 import uk.tsundokus.features.orders.domain.dates.todayIso
@@ -138,16 +141,39 @@ internal suspend fun nextArrivalsUi(
                 volume = arrival.volume,
                 detail =
                     when (phrase) {
-                        ArrivalPhrase.RELEASES -> getString(Res.string.widget_releases, day)
-                        ArrivalPhrase.ARRIVES -> getString(Res.string.widget_arrives, day)
-                        ArrivalPhrase.DELAYED_TO -> getString(Res.string.widget_delayed_to, day)
-                        ArrivalPhrase.OVERDUE -> getString(Res.string.widget_overdue, day)
+                        ArrivalPhrase.RELEASES -> {
+                            getString(Res.string.widget_releases, day)
+                        }
+
+                        ArrivalPhrase.ARRIVES -> {
+                            getString(
+                                arrival.wording(Res.string.widget_arrives, Res.string.widget_arrives_around),
+                                day,
+                            )
+                        }
+
+                        ArrivalPhrase.DELAYED_TO -> {
+                            getString(Res.string.widget_delayed_to, day)
+                        }
+
+                        ArrivalPhrase.OVERDUE -> {
+                            getString(
+                                arrival.wording(Res.string.widget_overdue, Res.string.widget_overdue_around),
+                                day,
+                            )
+                        }
                     },
                 phrase = phrase,
             )
         }
     return NextArrivalsUi(heading, lines, signedOutMessage = null, nothingMessage = nothing)
 }
+
+/** [known] for a date the order carries, [estimated] for one worked out from past deliveries. */
+private fun WidgetArrival.wording(
+    known: StringResource,
+    estimated: StringResource,
+): StringResource = if (this.estimated) estimated else known
 
 @Composable
 internal fun NextArrivalsContent(

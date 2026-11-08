@@ -328,6 +328,26 @@ class CollectionStatsTest {
     }
 
     @Test
+    fun `a slip after shipping without an eta is counted from the store's usual arrival`() {
+        val stats =
+            listOf(
+                order(store = "Thalia", shipDate = "2026-09-01", receivedDate = "2026-09-03"),
+                order(store = "Thalia", shipDate = "2026-09-05", receivedDate = "2026-09-07"),
+                order(store = "Thalia", shipDate = "2026-09-10", receivedDate = "2026-09-12"),
+                order(
+                    store = "Thalia",
+                    status = OrderStatus.DELAYED,
+                    releaseDate = "2026-08-01",
+                    shipDate = "2026-09-20",
+                    delayedTo = "2026-09-30",
+                ),
+            ).stats()
+
+        // Expected two days after shipping, on the 22nd; delayed to the 30th.
+        assertEquals(8, stats.storeReliability.single().medianSlipDays)
+    }
+
+    @Test
     fun `a slip without an eta is counted from the release date`() {
         val stats =
             listOf(

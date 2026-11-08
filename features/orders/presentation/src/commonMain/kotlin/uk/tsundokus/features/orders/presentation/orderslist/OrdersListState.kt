@@ -5,6 +5,7 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
 
 @Stable
 data class OrdersListState(
@@ -17,6 +18,8 @@ data class OrdersListState(
     val sortDirection: SortDirection = OrderSort.RECENT.defaultDirection,
     val statusFilter: OrderStatus? = null,
     val nextArrival: Order? = null,
+    /** By order id: when each shipped order with no ETA should arrive, judged from past deliveries. */
+    val estimates: Map<String, ArrivalEstimate> = emptyMap(),
     val grouped: Map<OrderStatus, List<Order>> = emptyMap(),
     val selectedOrderId: String? = null,
     val counts: Map<OrderStatus?, Int> = emptyMap(),

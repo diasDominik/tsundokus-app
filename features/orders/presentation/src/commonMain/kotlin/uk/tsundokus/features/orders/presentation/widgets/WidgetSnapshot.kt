@@ -6,6 +6,7 @@ import uk.tsundokus.features.orders.domain.dates.daysBetween
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.domain.stats.shippingTimes
 import uk.tsundokus.features.orders.presentation.components.arrivalDate
 
 /**
@@ -54,6 +55,8 @@ data class WidgetArrival(
     val date: String,
     /** [OrderStatus] name: ORDERED (a release), SHIPPED or DELAYED. */
     val status: String,
+    /** [date] was estimated from past deliveries: the order shipped without an ETA. */
+    val estimated: Boolean = false,
 )
 
 /**
@@ -78,22 +81,25 @@ private val snapshotJson =
 fun List<Order>.toWidgetSnapshot(today: String): WidgetSnapshot {
     val active = filter { it.status != OrderStatus.CANCELLED }
     val pile = active.filter { it.status == OrderStatus.RECEIVED && it.readState != ReadState.READ }
+    val shippingTimes = shippingTimes()
     return WidgetSnapshot(
         signedIn = true,
         arrivals =
             active
-                .mapNotNull { order -> arrivalDate(order, today)?.let { order to it } }
-                .sortedWith(compareBy<Pair<Order, String>> { it.second }.thenBy { it.first.title.lowercase() })
-                .take(MAX_ARRIVALS)
-                .map { (order, date) ->
-                    WidgetArrival(
-                        id = order.id,
-                        title = order.title,
-                        volume = order.volume,
-                        date = date,
-                        status = order.status.name,
-                    )
-                },
+                .mapNotNull { order ->
+                    val estimate = shippingTimes.estimateFor(order)
+                    arrivalDate(order, today, estimate)?.let { date ->
+                        WidgetArrival(
+                            id = order.id,
+                            title = order.title,
+                            volume = order.volume,
+                            date = date,
+                            status = order.status.name,
+                            estimated = estimate != null,
+                        )
+                    }
+                }.sortedWith(compareBy<WidgetArrival> { it.date }.thenBy { it.title.lowercase() })
+                .take(MAX_ARRIVALS),
         unread = pile.size,
         reading = pile.count { it.readState == ReadState.READING },
         oldestUnreadSince =

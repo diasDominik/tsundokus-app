@@ -26,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
 
 /**
  * A single order row: status tile, then title and price, subtitle, date and read-state. Only the
  * price shares the title's line, so a long title keeps the room. [checked] is null outside selection
  * mode; in it, the row shows a checkbox and a tap toggles it. [onLongClick] starts selection mode.
+ * [estimate] is shown, as an estimate, when a shipped order has no ETA of its own.
  */
 @Composable
 fun OrderRow(
@@ -41,6 +43,7 @@ fun OrderRow(
     selected: Boolean = false,
     checked: Boolean? = null,
     onLongClick: (() -> Unit)? = null,
+    estimate: ArrivalEstimate? = null,
 ) {
     val shape = RoundedCornerShape(16.dp)
     OutlinedCard(
@@ -95,7 +98,7 @@ fun OrderRow(
                 VerticalSpacer(4.dp)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = dateLabel(order, today),
+                        text = dateLabel(order, today, estimate),
                         style = MaterialTheme.typography.labelSmall,
                         color = order.status.accentColor(),
                         maxLines = 1,

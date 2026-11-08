@@ -24,12 +24,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_delete
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_edit
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_estimate_all_stores
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_estimate_default
+import tsundokuapp.features.orders.presentation.generated.resources.order_detail_estimate_store
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_delayed_to
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_eta
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_isbn
@@ -57,7 +61,11 @@ import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
+import uk.tsundokus.features.orders.domain.stats.DEFAULT_SHIPPING_DAYS
+import uk.tsundokus.features.orders.domain.stats.EstimateBasis
 import uk.tsundokus.features.orders.presentation.components.BookCover
+import uk.tsundokus.features.orders.presentation.components.ESTIMATE_MARK
 import uk.tsundokus.features.orders.presentation.components.FactRow
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
@@ -203,7 +211,7 @@ private fun ColumnScope.OrderDetailContent(
     VerticalSpacer(20.dp)
     SectionLabel(stringResource(Res.string.order_detail_section_details))
     VerticalSpacer(4.dp)
-    OrderFacts(order = order)
+    OrderFacts(order = order, estimate = state.estimate)
 
     VerticalSpacer(20.dp)
     state.primaryAction?.let { action ->
@@ -250,7 +258,10 @@ private fun ColumnScope.OrderDetailContent(
 }
 
 @Composable
-private fun OrderFacts(order: Order) {
+private fun OrderFacts(
+    order: Order,
+    estimate: ArrivalEstimate?,
+) {
     Column {
         if (order.store.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_store), order.store)
@@ -271,6 +282,12 @@ private fun OrderFacts(order: Order) {
         }
         if (order.eta.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_eta), fmtDate(order.eta))
+        } else if (estimate != null) {
+            FactRow(
+                label = stringResource(Res.string.order_detail_fact_eta),
+                value = ESTIMATE_MARK + fmtDate(estimate.date),
+                caption = estimateCaption(estimate),
+            )
         }
         if (order.delayedTo.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_delayed_to), fmtDate(order.delayedTo))
@@ -280,6 +297,27 @@ private fun OrderFacts(order: Order) {
         }
     }
 }
+
+/** Where an estimate comes from, so it reads as one: "Based on 9 deliveries from this store". */
+@Composable
+private fun estimateCaption(estimate: ArrivalEstimate): String =
+    when (estimate.basis) {
+        EstimateBasis.STORE -> {
+            pluralStringResource(Res.plurals.order_detail_estimate_store, estimate.sample, estimate.sample)
+        }
+
+        EstimateBasis.ALL_STORES -> {
+            pluralStringResource(Res.plurals.order_detail_estimate_all_stores, estimate.sample, estimate.sample)
+        }
+
+        EstimateBasis.DEFAULT -> {
+            pluralStringResource(
+                Res.plurals.order_detail_estimate_default,
+                DEFAULT_SHIPPING_DAYS,
+                DEFAULT_SHIPPING_DAYS,
+            )
+        }
+    }
 
 @Composable
 private fun SectionLabel(text: String) {

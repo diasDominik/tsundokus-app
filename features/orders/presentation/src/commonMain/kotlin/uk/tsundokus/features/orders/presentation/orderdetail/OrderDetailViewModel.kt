@@ -6,6 +6,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -35,6 +36,9 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.domain.order.OrderRepository
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
+import uk.tsundokus.features.orders.domain.stats.shippingTimes
+import uk.tsundokus.features.orders.presentation.components.ESTIMATE_MARK
 import uk.tsundokus.features.orders.presentation.components.TimelineNode
 import uk.tsundokus.features.orders.presentation.components.TimelineNodeState
 import uk.tsundokus.features.orders.presentation.components.fmtDate
@@ -51,24 +55,28 @@ class OrderDetailViewModel(
     val events = eventChannel.receiveAsFlow()
 
     val state: StateFlow<OrderDetailState> =
-        orderRepository
-            .getOrderById(orderId)
-            .map { order ->
-                if (order == null) {
-                    OrderDetailState(isLoading = false, order = null)
-                } else {
-                    OrderDetailState(
-                        isLoading = false,
-                        order = order,
-                        timeline = buildTimeline(order),
-                        primaryAction = primaryActionFor(order),
-                    )
-                }
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5.seconds),
-                initialValue = OrderDetailState(),
-            )
+        combine(
+            orderRepository.getOrderById(orderId),
+            // Every order, for the deliveries an estimate is judged from.
+            orderRepository.getOrders().map { it.shippingTimes() },
+        ) { order, shippingTimes ->
+            if (order == null) {
+                OrderDetailState(isLoading = false, order = null)
+            } else {
+                val estimate = shippingTimes.estimateFor(order)
+                OrderDetailState(
+                    isLoading = false,
+                    order = order,
+                    timeline = buildTimeline(order, estimate),
+                    primaryAction = primaryActionFor(order),
+                    estimate = estimate,
+                )
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = OrderDetailState(),
+        )
 
     fun onPrimaryAction() {
         val action = state.value.primaryAction ?: return
@@ -145,7 +153,10 @@ private fun primaryActionFor(order: Order): PrimaryAction? =
 /** The timeline shows a dash where a date is not known yet; not translated copy. */
 private const val EM_DASH = "\u2014"
 
-private fun buildTimeline(order: Order): List<TimelineNode> {
+private fun buildTimeline(
+    order: Order,
+    estimate: ArrivalEstimate?,
+): List<TimelineNode> {
     fun node(
         label: org.jetbrains.compose.resources.StringResource,
         value: String,
@@ -177,7 +188,17 @@ private fun buildTimeline(order: Order): List<TimelineNode> {
             listOf(
                 node(Res.string.timeline_ordered, order.orderDate, TimelineNodeState.DONE),
                 node(Res.string.timeline_shipped, order.shipDate.ifBlank { order.eta }, TimelineNodeState.DONE),
-                node(Res.string.timeline_arriving, order.eta, TimelineNodeState.CURRENT),
+                if (order.eta.isBlank() && estimate != null) {
+                    // An estimate is not a known date: drawn hollow, and marked.
+                    TimelineNode(
+                        label = Res.string.timeline_arriving,
+                        date = ESTIMATE_MARK + fmtDate(estimate.date),
+                        state = TimelineNodeState.CURRENT,
+                        isDateKnown = false,
+                    )
+                } else {
+                    node(Res.string.timeline_arriving, order.eta, TimelineNodeState.CURRENT)
+                },
             )
         }
 

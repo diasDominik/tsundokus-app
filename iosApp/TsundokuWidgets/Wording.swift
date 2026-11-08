@@ -20,14 +20,17 @@ extension WidgetArrival {
         return status == "DELAYED" ? .delayedTo : .arrives
     }
 
-    /// "Arrives today", "Releases tomorrow", "Delayed to Fri, 9 Oct", "Was due Thu, 1 Oct".
+    /// "Arrives today", "Releases tomorrow", "Delayed to Fri, 9 Oct", "Was due Thu, 1 Oct"; an
+    /// estimated date reads "Arrives around Fri, 9 Oct".
     func detail(on today: String) -> String {
         let day = dayName(date, today: today)
         switch phrase(on: today) {
         case .releases: return String(localized: "Releases \(day)")
-        case .arrives: return String(localized: "Arrives \(day)")
+        case .arrives:
+            return isEstimate ? String(localized: "Arrives around \(day)") : String(localized: "Arrives \(day)")
         case .delayedTo: return String(localized: "Delayed to \(day)")
-        case .overdue: return String(localized: "Was due \(day)")
+        case .overdue:
+            return isEstimate ? String(localized: "Was due around \(day)") : String(localized: "Was due \(day)")
         }
     }
 }

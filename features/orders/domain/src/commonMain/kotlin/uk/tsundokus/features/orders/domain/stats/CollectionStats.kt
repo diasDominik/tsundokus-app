@@ -140,7 +140,7 @@ fun List<Order>.toCollectionStats(
         topStores = inPeriod.topNames(Order::store),
         topPublishers = inPeriod.topNames(Order::publisher),
         delivery = inPeriod.toDelivery(),
-        storeReliability = inPeriod.toStoreReliability(),
+        storeReliability = inPeriod.toStoreReliability(active.shippingTimes()),
     )
 }
 
@@ -269,7 +269,7 @@ private fun Order.waitDays(): Int? {
  * Stores judged on the orders whose outcome is known: arrived, or already reported delayed. An order
  * that arrived after a delay still counts as delayed — reporting one keeps its delayed-to date.
  */
-private fun List<Order>.toStoreReliability(): List<StoreReliability> =
+private fun List<Order>.toStoreReliability(shippingTimes: ShippingTimes): List<StoreReliability> =
     filter { it.store.isNotBlank() && (it.status == OrderStatus.RECEIVED || it.wasDelayed) }
         .groupBy { nameKey(it.store) }
         .values
@@ -280,7 +280,7 @@ private fun List<Order>.toStoreReliability(): List<StoreReliability> =
                 store = orders.map { it.store.trim() }.mostCommon(),
                 orders = orders.size,
                 delayed = delayed.size,
-                medianSlipDays = delayed.mapNotNull { it.slipDays() }.median(),
+                medianSlipDays = delayed.mapNotNull { it.slipDays(shippingTimes) }.median(),
             )
         }.sortedWith(
             compareByDescending(StoreReliability::delayRate)
@@ -291,13 +291,16 @@ private fun List<Order>.toStoreReliability(): List<StoreReliability> =
 private val Order.wasDelayed: Boolean
     get() = status == OrderStatus.DELAYED || delayedTo.isNotBlank()
 
-/** How much later the delayed-to date is than the one first promised: the ETA, else the release date. */
-private fun Order.slipDays(): Int? {
-    val promised = eta.ifBlank { releaseDate }
+/**
+ * How much later the delayed-to date is than the one first expected: the ETA, else — once shipped —
+ * the arrival its store's shipping time points to, else the release date.
+ */
+private fun Order.slipDays(shippingTimes: ShippingTimes): Int? {
+    val promised = eta.ifBlank { shippingTimes.expectedArrival(this)?.date ?: releaseDate }
     return daysBetween(promised, delayedTo)?.takeIf { it > 0 }
 }
 
-private fun nameKey(name: String): String = name.lowercase().filterNot(Char::isWhitespace)
+internal fun nameKey(name: String): String = name.lowercase().filterNot(Char::isWhitespace)
 
 private fun List<String>.mostCommon(): String =
     groupingBy { it }
@@ -306,7 +309,7 @@ private fun List<String>.mostCommon(): String =
         .key
 
 /** The middle value, the two middle ones' mean rounded up when there is an even number; null if empty. */
-private fun List<Int>.median(): Int? {
+internal fun List<Int>.median(): Int? {
     if (isEmpty()) return null
     val sorted = sorted()
     val middle = size / 2

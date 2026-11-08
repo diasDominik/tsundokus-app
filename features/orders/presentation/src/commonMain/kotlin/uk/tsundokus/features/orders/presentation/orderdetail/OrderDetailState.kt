@@ -7,6 +7,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_action
 import tsundokuapp.features.orders.presentation.generated.resources.order_action_mark_received
 import tsundokuapp.features.orders.presentation.generated.resources.order_action_mark_shipped
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
 import uk.tsundokus.features.orders.presentation.components.TimelineNode
 
 /** The primary call-to-action shown on the detail screen, derived from the order's status. */
@@ -22,6 +23,8 @@ data class OrderDetailState(
     val order: Order? = null,
     val timeline: List<TimelineNode> = emptyList(),
     val primaryAction: PrimaryAction? = null,
+    /** When the order should arrive, judged from past deliveries; only while shipped with no ETA. */
+    val estimate: ArrivalEstimate? = null,
 )
 
 val PrimaryAction.labelRes: StringResource

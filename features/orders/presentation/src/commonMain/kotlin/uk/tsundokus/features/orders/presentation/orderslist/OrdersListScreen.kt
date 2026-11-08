@@ -709,6 +709,7 @@ private fun OrdersLazyColumn(
                     today = today,
                     onClick = { onOrderClick(hero.id) },
                     modifier = Modifier.padding(bottom = 4.dp),
+                    estimate = state.estimates[hero.id],
                 )
             }
         }
@@ -730,6 +731,7 @@ private fun OrdersLazyColumn(
                     selected = order.id == state.selectedOrderId,
                     checked = picked?.let { order.id in it },
                     onLongClick = { onAction(OrdersListAction.OnTogglePicked(order.id)) },
+                    estimate = state.estimates[order.id],
                 )
             }
         }
