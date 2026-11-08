@@ -1,3 +1,3 @@
-• Adding the next volume of a series is faster: an empty publisher, store and price fill in from your earlier orders of that series. A price keeps the currency it was paid in, and what you type yourself always wins.
-• Adding a passkey that this device or password manager already holds now says so, instead of asking you to try again.
-• Updated passkey support.
+• A shipped order without an expected date now gets an estimate from your own past deliveries from that store. It is marked with ≈, and overdue reminders and the Next arrivals widget use it. A date you enter yourself always wins.
+• Setting a widget's background to None now removes the card instead of leaving it translucent.
+• The app now refuses unencrypted connections.
