@@ -46,7 +46,15 @@ extension WidgetSnapshot {
             ],
             unread: 12,
             reading: 2,
-            oldestUnreadSince: IsoDay.adding(-30, to: today)
+            oldestUnreadSince: IsoDay.adding(-150, to: today),
+            // Twelve volumes, from one that has a spider to one that came this week.
+            pile: [150, 95, 70, 52, 41, 33, 25, 18, 12, 8, 5, 2].enumerated().map { index, days in
+                WidgetPileBook(
+                    id: "preview-pile-\(index)",
+                    since: IsoDay.adding(-days, to: today) ?? today,
+                    reading: index == 7 || index == 10
+                )
+            }
         )
     }
 }

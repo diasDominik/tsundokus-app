@@ -2,7 +2,8 @@ import SwiftUI
 import WidgetKit
 
 /// The tsundoku: how many arrived volumes wait to be read. On the home screen with how many are being
-/// read and how long the oldest has waited; on the Lock Screen, the count. A tap opens the app.
+/// read and how long the oldest has waited, and the pile itself drawn gathering dust (see `PileArt`);
+/// on the Lock Screen, the count. A tap opens the app.
 struct PileWidget: Widget {
     var body: some WidgetConfiguration {
         AppIntentConfiguration(
@@ -15,7 +16,7 @@ struct PileWidget: Widget {
         }
         .configurationDisplayName("Your pile")
         .description("How many arrived volumes are waiting to be read.")
-        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular, .accessoryInline])
     }
 }
 
@@ -69,7 +70,67 @@ struct PileView: View {
         }
     }
 
+    @ViewBuilder
     private var homeScreen: some View {
+        if message == nil, !snapshot.pileBooks.isEmpty {
+            withPile
+        } else {
+            countOnly
+        }
+    }
+
+    /// The count made smaller, with the pile drawn in the room under it (see `PileArt`); in the
+    /// medium size, beside it, where the pile gets the whole height.
+    @ViewBuilder
+    private var withPile: some View {
+        if family == .systemMedium {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    words(detailLines: 2)
+                    Spacer(minLength: 0)
+                }
+                .frame(maxHeight: .infinity, alignment: .topLeading)
+                // The words take what they need; the pile gets the rest of the width.
+                .layoutPriority(1)
+                pileArt
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 2) {
+                words(detailLines: 1)
+                pileArt.padding(.top, 4)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+    }
+
+    private var pileArt: some View {
+        PileArtView(books: snapshot.pileBooks, today: IsoDay.string(for: entry.date))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    /// The heading, the count and the detail line, as they sit by the pile.
+    @ViewBuilder
+    private func words(detailLines: Int) -> some View {
+        if entry.configuration.showHeading {
+            Text("Your pile")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(palette.accent)
+                .widgetAccentable()
+        }
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text("\(snapshot.unread)")
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .foregroundStyle(palette.text)
+            Text("to read").font(.footnote).foregroundStyle(palette.secondaryText)
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        if entry.configuration.showDetail, let detail {
+            Text(detail).font(.caption2).foregroundStyle(palette.secondaryText).lineLimit(detailLines)
+        }
+    }
+
+    private var countOnly: some View {
         VStack(alignment: .leading, spacing: 4) {
             if entry.configuration.showHeading {
                 Text("Your pile")
@@ -97,6 +158,12 @@ struct PileView: View {
 }
 
 #Preview("Small", as: .systemSmall) {
+    PileWidget()
+} timeline: {
+    SnapshotEntry(date: .now, snapshot: .preview(on: IsoDay.string(for: .now)), configuration: PileConfiguration())
+}
+
+#Preview("Medium", as: .systemMedium) {
     PileWidget()
 } timeline: {
     SnapshotEntry(date: .now, snapshot: .preview(on: IsoDay.string(for: .now)), configuration: PileConfiguration())
