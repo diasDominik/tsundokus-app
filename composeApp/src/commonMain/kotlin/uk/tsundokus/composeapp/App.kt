@@ -5,10 +5,16 @@ import androidx.compose.animation.ContentTransform
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +53,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
@@ -116,13 +123,55 @@ private val deepLinkMatchers = buildDeepLinkMatchers(devBaseUrl = BuildKonfig.BA
 private const val NAV_TRANSITION_DURATION_MS = 300
 private const val PREDICTIVE_POP_EXIT_TARGET_SCALE = 0.92f
 
-// Fade both directions for ordinary navigate/pop.
-private val navTransition: ContentTransform
-    get() =
-        ContentTransform(
-            fadeIn(tween(NAV_TRANSITION_DURATION_MS)),
-            fadeOut(tween(NAV_TRANSITION_DURATION_MS)),
+/** How long the outgoing screen takes to fade; the incoming one fades in over the rest of the transition. */
+private const val NAV_FADE_OUT_MS = 90
+
+/** Shared-axis slide distance, as a fraction of the screen width (Material's ~30dp on a phone). */
+private const val NAV_SLIDE_FRACTION = 12
+
+private const val FADE_THROUGH_INITIAL_SCALE = 0.92f
+
+/**
+ * Opening a screen and going back: Material's shared-axis X. The outgoing screen is gone within the
+ * first [NAV_FADE_OUT_MS] while both slide a short way, so the two never sit on top of each other half
+ * transparent (a plain crossfade reads as a double exposure). Going back runs the same motion reversed.
+ */
+private fun sharedAxisTransition(forward: Boolean): ContentTransform {
+    val direction = if (forward) 1 else -1
+    val slide = tween<IntOffset>(NAV_TRANSITION_DURATION_MS, easing = FastOutSlowInEasing)
+    return ContentTransform(
+        targetContentEnter =
+            slideInHorizontally(slide) { width -> direction * width / NAV_SLIDE_FRACTION } +
+                fadeIn(
+                    tween(
+                        durationMillis = NAV_TRANSITION_DURATION_MS - NAV_FADE_OUT_MS,
+                        delayMillis = NAV_FADE_OUT_MS,
+                        easing = LinearOutSlowInEasing,
+                    ),
+                ),
+        initialContentExit =
+            slideOutHorizontally(slide) { width -> -direction * width / NAV_SLIDE_FRACTION } +
+                fadeOut(tween(NAV_FADE_OUT_MS, easing = FastOutLinearInEasing)),
+    )
+}
+
+/**
+ * Switching tabs: Material's fade-through. Tabs are siblings, not a step deeper, so nothing slides; the
+ * old tab fades out quickly and the new one fades and settles in from slightly smaller.
+ */
+private val fadeThroughTransition: ContentTransform
+    get() {
+        val incoming =
+            tween<Float>(
+                durationMillis = NAV_TRANSITION_DURATION_MS - NAV_FADE_OUT_MS,
+                delayMillis = NAV_FADE_OUT_MS,
+                easing = LinearOutSlowInEasing,
+            )
+        return ContentTransform(
+            targetContentEnter = fadeIn(incoming) + scaleIn(incoming, initialScale = FADE_THROUGH_INITIAL_SCALE),
+            initialContentExit = fadeOut(tween(NAV_FADE_OUT_MS, easing = FastOutLinearInEasing)),
         )
+    }
 
 // All sub-animations share one duration: the predictive gesture scrubs the whole ContentTransform
 // through a SeekableTransitionState, and mismatched durations hitch on settle.
@@ -364,8 +413,15 @@ fun App() {
                                 backStack = backStack,
                                 onBack = { backStack.removeLastOrNull() },
                                 entryDecorators = rememberEntryDecorators(backStack),
-                                transitionSpec = { navTransition },
-                                popTransitionSpec = { navTransition },
+                                // A tab switch replaces the top of the stack with another tab.
+                                transitionSpec = {
+                                    if (backStack.lastOrNull() is TopLevelTab) {
+                                        fadeThroughTransition
+                                    } else {
+                                        sharedAxisTransition(forward = true)
+                                    }
+                                },
+                                popTransitionSpec = { sharedAxisTransition(forward = false) },
                                 predictivePopTransitionSpec = { _ -> predictivePopTransition },
                                 entryProvider = entryProvider {
                                     ordersGraph(
@@ -423,8 +479,8 @@ fun App() {
                         modifier = Modifier.fillMaxSize().padding(padding),
                         backStack = backStack,
                         entryDecorators = rememberEntryDecorators(backStack),
-                        transitionSpec = { navTransition },
-                        popTransitionSpec = { navTransition },
+                        transitionSpec = { sharedAxisTransition(forward = true) },
+                        popTransitionSpec = { sharedAxisTransition(forward = false) },
                         predictivePopTransitionSpec = { _ -> predictivePopTransition },
                         onBack = { backStack.removeLastOrNull() },
                         entryProvider = entryProvider {
