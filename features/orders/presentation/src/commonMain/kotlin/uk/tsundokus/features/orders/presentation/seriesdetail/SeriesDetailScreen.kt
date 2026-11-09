@@ -213,7 +213,7 @@ private fun VolumeStrip(
     onOpenOrder: (String) -> Unit,
 ) {
     val byNumber = remember(series) { series.volumes.associateBy(SeriesVolume::number) }
-    val numbers = series.volumes.first().number..series.volumes.last().number
+    val numbers = series.volumeRange
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

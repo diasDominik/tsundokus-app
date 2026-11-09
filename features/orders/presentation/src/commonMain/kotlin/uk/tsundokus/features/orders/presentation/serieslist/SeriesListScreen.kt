@@ -378,13 +378,28 @@ internal fun SeriesSummary(series: Series) {
     )
 }
 
-/** Up to three gaps by number, then how many more: "6, 9, 12 +4". */
+/** Up to three gaps, runs written as ranges, then how many more volumes: "1–8, 10, 14 +4". */
 @Composable
 private fun missingLabel(missing: List<Int>): String {
-    val shown = missing.take(MAX_MISSING_SHOWN).joinToString(", ")
-    val more = missing.size - MAX_MISSING_SHOWN
+    val runs = missing.toRuns()
+    val shown = runs.take(MAX_MISSING_SHOWN).joinToString(", ") { it.label() }
+    val more = runs.drop(MAX_MISSING_SHOWN).sumOf { it.count() }
     return if (more > 0) stringResource(Res.string.series_missing_more, shown, more) else shown
 }
+
+/** Ascending numbers grouped into consecutive runs: 1, 2, 3, 5 becomes 1..3 and 5..5. */
+internal fun List<Int>.toRuns(): List<IntRange> =
+    fold(mutableListOf<IntRange>()) { runs, number ->
+        val last = runs.lastOrNull()
+        if (last != null && number == last.last + 1) {
+            runs[runs.lastIndex] = last.first..number
+        } else {
+            runs += number..number
+        }
+        runs
+    }
+
+private fun IntRange.label(): String = if (first == last) "$first" else "$first–$last"
 
 private const val MAX_MISSING_SHOWN = 3
 
