@@ -14,8 +14,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.settings.presentation.generated.resources.Res
+import tsundokuapp.features.settings.presentation.generated.resources.nav_settings
 import tsundokuapp.features.settings.presentation.generated.resources.settings_about
 import tsundokuapp.features.settings.presentation.generated.resources.settings_about_caption
 import tsundokuapp.features.settings.presentation.generated.resources.settings_account_fallback
@@ -152,7 +156,12 @@ internal fun SettingsScreen(
                     .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            VerticalSpacer(8.dp)
+            Text(
+                text = stringResource(Res.string.nav_settings),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 12.dp),
+            )
             AccountHeaderCard(
                 name = state.accountName,
                 email = state.accountEmail,
@@ -174,10 +183,17 @@ internal fun SettingsScreen(
                 onClick = onChangePassword,
             )
             SettingsRow(
-                icon = TsundokuIcons.Lock,
+                icon = TsundokuIcons.Key,
                 title = stringResource(Res.string.settings_passkeys),
                 subtitle = stringResource(Res.string.settings_passkeys_caption),
                 onClick = onPasskeys,
+            )
+            SettingsRow(
+                icon = TsundokuIcons.Delete,
+                title = stringResource(Res.string.settings_delete_account),
+                subtitle = stringResource(Res.string.settings_delete_account_caption),
+                onClick = onDeleteAccount,
+                destructive = true,
             )
 
             SectionLabel(stringResource(Res.string.settings_section_preferences))
@@ -212,17 +228,10 @@ internal fun SettingsScreen(
             )
             PrivacyPolicyRow()
             SettingsRow(
-                icon = TsundokuIcons.Info,
+                icon = TsundokuIcons.Description,
                 title = stringResource(Res.string.settings_oss_licenses),
                 subtitle = stringResource(Res.string.settings_oss_licenses_caption),
                 onClick = onLicenses,
-            )
-            SettingsRow(
-                icon = TsundokuIcons.Delete,
-                title = stringResource(Res.string.settings_delete_account),
-                subtitle = stringResource(Res.string.settings_delete_account_caption),
-                onClick = onDeleteAccount,
-                destructive = true,
             )
 
             VerticalSpacer(4.dp)
@@ -447,6 +456,7 @@ internal fun PreferenceCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SegmentedControl(
     options: List<String>,
@@ -454,43 +464,14 @@ private fun SegmentedControl(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            options.forEachIndexed { index, label ->
-                val selected = index == selectedIndex
-                val container = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent
-                val content =
-                    if (selected) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                Surface(
-                    onClick = { onSelect(index) },
-                    color = container,
-                    contentColor = content,
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Box(
-                        modifier = Modifier.padding(vertical = 10.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                            maxLines = 1,
-                        )
-                    }
-                }
+    SingleChoiceSegmentedButtonRow(modifier = modifier.fillMaxWidth()) {
+        options.forEachIndexed { index, label ->
+            SegmentedButton(
+                selected = index == selectedIndex,
+                onClick = { onSelect(index) },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+            ) {
+                Text(text = label, maxLines = 1)
             }
         }
     }
