@@ -40,6 +40,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -163,6 +166,13 @@ fun AddEditOrderRoot(
             },
         navigationAction = TopBarAction.Close,
         onNavigationClick = requestClose,
+    )
+    // The system back gesture pops the back stack on its own, past the ✕ above. While there is
+    // something to lose it asks first, the same as the ✕ does.
+    NavigationBackHandler(
+        state = rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = state.isDirty && !confirmingDiscard,
+        onBackCompleted = requestClose,
     )
 
     AddEditOrderScreen(

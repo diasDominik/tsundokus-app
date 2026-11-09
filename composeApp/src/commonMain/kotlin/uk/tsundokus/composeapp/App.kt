@@ -74,6 +74,8 @@ import uk.tsundokus.core.presentation.navigation.FabAction
 import uk.tsundokus.core.presentation.navigation.LocalTopBarActionsController
 import uk.tsundokus.core.presentation.navigation.LoggedIn
 import uk.tsundokus.core.presentation.navigation.ScreenWithFab
+import uk.tsundokus.core.presentation.navigation.ScreenWithTopBar
+import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.navigation.TopBarActionsController
 import uk.tsundokus.core.presentation.navigation.TopLevelTab
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
@@ -259,8 +261,13 @@ fun App() {
                 // screen, and stacking the bar on top of it would eat another ~88dp from the screen
                 // the user is filling in.
                 val isKeyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+                // A screen closed with ✕ is a task the user finishes or abandons — a form like Add
+                // order. Offering the tabs there let one tap throw away what was typed: switching
+                // tabs drops the screen without its unsaved-changes guard ever being asked. Without
+                // the bar, the ✕ (and Back) are the way out, and both go through that guard.
+                val isTaskScreen = (currentKey as? ScreenWithTopBar)?.topBarAction == TopBarAction.Close
                 val navigationSuiteType =
-                    if (isKeyboardOpen) {
+                    if (isKeyboardOpen || isTaskScreen) {
                         NavigationSuiteType.None
                     } else {
                         NavigationSuiteScaffoldDefaults.navigationSuiteType(currentWindowAdaptiveInfoV2())
