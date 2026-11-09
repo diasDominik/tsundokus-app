@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -43,7 +42,7 @@ class ReadingListViewModel(
 
     val state: StateFlow<ReadingListState> =
         combine(
-            orderRepository.getOrders().onStart { emit(emptyList()) },
+            orderRepository.getOrders(),
             searchQuery,
             selection.picked,
         ) { orders, query, picked ->

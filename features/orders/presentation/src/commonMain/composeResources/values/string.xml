@@ -90,6 +90,7 @@
     <string name="orders_list_no_matches_filter_caption">No orders have this status.</string>
     <string name="orders_list_clear_filters">Clear filters</string>
     <string name="orders_list_clear_search_cd">Clear search</string>
+    <string name="list_loading_cd">Loading</string>
     <string name="orders_list_refresh_cd">Sync now</string>
     <string name="orders_list_detail_placeholder_title">Select an order</string>
     <string name="orders_list_detail_placeholder_caption">Pick an order on the left to see its details.</string>

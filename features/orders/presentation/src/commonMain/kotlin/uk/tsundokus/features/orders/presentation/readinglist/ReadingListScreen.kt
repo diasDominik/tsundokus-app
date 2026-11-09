@@ -59,6 +59,7 @@ import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
 import uk.tsundokus.features.orders.presentation.components.ShelfThumbnail
 import uk.tsundokus.features.orders.presentation.components.containerColor
@@ -187,6 +188,10 @@ private fun ReadingListScreen(
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             )
+            if (state.isLoading) {
+                ListSkeleton(modifier = Modifier.fillMaxSize())
+                return@Column
+            }
             if (state.grouped.isEmpty()) {
                 EmptyShelf(isFiltered = state.isFiltered, modifier = Modifier.fillMaxSize())
                 return@Column

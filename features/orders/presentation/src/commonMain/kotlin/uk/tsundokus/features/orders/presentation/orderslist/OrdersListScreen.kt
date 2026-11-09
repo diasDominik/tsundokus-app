@@ -107,6 +107,7 @@ import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.presentation.components.EmptyState
 import uk.tsundokus.features.orders.presentation.components.FadingChipRow
+import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
@@ -327,7 +328,8 @@ private fun ListHeader(
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocusRequester),
         )
         VerticalSpacer(8.dp)
-        FilterChipsRow(state = state, onAction = onAction)
+        // The chips carry counts; before the first load they would all read 0 and then jump.
+        if (!state.isLoading) FilterChipsRow(state = state, onAction = onAction)
     }
 }
 
@@ -569,6 +571,12 @@ private fun OrdersListBody(
     onOrderClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Until the local database has answered, nothing is known: showing "no orders" here would flash the
+    // empty state on every cold start.
+    if (state.isLoading) {
+        ListSkeleton(modifier = modifier.fillMaxSize())
+        return
+    }
     if (state.displayed.isEmpty()) {
         if (state.isFiltered) {
             NoMatchesState(state = state, onAction = onAction, modifier = modifier.fillMaxSize())

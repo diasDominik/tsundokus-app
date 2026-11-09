@@ -70,6 +70,7 @@ import uk.tsundokus.features.orders.domain.series.Series
 import uk.tsundokus.features.orders.domain.series.toSeries
 import uk.tsundokus.features.orders.presentation.addeditorder.OrderPrefill
 import uk.tsundokus.features.orders.presentation.components.EmptyState
+import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.SeriesThumbnail
 import uk.tsundokus.features.orders.presentation.seriesdetail.SeriesDetailRoot
 
@@ -190,7 +191,10 @@ private fun SeriesListContent(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
     }
-    if (state.isLoading) return
+    if (state.isLoading) {
+        ListSkeleton(modifier = Modifier.fillMaxSize())
+        return
+    }
     when {
         state.series.isEmpty() && state.isFiltered -> {
             EmptyState(

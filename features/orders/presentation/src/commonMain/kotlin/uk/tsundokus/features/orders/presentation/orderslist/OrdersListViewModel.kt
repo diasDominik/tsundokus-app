@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -82,7 +81,7 @@ class OrdersListViewModel(
 
     val state: StateFlow<OrdersListState> =
         combine(
-            orderRepository.getOrders().onStart { emit(emptyList()) },
+            orderRepository.getOrders(),
             ordersPreferences.sort(),
             narrowing,
         ) { orders, sortPreference, current ->
