@@ -278,6 +278,9 @@ private fun OrdersListScreen(
 /** The same cap the reading shelf and the order form use, so the tabs line up. */
 private val LIST_MAX_WIDTH = 600.dp
 
+/** A 56dp FAB, its 16dp margin, and a 16dp gap so the last row ends clear of it. */
+private val FAB_CLEARANCE = 88.dp
+
 @Composable
 private fun ListHeader(
     state: OrdersListState,
@@ -698,7 +701,9 @@ private fun OrdersLazyColumn(
     val picked = state.picked
     LazyColumn(
         modifier = Modifier.fillMaxSize().listKeyboardNavigation(state, onAction, onOrderClick),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        // The Add-order button floats over the bottom-right corner of this list; without room
+        // below the last row it sat on that row's price and reading badge for good.
+        contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = FAB_CLEARANCE),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         // A shortcut to one order, not part of the list: nothing to pick there.
