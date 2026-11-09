@@ -87,8 +87,11 @@ internal fun GlanceModifier.widgetCard(style: WidgetStyle): GlanceModifier {
                 card.background(Color.Transparent)
             }
         }
-    return withBackground.padding(12.dp)
+    return withBackground.padding(WIDGET_CARD_PADDING)
 }
+
+/** Inside the card, around what the widget shows. */
+internal val WIDGET_CARD_PADDING = 12.dp
 
 /** The light and dark schemes behind [style]'s palette. */
 private fun schemesFor(

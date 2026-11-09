@@ -22,7 +22,17 @@ internal fun previewSnapshot(today: String): WidgetSnapshot =
             ),
         unread = 12,
         reading = 2,
-        oldestUnreadSince = isoPlusDays(today, -30),
+        oldestUnreadSince = isoPlusDays(today, -150),
+        // Twelve volumes, from one that has a spider to one that came this week.
+        pile =
+            listOf(150, 95, 70, 52, 41, 33, 25, 18, 12, 8, 5, 2).mapIndexed { index, days ->
+                WidgetPileBook(
+                    "preview-pile-$index",
+                    isoPlusDays(today, -days) ?: today,
+                    reading =
+                        index == 7 || index == 10,
+                )
+            },
     )
 
 /**

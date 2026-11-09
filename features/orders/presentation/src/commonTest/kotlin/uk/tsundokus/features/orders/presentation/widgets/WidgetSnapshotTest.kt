@@ -72,6 +72,39 @@ class WidgetSnapshotTest {
     }
 
     @Test
+    fun `the pile lists every unread volume with the longest waiting at the bottom`() {
+        val snapshot =
+            listOf(
+                order("new", status = OrderStatus.RECEIVED, receivedDate = "2026-10-01"),
+                order(
+                    "read",
+                    status = OrderStatus.RECEIVED,
+                    readState = ReadState.READ,
+                    receivedDate = "2026-01-01",
+                ),
+                order("old", status = OrderStatus.RECEIVED, receivedDate = "2026-03-01"),
+                order(
+                    "reading",
+                    status = OrderStatus.RECEIVED,
+                    readState = ReadState.READING,
+                    receivedDate = "2026-06-01",
+                ),
+                order("undated", status = OrderStatus.RECEIVED),
+                order("coming", status = OrderStatus.SHIPPED, eta = "2026-10-05"),
+            ).toWidgetSnapshot(TODAY)
+
+        assertEquals(
+            listOf(
+                WidgetPileBook("undated", ""),
+                WidgetPileBook("old", "2026-03-01"),
+                WidgetPileBook("reading", "2026-06-01", reading = true),
+                WidgetPileBook("new", "2026-10-01"),
+            ),
+            snapshot.pile,
+        )
+    }
+
+    @Test
     fun `orders with nothing to wait for are not arrivals`() {
         val snapshot =
             listOf(
