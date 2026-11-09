@@ -60,9 +60,8 @@ import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
-import uk.tsundokus.features.orders.presentation.components.StatusTile
+import uk.tsundokus.features.orders.presentation.components.ShelfThumbnail
 import uk.tsundokus.features.orders.presentation.components.containerColor
-import uk.tsundokus.features.orders.presentation.components.fullLabelRes
 import uk.tsundokus.features.orders.presentation.components.labelRes
 import uk.tsundokus.features.orders.presentation.components.onContainerColor
 import uk.tsundokus.features.orders.presentation.components.pickableRowClicks
@@ -215,12 +214,12 @@ private fun ShelfList(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        state.grouped.forEach { (readState, orders) ->
-            item(key = "header_${readState.name}") {
+        state.grouped.forEach { (section, orders) ->
+            item(key = "header_${section.name}") {
                 SectionHeader(
-                    label = stringResource(readState.fullLabelRes),
+                    label = stringResource(section.labelRes),
                     count = orders.size,
-                    dotColor = readState.dotColor(),
+                    dotColor = section.dotColor(),
                 )
             }
             items(items = orders, key = { it.id }) { order ->
@@ -267,7 +266,7 @@ private fun ReadingRow(
                 Checkbox(checked = checked, onCheckedChange = null)
                 HorizontalSpacer(8.dp)
             }
-            StatusTile(status = order.status)
+            ShelfThumbnail(isbn = order.isbn, hasCover = order.hasCover, status = order.status)
             HorizontalSpacer(12.dp)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -342,16 +341,17 @@ private fun EmptyShelf(
 
 @Composable
 @ReadOnlyComposable
-private fun ReadState.dotColor(): Color =
+private fun ShelfSection.dotColor(): Color =
     when (this) {
-        ReadState.WANT -> MaterialTheme.colorScheme.onSurfaceVariant
-        ReadState.READING -> MaterialTheme.colorScheme.tertiary
-        ReadState.READ -> MaterialTheme.colorScheme.outline
+        ShelfSection.READING -> MaterialTheme.colorScheme.tertiary
+        ShelfSection.PILE -> MaterialTheme.colorScheme.primary
+        ShelfSection.ON_THE_WAY -> MaterialTheme.colorScheme.secondary
+        ShelfSection.READ -> MaterialTheme.colorScheme.outline
     }
 
 private val previewShelf =
     mapOf(
-        ReadState.READING to
+        ShelfSection.READING to
             listOf(
                 Order(
                     id = "1",
@@ -362,7 +362,7 @@ private val previewShelf =
                     readState = ReadState.READING,
                 ),
             ),
-        ReadState.WANT to
+        ShelfSection.ON_THE_WAY to
             listOf(
                 Order(
                     id = "2",

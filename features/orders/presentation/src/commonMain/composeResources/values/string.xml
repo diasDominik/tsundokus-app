@@ -101,6 +101,10 @@
 
     <string name="reading_list_title">Reading</string>
     <string name="reading_list_empty">Nothing on your shelf yet.</string>
+    <string name="reading_list_section_reading">Reading</string>
+    <string name="reading_list_section_pile">On your pile</string>
+    <string name="reading_list_section_on_the_way">On the way</string>
+    <string name="reading_list_section_read">Read</string>
 
     <string name="order_detail_not_found">Order not found</string>
     <string name="order_detail_section_reading">Reading</string>

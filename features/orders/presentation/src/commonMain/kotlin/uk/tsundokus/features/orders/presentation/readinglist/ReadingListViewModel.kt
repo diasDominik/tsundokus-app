@@ -129,8 +129,8 @@ class ReadingListViewModel(
     }
 }
 
-private fun List<Order>.groupForShelf(): Map<ReadState, List<Order>> =
-    ReadState.groupOrder
-        .associateWith { readState ->
-            filter { it.readState == readState }
+private fun List<Order>.groupForShelf(): Map<ShelfSection, List<Order>> =
+    ShelfSection.entries
+        .associateWith { section ->
+            filter { it.shelfSection == section }
         }.filterValues { it.isNotEmpty() }
