@@ -108,7 +108,6 @@ import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.presentation.components.EmptyState
 import uk.tsundokus.features.orders.presentation.components.FadingChipRow
 import uk.tsundokus.features.orders.presentation.components.ListSkeleton
-import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
 import uk.tsundokus.features.orders.presentation.components.labelRes
@@ -667,18 +666,6 @@ private fun OrdersLazyColumn(
         contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = FAB_CLEARANCE),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // A shortcut to one order, not part of the list: nothing to pick there.
-        state.nextArrival?.takeIf { picked == null }?.let { hero ->
-            item(key = "hero") {
-                NextArrivalHero(
-                    order = hero,
-                    today = today,
-                    onClick = { onOrderClick(hero.id) },
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    estimate = state.estimates[hero.id],
-                )
-            }
-        }
         state.grouped.forEach { (status, orders) ->
             item(key = "header_${status.name}") {
                 SectionHeader(label = stringResource(status.labelRes), count = orders.size)
@@ -795,7 +782,6 @@ private fun previewState(): OrdersListState {
         isLoading = false,
         allOrders = orders,
         displayed = orders,
-        nextArrival = orders.first(),
         grouped =
             mapOf(
                 OrderStatus.DELAYED to orders.filter { it.status == OrderStatus.DELAYED },

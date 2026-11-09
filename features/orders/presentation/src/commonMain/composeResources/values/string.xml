@@ -151,10 +151,6 @@
     <string name="order_row_ordered_on">Ordered %1$s</string>
     <string name="order_row_ordered">Ordered</string>
 
-    <string name="hero_releases">Releases %1$s</string>
-    <string name="hero_expected">Expected %1$s</string>
-    <string name="hero_expected_estimated">Expected around %1$s</string>
-    <string name="hero_subtitle_with_store">%1$s · %2$s</string>
 
     <string name="report_delay_title">New expected date</string>
     <string name="report_delay_caption">When do you now expect this order to arrive?</string>
