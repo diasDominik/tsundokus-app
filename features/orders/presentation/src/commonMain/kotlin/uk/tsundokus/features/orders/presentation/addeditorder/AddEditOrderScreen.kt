@@ -1,6 +1,5 @@
 package uk.tsundokus.features.orders.presentation.addeditorder
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,13 +32,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -99,9 +108,11 @@ import uk.tsundokus.core.presentation.navigation.TopBarAction
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.core.presentation.util.UiText
+import uk.tsundokus.core.presentation.util.isCommandOrControlPressed
 import uk.tsundokus.features.orders.domain.models.Isbn
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.BookCover
+import uk.tsundokus.features.orders.presentation.components.FadingChipRow
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
@@ -164,6 +175,13 @@ fun AddEditOrderRoot(
         navigationAction = TopBarAction.Close,
         onNavigationClick = requestClose,
     )
+    // The system back gesture pops the back stack on its own, past the ✕ above. While there is
+    // something to lose it asks first, the same as the ✕ does.
+    NavigationBackHandler(
+        state = rememberNavigationEventState(NavigationEventInfo.None),
+        isBackEnabled = state.isDirty && !confirmingDiscard,
+        onBackCompleted = requestClose,
+    )
 
     AddEditOrderScreen(
         state = state,
@@ -195,8 +213,15 @@ private fun AddEditOrderScreen(
 ) {
     // Capped and centred like the settings screens: on a desktop window these fields would
     // otherwise stretch the full width, putting a text input a thousand pixels wide on screen.
+    // Ctrl/Cmd+S saves from any field, as in any other editor on a desktop or with a hardware keyboard.
+    val saveShortcut =
+        Modifier.onPreviewKeyEvent { event ->
+            val save = event.type == KeyEventType.KeyDown && event.isCommandOrControlPressed && event.key == Key.S
+            if (save) onAction(AddEditOrderAction.OnSave)
+            save
+        }
     Box(
-        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = modifier.fillMaxSize().then(saveShortcut).verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(
@@ -222,10 +247,9 @@ private fun ColumnScope.AddEditOrderForm(
 ) {
     run {
         SectionLabel(Res.string.add_edit_order_section_status)
-        Row(
-            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+        // One line, so the form stays short enough to reach Add order without scrolling; the fade
+        // shows the statuses past the edge, which before looked like they did not exist.
+        FadingChipRow {
             OrderStatus.entries.forEach { status ->
                 FilterChip(
                     selected = state.status == status,
@@ -290,6 +314,7 @@ private fun ColumnScope.AddEditOrderForm(
                 isError = OrderFormField.PRICE in state.errors,
                 supportingText = state.errorFor(OrderFormField.PRICE),
                 keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -473,7 +498,11 @@ private fun FormField(
     isError: Boolean = false,
     supportingText: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
+    imeAction: ImeAction = ImeAction.Next,
 ) {
+    // Next walks the text fields in order; the last one says Done, which puts the keyboard away so
+    // the pickers below it are in view.
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -481,7 +510,8 @@ private fun FormField(
         isError = isError,
         supportingText = supportingText?.let { message -> { Text(message) } },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions =
+            KeyboardOptions(capitalization = capitalization, keyboardType = keyboardType, imeAction = imeAction),
         modifier = modifier.fillMaxWidth(),
     )
 }
@@ -516,6 +546,8 @@ private fun SuggestingFormField(
             label = label,
             isError = field in state.errors,
             supportingText = state.errorFor(field),
+            // Titles, names, publishers and shops are all proper nouns.
+            capitalization = KeyboardCapitalization.Words,
             // PrimaryEditable keeps the keyboard up and the caret in the field while the list is
             // open, so the user can keep typing to narrow it instead of having to dismiss it.
             modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
@@ -586,7 +618,7 @@ private fun IsbnTextField(
         isError = OrderFormField.ISBN in state.errors,
         supportingText = state.errorFor(OrderFormField.ISBN)?.let { message -> { Text(message) } },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
         trailingIcon =
             if (canScan || state.isLookingUpBook) {
                 {

@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -27,10 +29,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,11 +70,15 @@ import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.domain.series.Series
 import uk.tsundokus.features.orders.domain.series.toSeries
 import uk.tsundokus.features.orders.presentation.addeditorder.OrderPrefill
 import uk.tsundokus.features.orders.presentation.components.EmptyState
+import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.SeriesThumbnail
+import uk.tsundokus.features.orders.presentation.components.labelRes
+import uk.tsundokus.features.orders.presentation.components.selectedRowColors
 import uk.tsundokus.features.orders.presentation.seriesdetail.SeriesDetailRoot
 
 @Composable
@@ -120,6 +128,7 @@ private fun SeriesListScreen(
                     state = state,
                     onAction = onAction,
                     onSeriesClick = { key -> onAction(SeriesListAction.OnSeriesSelected(key)) },
+                    showSelection = true,
                 )
             }
             VerticalDivider(modifier = Modifier.fillMaxHeight(), color = MaterialTheme.colorScheme.outlineVariant)
@@ -160,6 +169,8 @@ private fun SeriesListContent(
     state: SeriesListState,
     onAction: (SeriesListAction) -> Unit,
     onSeriesClick: (String) -> Unit,
+    // Only beside a detail pane does a highlighted row mean anything: it is the one shown there.
+    showSelection: Boolean = false,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -187,10 +198,25 @@ private fun SeriesListContent(
                 }
             },
             singleLine = true,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
     }
-    if (state.isLoading) return
+    val listState = rememberLazyListState()
+    // A new order starts from its top. The list would otherwise keep the previously first row in view,
+    // leaving the user somewhere in the middle; coming back to the tab keeps where they were.
+    val sortKey = "${state.sort.name}_${state.sortDirection.name}"
+    var shownSortKey by rememberSaveable { mutableStateOf(sortKey) }
+    LaunchedEffect(sortKey) {
+        if (sortKey != shownSortKey) {
+            shownSortKey = sortKey
+            listState.requestScrollToItem(0)
+        }
+    }
+    if (state.isLoading) {
+        ListSkeleton(modifier = Modifier.fillMaxSize())
+        return
+    }
     when {
         state.series.isEmpty() && state.isFiltered -> {
             EmptyState(
@@ -210,14 +236,17 @@ private fun SeriesListContent(
 
         else -> {
             LazyColumn(
+                state = listState,
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(items = state.series, key = Series::key) { series ->
                     SeriesRow(
                         series = series,
-                        selected = series.key == state.selectedKey,
+                        selected = showSelection && series.key == state.selectedKey,
                         onClick = { onSeriesClick(series.key) },
+                        // Re-sorting reorders the rows; let them move instead of jumping.
+                        modifier = Modifier.animateItem(),
                     )
                 }
             }
@@ -234,17 +263,23 @@ private fun SortMenu(
     Box {
         TextButton(onClick = { expanded = true }) {
             Text(stringResource(Res.string.series_list_sort, stringResource(state.sort.labelRes)))
+            SortDirectionIcon(state.sortDirection, modifier = Modifier.size(16.dp))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             SeriesSort.entries.forEach { sort ->
+                val isSelected = sort == state.sort
                 DropdownMenuItem(
                     text = { Text(stringResource(sort.labelRes)) },
                     onClick = {
                         onAction(SeriesListAction.OnSortSelected(sort))
-                        expanded = false
+                        // Kept open on the active entry, as on Orders: reversing is a repeat tap.
+                        if (!isSelected) expanded = false
                     },
                     leadingIcon = {
-                        if (sort == state.sort) Icon(TsundokuIcons.Check, contentDescription = null)
+                        if (isSelected) Icon(TsundokuIcons.Check, contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (isSelected) SortDirectionIcon(state.sortDirection)
                     },
                 )
             }
@@ -253,10 +288,30 @@ private fun SortMenu(
 }
 
 @Composable
+private fun SortDirectionIcon(
+    direction: SortDirection,
+    modifier: Modifier = Modifier,
+) {
+    Icon(
+        imageVector =
+            if (direction ==
+                SortDirection.ASCENDING
+            ) {
+                TsundokuIcons.ArrowUpward
+            } else {
+                TsundokuIcons.ArrowDownward
+            },
+        contentDescription = stringResource(direction.labelRes),
+        modifier = modifier,
+    )
+}
+
+@Composable
 private fun SeriesRow(
     series: Series,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedCard(
         onClick = onClick,
@@ -266,7 +321,8 @@ private fun SeriesRow(
                 1.dp,
                 if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
             ),
-        modifier = Modifier.fillMaxWidth(),
+        colors = selectedRowColors(selected),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             SeriesThumbnail(coverIsbn = series.coverIsbn, status = series.status)
@@ -302,7 +358,9 @@ internal fun SeriesSummary(series: Series) {
             listOf(stringResource(Res.string.series_one_shot))
         } else {
             listOfNotNull(
-                pluralStringResource(Res.plurals.series_volumes, series.receivedCount, series.receivedCount),
+                // "0 volumes · 1 on the way" led with a zero; with nothing in hand yet, say only what is coming.
+                pluralStringResource(Res.plurals.series_volumes, series.receivedCount, series.receivedCount)
+                    .takeIf { series.receivedCount > 0 || series.onTheWayCount == 0 },
                 series.onTheWayCount
                     .takeIf { it > 0 }
                     ?.let { stringResource(Res.string.series_on_the_way, it) },
@@ -320,13 +378,28 @@ internal fun SeriesSummary(series: Series) {
     )
 }
 
-/** Up to three gaps by number, then how many more: "6, 9, 12 +4". */
+/** Up to three gaps, runs written as ranges, then how many more volumes: "1–8, 10, 14 +4". */
 @Composable
 private fun missingLabel(missing: List<Int>): String {
-    val shown = missing.take(MAX_MISSING_SHOWN).joinToString(", ")
-    val more = missing.size - MAX_MISSING_SHOWN
+    val runs = missing.toRuns()
+    val shown = runs.take(MAX_MISSING_SHOWN).joinToString(", ") { it.label() }
+    val more = runs.drop(MAX_MISSING_SHOWN).sumOf { it.count() }
     return if (more > 0) stringResource(Res.string.series_missing_more, shown, more) else shown
 }
+
+/** Ascending numbers grouped into consecutive runs: 1, 2, 3, 5 becomes 1..3 and 5..5. */
+internal fun List<Int>.toRuns(): List<IntRange> =
+    fold(mutableListOf<IntRange>()) { runs, number ->
+        val last = runs.lastOrNull()
+        if (last != null && number == last.last + 1) {
+            runs[runs.lastIndex] = last.first..number
+        } else {
+            runs += number..number
+        }
+        runs
+    }
+
+private fun IntRange.label(): String = if (first == last) "$first" else "$first–$last"
 
 private const val MAX_MISSING_SHOWN = 3
 

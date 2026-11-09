@@ -1,12 +1,16 @@
 package uk.tsundokus.features.authentication.presentation.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -20,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,6 +35,7 @@ import androidx.navigation3.runtime.NavKey
 import io.github.androidpoet.passkeys.PasskeyException
 import io.github.androidpoet.passkeys.PasskeyResult
 import io.github.androidpoet.passkeys.compose.rememberPasskeyClient
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import tsundokuapp.features.authentication.presentation.generated.resources.Res
@@ -44,6 +51,7 @@ import tsundokuapp.features.authentication.presentation.generated.resources.logi
 import tsundokuapp.features.authentication.presentation.generated.resources.login_with_passkey
 import tsundokuapp.features.authentication.presentation.generated.resources.register_email_hint
 import tsundokuapp.features.authentication.presentation.generated.resources.register_password_hint
+import tsundokuapp.features.authentication.presentation.generated.resources.tsundoku_logo
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
@@ -142,73 +150,94 @@ private fun LoginScreen(
     isSigningInWithPasskey: Boolean,
     onCreateAccountClick: () -> Unit,
 ) {
+    // The outer column scrolls and makes room for the keyboard, so the buttons stay reachable while
+    // typing; the inner one caps the width, so fields, buttons and links share one edge on any screen.
     Column(
         modifier =
             Modifier
-                .padding(16.dp)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = stringResource(Res.string.login_title),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Text(
-            text = stringResource(Res.string.login_title_desc),
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-        )
-        TsundokuTextField(
-            modifier = Modifier.widthIn(max = 300.dp).fillMaxWidth(),
-            state = emailTextFieldState,
-            placeholder = stringResource(Res.string.register_email_hint),
-            keyboardType = KeyboardType.Email,
-            contentType = ContentType.EmailAddress,
-        )
-        TsundokuPasswordTextField(
-            modifier = Modifier.widthIn(max = 300.dp).fillMaxWidth(),
-            state = passwordTextFieldState,
-            placeholder = stringResource(Res.string.register_password_hint),
-            isPasswordVisible = isPasswordVisible,
-            onToggleVisibilityClick = onTogglePasswordVisibility,
-        )
-        TsundokuInlineLinkText(
-            modifier = Modifier.widthIn(max = 300.dp).fillMaxWidth(),
-            textBeforeLink = "",
-            linkText = stringResource(Res.string.login_forgot_password),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.End),
-            onLinkClick = onForgotPasswordClick,
-        )
-        VerticalSpacer(4.dp)
-        TsundokuButton(
-            modifier = Modifier.widthIn(max = 200.dp).fillMaxWidth(),
-            text = stringResource(Res.string.login),
-            onClick = onLoginClick,
-            enabled = canLogin,
-            isLoading = isLoggingIn,
-        )
-        if (canUsePasskey) {
+        Column(
+            modifier = Modifier.widthIn(max = CONTENT_MAX_WIDTH).fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.tsundoku_logo),
+                contentDescription = null,
+                modifier = Modifier.size(72.dp).clip(RoundedCornerShape(18.dp)),
+            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(Res.string.login_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                )
+                VerticalSpacer(4.dp)
+                Text(
+                    text = stringResource(Res.string.login_title_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            VerticalSpacer(4.dp)
+            TsundokuTextField(
+                modifier = Modifier.fillMaxWidth(),
+                state = emailTextFieldState,
+                placeholder = stringResource(Res.string.register_email_hint),
+                keyboardType = KeyboardType.Email,
+                contentType = ContentType.EmailAddress,
+            )
+            TsundokuPasswordTextField(
+                modifier = Modifier.fillMaxWidth(),
+                state = passwordTextFieldState,
+                placeholder = stringResource(Res.string.register_password_hint),
+                isPasswordVisible = isPasswordVisible,
+                onToggleVisibilityClick = onTogglePasswordVisibility,
+            )
+            TsundokuInlineLinkText(
+                modifier = Modifier.fillMaxWidth(),
+                textBeforeLink = "",
+                linkText = stringResource(Res.string.login_forgot_password),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.End),
+                onLinkClick = onForgotPasswordClick,
+            )
             TsundokuButton(
-                modifier = Modifier.widthIn(max = 200.dp).fillMaxWidth(),
-                text = stringResource(Res.string.login_with_passkey),
-                style = TsundokuButtonStyle.Secondary,
-                onClick = onPasskeyClick,
-                enabled = !isLoggingIn,
-                isLoading = isSigningInWithPasskey,
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(Res.string.login),
+                onClick = onLoginClick,
+                enabled = canLogin,
+                isLoading = isLoggingIn,
+            )
+            if (canUsePasskey) {
+                TsundokuButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.login_with_passkey),
+                    style = TsundokuButtonStyle.Secondary,
+                    onClick = onPasskeyClick,
+                    enabled = !isLoggingIn,
+                    isLoading = isSigningInWithPasskey,
+                )
+            }
+            HorizontalDivider()
+            TsundokuInlineLinkText(
+                textBeforeLink = stringResource(Res.string.login_create_account),
+                linkText = stringResource(Res.string.login_sign_up),
+                onLinkClick = onCreateAccountClick,
             )
         }
-        HorizontalDivider()
-        VerticalSpacer(4.dp)
-        TsundokuInlineLinkText(
-            modifier = Modifier.align(Alignment.Start),
-            textBeforeLink = stringResource(Res.string.login_create_account),
-            linkText = stringResource(Res.string.login_sign_up),
-            onLinkClick = onCreateAccountClick,
-        )
     }
 }
+
+/** Wide enough for the fields on a phone, narrow enough that they don't stretch across a tablet. */
+private val CONTENT_MAX_WIDTH = 400.dp
 
 @PreviewThemes
 @Composable

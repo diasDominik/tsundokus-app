@@ -32,9 +32,11 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
@@ -45,6 +47,8 @@ import tsundokuapp.features.orders.presentation.generated.resources.series_detai
 import tsundokuapp.features.orders.presentation.generated.resources.series_detail_gone
 import tsundokuapp.features.orders.presentation.generated.resources.series_detail_order_next
 import tsundokuapp.features.orders.presentation.generated.resources.series_detail_volumes
+import tsundokuapp.features.orders.presentation.generated.resources.series_legend_missing
+import tsundokuapp.features.orders.presentation.generated.resources.series_legend_on_the_way
 import tsundokuapp.features.orders.presentation.generated.resources.series_volume_missing_cd
 import tsundokuapp.features.orders.presentation.generated.resources.series_volume_on_the_way_cd
 import tsundokuapp.features.orders.presentation.generated.resources.series_volume_received_cd
@@ -54,6 +58,7 @@ import uk.tsundokus.core.designsystem.theme.TsundokuTheme
 import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.domain.models.formatAmount
 import uk.tsundokus.features.orders.domain.series.Series
 import uk.tsundokus.features.orders.domain.series.SeriesVolume
@@ -65,6 +70,7 @@ import uk.tsundokus.features.orders.presentation.components.EmptyState
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.accentColor
 import uk.tsundokus.features.orders.presentation.components.containerColor
+import uk.tsundokus.features.orders.presentation.components.fullLabelRes
 import uk.tsundokus.features.orders.presentation.components.labelRes
 import uk.tsundokus.features.orders.presentation.components.onContainerColor
 import uk.tsundokus.features.orders.presentation.serieslist.SeriesSummary
@@ -196,8 +202,9 @@ private fun SectionTitle(text: String) {
 }
 
 /**
- * Every volume from the first to the last the user has: received ones filled, those on the way outlined
- * in their status colour, gaps dashed. Tapping one opens its order.
+ * Every volume from the first to the last the user has: received ones filled in their reading colour
+ * (the same as the rows' reading badge), those on the way outlined in their status colour, gaps dashed.
+ * Tapping one opens its order. A legend below names only the kinds of tile this series shows.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -206,20 +213,95 @@ private fun VolumeStrip(
     onOpenOrder: (String) -> Unit,
 ) {
     val byNumber = remember(series) { series.volumes.associateBy(SeriesVolume::number) }
+    val numbers = series.volumeRange
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            numbers.forEach { number ->
+                val volume = byNumber[number]
+                if (volume == null) {
+                    MissingVolumeTile(number)
+                } else {
+                    VolumeTile(volume = volume, onClick = { onOpenOrder(volume.latestOrder.id) })
+                }
+            }
+        }
+        VolumeLegend(volumes = series.volumes, hasGaps = numbers.any { it !in byNumber })
+    }
+}
+
+/** What the tile colours mean, listing only those present: reading states, then on the way, then gaps. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun VolumeLegend(
+    volumes: List<SeriesVolume>,
+    hasGaps: Boolean,
+) {
+    val received = volumes.filter { it.state == VolumeState.RECEIVED }
+    val onTheWay = volumes.firstOrNull { it.state == VolumeState.ON_THE_WAY }
+    // Decorative for screen readers: every tile already says its own state.
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.clearAndSetSemantics {},
     ) {
-        (series.volumes.first().number..series.volumes.last().number).forEach { number ->
-            val volume = byNumber[number]
-            if (volume == null) {
-                MissingVolumeTile(number)
-            } else {
-                VolumeTile(volume = volume, onClick = { onOpenOrder(volume.latestOrder.id) })
+        ReadState.entries
+            .filter { state -> received.any { it.latestOrder.readState == state } }
+            .forEach { state ->
+                LegendEntry(stringResource(state.fullLabelRes)) {
+                    Box(Modifier.fillMaxSize().background(state.containerColor(), LEGEND_SHAPE))
+                }
+            }
+        if (onTheWay != null) {
+            val accent = onTheWay.latestOrder.status.accentColor()
+            LegendEntry(stringResource(Res.string.series_legend_on_the_way)) {
+                Box(Modifier.fillMaxSize().border(1.5.dp, accent, LEGEND_SHAPE))
+            }
+        }
+        if (hasGaps) {
+            LegendEntry(stringResource(Res.string.series_legend_missing)) {
+                Box(Modifier.fillMaxSize().dashedOutline(MaterialTheme.colorScheme.outline, 3.dp))
             }
         }
     }
 }
+
+private val LEGEND_SWATCH = 12.dp
+private val LEGEND_SHAPE = RoundedCornerShape(3.dp)
+
+@Composable
+private fun LegendEntry(
+    label: String,
+    swatch: @Composable () -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Box(Modifier.size(LEGEND_SWATCH)) { swatch() }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** A dashed rounded outline, the mark for a volume the user doesn't have. */
+private fun Modifier.dashedOutline(
+    color: Color,
+    corner: Dp,
+): Modifier =
+    drawBehind {
+        drawRoundRect(
+            color = color,
+            cornerRadius = CornerRadius(corner.toPx()),
+            style =
+                Stroke(
+                    width = 1.5.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f)),
+                ),
+        )
+    }
 
 private val TILE_SIZE = 44.dp
 private val TILE_SHAPE = RoundedCornerShape(10.dp)
@@ -230,10 +312,15 @@ private fun VolumeTile(
     onClick: () -> Unit,
 ) {
     val status = volume.latestOrder.status
+    val readState = volume.latestOrder.readState
     val description =
         when (volume.state) {
             VolumeState.RECEIVED -> {
-                stringResource(Res.string.series_volume_received_cd, volume.number)
+                stringResource(
+                    Res.string.series_volume_received_cd,
+                    volume.number,
+                    stringResource(readState.fullLabelRes),
+                )
             }
 
             VolumeState.ON_THE_WAY -> {
@@ -250,7 +337,7 @@ private fun VolumeTile(
             Modifier
                 .size(TILE_SIZE)
                 .clip(TILE_SHAPE)
-                .background(if (received) OrderStatus.RECEIVED.containerColor() else Color.Transparent)
+                .background(if (received) readState.containerColor() else Color.Transparent)
                 .border(BorderStroke(2.dp, if (received) Color.Transparent else status.accentColor()), TILE_SHAPE)
                 .clickable(onClick = onClick)
                 .semantics { contentDescription = description },
@@ -260,7 +347,7 @@ private fun VolumeTile(
             text = volume.number.toString(),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold,
-            color = if (received) OrderStatus.RECEIVED.onContainerColor() else status.accentColor(),
+            color = if (received) readState.onContainerColor() else status.accentColor(),
         )
     }
 }
@@ -273,17 +360,8 @@ private fun MissingVolumeTile(number: Int) {
         modifier =
             Modifier
                 .size(TILE_SIZE)
-                .drawBehind {
-                    drawRoundRect(
-                        color = outline,
-                        cornerRadius = CornerRadius(10.dp.toPx()),
-                        style =
-                            Stroke(
-                                width = 1.5.dp.toPx(),
-                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f)),
-                            ),
-                    )
-                }.semantics { contentDescription = description },
+                .dashedOutline(outline, 10.dp)
+                .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -305,6 +383,12 @@ private fun SeriesDetailScreenPreview() {
                 author = "Eiichiro Oda",
                 volume = "Vol. $number",
                 status = if (number == 8) OrderStatus.SHIPPED else OrderStatus.RECEIVED,
+                readState =
+                    when {
+                        number <= 3 -> ReadState.READ
+                        number == 4 -> ReadState.READING
+                        else -> ReadState.WANT
+                    },
                 createdAt = number.toLong(),
             )
         }

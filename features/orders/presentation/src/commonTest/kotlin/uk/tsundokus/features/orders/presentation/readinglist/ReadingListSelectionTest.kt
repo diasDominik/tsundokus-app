@@ -71,7 +71,7 @@ class ReadingListSelectionTest {
                 }
                 val afterChange = expectMostRecentItem()
                 assertNull(afterChange.picked)
-                assertEquals(listOf("a", "c"), afterChange.grouped[ReadState.READ]?.map { it.id })
+                assertEquals(listOf("a", "c"), afterChange.grouped[ShelfSection.READ]?.map { it.id })
 
                 sut.onUndo()
 

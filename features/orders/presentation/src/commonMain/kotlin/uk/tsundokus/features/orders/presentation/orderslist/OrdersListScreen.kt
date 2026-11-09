@@ -2,10 +2,8 @@ package uk.tsundokus.features.orders.presentation.orderslist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -47,8 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -111,7 +106,8 @@ import uk.tsundokus.features.orders.domain.models.OrderSort
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.presentation.components.EmptyState
-import uk.tsundokus.features.orders.presentation.components.NextArrivalHero
+import uk.tsundokus.features.orders.presentation.components.FadingChipRow
+import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.OrderRow
 import uk.tsundokus.features.orders.presentation.components.SectionHeader
 import uk.tsundokus.features.orders.presentation.components.labelRes
@@ -223,6 +219,7 @@ private fun OrdersListScreen(
                     state = state,
                     onAction = onAction,
                     onOrderClick = { id -> onAction(OrdersListAction.OnOrderSelected(id)) },
+                    showSelection = true,
                 )
             }
             VerticalDivider(
@@ -241,6 +238,7 @@ private fun OrdersListScreen(
                     key(selectedId) {
                         OrderDetailRoot(
                             orderId = selectedId,
+                            navKey = null,
                             snackbar = snackbar,
                             onEdit = { onEditOrder(selectedId) },
                             onReportDelay = { onReportDelay(selectedId) },
@@ -277,6 +275,9 @@ private fun OrdersListScreen(
 
 /** The same cap the reading shelf and the order form use, so the tabs line up. */
 private val LIST_MAX_WIDTH = 600.dp
+
+/** A 56dp FAB, its 16dp margin, and a 16dp gap so the last row ends clear of it. */
+private val FAB_CLEARANCE = 88.dp
 
 @Composable
 private fun ListHeader(
@@ -328,7 +329,8 @@ private fun ListHeader(
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocusRequester),
         )
         VerticalSpacer(8.dp)
-        FilterChipsRow(state = state, onAction = onAction)
+        // The chips carry counts; before the first load they would all read 0 and then jump.
+        if (!state.isLoading) FilterChipsRow(state = state, onAction = onAction)
     }
 }
 
@@ -533,78 +535,34 @@ private fun FilterChipsRow(
     onAction: (OrdersListAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
-    // The row scrolls but gave no sign of it: chips simply ran off the edge, and the last two were
-    // invisible in a narrow pane. A fade on whichever side has more chips shows there is more to
-    // reach, and clearing the filters returns the row to the start so it never reads as truncated.
-    val fadeColor = MaterialTheme.colorScheme.background
+    // Clearing the filters returns the row to the start so it never reads as truncated.
     LaunchedEffect(state.isFiltered) {
         if (!state.isFiltered) scrollState.animateScrollTo(0)
     }
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    FadingChipRow(scrollState = scrollState) {
+        FilterChip(
+            selected = state.statusFilter == null,
+            onClick = { onAction(OrdersListAction.OnStatusFilterSelected(null)) },
+            label = { Text(stringResource(Res.string.orders_list_filter_all, state.counts[null] ?: 0)) },
+            shape = RoundedCornerShape(20.dp),
+        )
+        OrderStatus.entries.forEach { status ->
             FilterChip(
-                selected = state.statusFilter == null,
-                onClick = { onAction(OrdersListAction.OnStatusFilterSelected(null)) },
-                label = { Text(stringResource(Res.string.orders_list_filter_all, state.counts[null] ?: 0)) },
+                selected = state.statusFilter == status,
+                onClick = { onAction(OrdersListAction.OnStatusFilterSelected(status)) },
+                label = {
+                    Text(
+                        stringResource(
+                            Res.string.orders_list_status_filter,
+                            stringResource(status.labelRes),
+                            state.counts[status] ?: 0,
+                        ),
+                    )
+                },
                 shape = RoundedCornerShape(20.dp),
-            )
-            OrderStatus.entries.forEach { status ->
-                FilterChip(
-                    selected = state.statusFilter == status,
-                    onClick = { onAction(OrdersListAction.OnStatusFilterSelected(status)) },
-                    label = {
-                        Text(
-                            stringResource(
-                                Res.string.orders_list_status_filter,
-                                stringResource(status.labelRes),
-                                state.counts[status] ?: 0,
-                            ),
-                        )
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                )
-            }
-        }
-        // matchParentSize, not fillMaxHeight: the fades must take their height *from* the chip row
-        // without contributing to layout. Filling height made this Box claim the whole column and
-        // left the list itself zero pixels tall.
-        Box(modifier = Modifier.matchParentSize()) {
-            EdgeFade(Alignment.CenterStart, fadeColor, visible = scrollState.value > 0)
-            EdgeFade(
-                Alignment.CenterEnd,
-                fadeColor,
-                visible = scrollState.value < scrollState.maxValue,
             )
         }
     }
-}
-
-/** A short gradient over the scrolling edge, purely a hint that the row continues. */
-@Composable
-private fun BoxScope.EdgeFade(
-    alignment: Alignment,
-    color: Color,
-    visible: Boolean,
-) {
-    if (!visible) return
-    val colors =
-        if (alignment == Alignment.CenterStart) {
-            listOf(color, Color.Transparent)
-        } else {
-            listOf(Color.Transparent, color)
-        }
-    Box(
-        modifier =
-            Modifier
-                .align(alignment)
-                .width(24.dp)
-                .fillMaxHeight()
-                .background(Brush.horizontalGradient(colors)),
-    )
 }
 
 @Composable
@@ -613,7 +571,15 @@ private fun OrdersListBody(
     onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    // Only beside a detail pane does a highlighted row mean anything: it is the one shown there.
+    showSelection: Boolean = false,
 ) {
+    // Until the local database has answered, nothing is known: showing "no orders" here would flash the
+    // empty state on every cold start.
+    if (state.isLoading) {
+        ListSkeleton(modifier = modifier.fillMaxSize())
+        return
+    }
     if (state.displayed.isEmpty()) {
         if (state.isFiltered) {
             NoMatchesState(state = state, onAction = onAction, modifier = modifier.fillMaxSize())
@@ -632,7 +598,13 @@ private fun OrdersListBody(
         onRefresh = { onAction(OrdersListAction.OnRefresh) },
         modifier = modifier.fillMaxSize(),
     ) {
-        OrdersLazyColumn(state = state, today = today, onAction = onAction, onOrderClick = onOrderClick)
+        OrdersLazyColumn(
+            state = state,
+            today = today,
+            onAction = onAction,
+            onOrderClick = onOrderClick,
+            showSelection = showSelection,
+        )
     }
 }
 
@@ -694,28 +666,23 @@ private fun OrdersLazyColumn(
     today: String,
     onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
+    showSelection: Boolean,
 ) {
     val picked = state.picked
     LazyColumn(
         modifier = Modifier.fillMaxSize().listKeyboardNavigation(state, onAction, onOrderClick),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        // The Add-order button floats over the bottom-right corner of this list; without room
+        // below the last row it sat on that row's price and reading badge for good.
+        contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = FAB_CLEARANCE),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // A shortcut to one order, not part of the list: nothing to pick there.
-        state.nextArrival?.takeIf { picked == null }?.let { hero ->
-            item(key = "hero") {
-                NextArrivalHero(
-                    order = hero,
-                    today = today,
-                    onClick = { onOrderClick(hero.id) },
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    estimate = state.estimates[hero.id],
-                )
-            }
-        }
         state.grouped.forEach { (status, orders) ->
             item(key = "header_${status.name}") {
-                SectionHeader(label = stringResource(status.labelRes), count = orders.size)
+                SectionHeader(
+                    label = stringResource(status.labelRes),
+                    count = orders.size,
+                    modifier = Modifier.animateItem(),
+                )
             }
             items(items = orders, key = { it.id }) { order ->
                 OrderRow(
@@ -728,10 +695,12 @@ private fun OrdersLazyColumn(
                             onOrderClick(order.id)
                         }
                     },
-                    selected = order.id == state.selectedOrderId,
+                    selected = showSelection && order.id == state.selectedOrderId,
                     checked = picked?.let { order.id in it },
                     onLongClick = { onAction(OrdersListAction.OnTogglePicked(order.id)) },
                     estimate = state.estimates[order.id],
+                    // A status change or a filter moves rows between sections; let them travel there.
+                    modifier = Modifier.animateItem(),
                 )
             }
         }
@@ -829,7 +798,6 @@ private fun previewState(): OrdersListState {
         isLoading = false,
         allOrders = orders,
         displayed = orders,
-        nextArrival = orders.first(),
         grouped =
             mapOf(
                 OrderStatus.DELAYED to orders.filter { it.status == OrderStatus.DELAYED },

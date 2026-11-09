@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -40,7 +39,7 @@ class ExportViewModel(
 
     val state: StateFlow<ExportState> =
         combine(
-            orderRepository.getOrders().onStart { emit(emptyList()) },
+            orderRepository.getOrders(),
             format,
             isSaving,
         ) { orders, format, saving ->

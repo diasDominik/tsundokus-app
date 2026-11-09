@@ -96,10 +96,18 @@ class SeriesTest {
     }
 
     @Test
-    fun `gaps count from the lowest volume not from 1`() {
-        val series = listOf(volume(5), volume(6), volume(8)).toSeries().single()
+    fun `gaps count from volume 1`() {
+        val series = listOf(volume(9), volume(12)).toSeries().single()
 
-        assertEquals(listOf(7), series.missing)
+        assertEquals(listOf(1, 2, 3, 4, 5, 6, 7, 8, 10, 11), series.missing)
+        assertEquals(1..12, series.volumeRange)
+    }
+
+    @Test
+    fun `a volume 0 starts the range there`() {
+        val series = listOf(volume(0), volume(2)).toSeries().single()
+
+        assertEquals(listOf(1), series.missing)
     }
 
     @Test

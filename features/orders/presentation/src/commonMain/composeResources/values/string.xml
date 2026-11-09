@@ -90,6 +90,7 @@
     <string name="orders_list_no_matches_filter_caption">No orders have this status.</string>
     <string name="orders_list_clear_filters">Clear filters</string>
     <string name="orders_list_clear_search_cd">Clear search</string>
+    <string name="list_loading_cd">Loading</string>
     <string name="orders_list_refresh_cd">Sync now</string>
     <string name="orders_list_detail_placeholder_title">Select an order</string>
     <string name="orders_list_detail_placeholder_caption">Pick an order on the left to see its details.</string>
@@ -101,6 +102,10 @@
 
     <string name="reading_list_title">Reading</string>
     <string name="reading_list_empty">Nothing on your shelf yet.</string>
+    <string name="reading_list_section_reading">Reading</string>
+    <string name="reading_list_section_pile">On your pile</string>
+    <string name="reading_list_section_on_the_way">On the way</string>
+    <string name="reading_list_section_read">Read</string>
 
     <string name="order_detail_not_found">Order not found</string>
     <string name="order_detail_section_reading">Reading</string>
@@ -116,8 +121,6 @@
     <string name="order_delete_confirm_confirm">Delete</string>
     <string name="order_delete_confirm_cancel">Keep</string>
     <string name="order_detail_fact_store">Store</string>
-    <string name="order_detail_fact_price">Price</string>
-    <string name="order_detail_fact_ordered">Ordered</string>
     <string name="order_detail_fact_release">Release</string>
     <string name="order_detail_fact_shipped">Shipped</string>
     <string name="order_detail_fact_eta">ETA</string>
@@ -148,10 +151,6 @@
     <string name="order_row_ordered_on">Ordered %1$s</string>
     <string name="order_row_ordered">Ordered</string>
 
-    <string name="hero_releases">Releases %1$s</string>
-    <string name="hero_expected">Expected %1$s</string>
-    <string name="hero_expected_estimated">Expected around %1$s</string>
-    <string name="hero_subtitle_with_store">%1$s · %2$s</string>
 
     <string name="report_delay_title">New expected date</string>
     <string name="report_delay_caption">When do you now expect this order to arrive?</string>
@@ -216,9 +215,11 @@
     <string name="series_detail_extras">Also in this series</string>
     <string name="series_detail_order_next">Order vol. %1$d</string>
     <string name="series_detail_gone">This series has no orders any more.</string>
-    <string name="series_volume_received_cd">Volume %1$d, received</string>
+    <string name="series_volume_received_cd">Volume %1$d, received, %2$s</string>
     <string name="series_volume_on_the_way_cd">Volume %1$d, %2$s</string>
     <string name="series_volume_missing_cd">Volume %1$d, missing</string>
+    <string name="series_legend_on_the_way">On the way</string>
+    <string name="series_legend_missing">Missing</string>
 
     <string name="reminder_overdue_title">Still waiting for %1$s?</string>
     <string name="reminder_overdue_body">It was expected on %1$s. Tap to report a delay or mark it received.</string>

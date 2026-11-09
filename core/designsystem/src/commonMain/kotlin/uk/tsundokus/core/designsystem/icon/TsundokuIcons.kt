@@ -120,6 +120,13 @@ object TsundokuIcons {
                 "0h1v10h-1zm2 0h2v10h-2zm3 0h1v10h-1zm2 0h1v10h-1zm1.5 0h1v10h-1z",
         )
 
+    val Edit: ImageVector =
+        icon(
+            "Edit",
+            "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34" +
+                "c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z",
+        )
+
     val Delete: ImageVector =
         icon(
             "Delete",
@@ -165,6 +172,20 @@ object TsundokuIcons {
             "Email",
             "M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5" +
                 "V6l8 5 8-5v2z",
+        )
+
+    val Key: ImageVector =
+        icon(
+            "Key",
+            "M21 10h-8.35C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H13l2 2 2-2 " +
+                "2 2 4-4.04L21 10zM7 15c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z",
+        )
+
+    val Description: ImageVector =
+        icon(
+            "Description",
+            "M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 " +
+                "18H6V4h7v5h5v11z",
         )
 
     val Lock: ImageVector =

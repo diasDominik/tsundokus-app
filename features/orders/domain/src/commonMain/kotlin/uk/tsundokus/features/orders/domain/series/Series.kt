@@ -59,15 +59,21 @@ data class Series(
     val onTheWayCount: Int get() = volumes.count { it.state == VolumeState.ON_THE_WAY }
 
     /**
-     * Volumes between the lowest and highest the user has that they do not have. Not from 1: someone
-     * who started a series at volume 5 has not missed 1 to 4.
+     * Every volume from the first of the series to the highest the user has. A series starts at
+     * volume 1 (or 0, for the few that have a prologue volume), whichever volume the user began with.
      */
+    val volumeRange: IntRange
+        get() {
+            if (volumes.isEmpty()) return IntRange.EMPTY
+            // Sorted by number, so the ends of the list are the ends of the range.
+            return minOf(1, volumes.first().number)..volumes.last().number
+        }
+
+    /** Volumes in [volumeRange] the user does not have: with 9 and 12, that is 1 to 8, 10 and 11. */
     val missing: List<Int>
         get() {
-            if (volumes.isEmpty()) return emptyList()
             val numbers = volumes.map(SeriesVolume::number).toSet()
-            // Sorted by number, so the ends of the list are the ends of the range.
-            return (volumes.first().number..volumes.last().number).filterNot { it in numbers }
+            return volumeRange.filterNot { it in numbers }
         }
 
     val nextVolume: Int? get() = volumes.maxOfOrNull(SeriesVolume::number)?.plus(1)

@@ -100,6 +100,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
     entry<OrderDetail> { route ->
         OrderDetailRoot(
             orderId = route.orderId,
+            navKey = route,
             snackbar = snackbar,
             onEdit = { onEditOrder(route.orderId) },
             onReportDelay = { onReportDelay(route.orderId) },

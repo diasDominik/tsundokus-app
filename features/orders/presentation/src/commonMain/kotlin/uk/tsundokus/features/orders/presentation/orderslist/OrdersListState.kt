@@ -17,7 +17,6 @@ data class OrdersListState(
     val sort: OrderSort = OrderSort.RECENT,
     val sortDirection: SortDirection = OrderSort.RECENT.defaultDirection,
     val statusFilter: OrderStatus? = null,
-    val nextArrival: Order? = null,
     /** By order id: when each shipped order with no ETA should arrive, judged from past deliveries. */
     val estimates: Map<String, ArrivalEstimate> = emptyMap(),
     val grouped: Map<OrderStatus, List<Order>> = emptyMap(),

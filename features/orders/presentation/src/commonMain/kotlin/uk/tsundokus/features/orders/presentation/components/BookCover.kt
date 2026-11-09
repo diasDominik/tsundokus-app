@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -113,6 +114,46 @@ fun SeriesThumbnail(
         }
         StatusDot(status = status, modifier = Modifier.align(Alignment.BottomEnd))
     }
+}
+
+/**
+ * The leading visual of a reading-shelf row. On the shelf a book is already sorted by its section, so
+ * the delivery status of a book in hand is noise: it shows the cover, or a plain book when there is none.
+ * Only books still on the way keep their status tile, since that is the one thing to know about them.
+ */
+@Composable
+fun ShelfThumbnail(
+    isbn: String,
+    hasCover: Boolean,
+    status: OrderStatus,
+    modifier: Modifier = Modifier,
+) {
+    // One slot as wide as the status tile, so titles line up whichever visual a row gets.
+    Box(modifier = modifier.width(44.dp), contentAlignment = Alignment.Center) {
+        when {
+            hasCover && isbn.isNotBlank() -> {
+                BookCover(isbn = isbn, width = 40.dp, placeholder = { BookPlaceholderIcon() })
+            }
+
+            status == OrderStatus.RECEIVED -> {
+                CoverFrame(width = 40.dp) { BookPlaceholderIcon() }
+            }
+
+            else -> {
+                StatusTile(status = status)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BookPlaceholderIcon() {
+    Icon(
+        imageVector = TsundokuIcons.LibraryBooks,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.size(20.dp),
+    )
 }
 
 /** A cover-shaped slot: fixed size and ratio, rounded, filled until something is drawn over it. */
