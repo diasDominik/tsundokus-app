@@ -225,6 +225,7 @@ private fun ShelfList(
                     label = stringResource(section.labelRes),
                     count = orders.size,
                     dotColor = section.dotColor(),
+                    modifier = Modifier.animateItem(),
                 )
             }
             items(items = orders, key = { it.id }) { order ->
@@ -234,6 +235,8 @@ private fun ShelfList(
                     onReadStateClick = { onCycleReadState(order.id) },
                     checked = picked?.let { order.id in it },
                     onLongClick = { picking.onToggle(order.id) },
+                    // A changed reading state moves the row to another section; let it travel there.
+                    modifier = Modifier.animateItem(),
                 )
             }
         }

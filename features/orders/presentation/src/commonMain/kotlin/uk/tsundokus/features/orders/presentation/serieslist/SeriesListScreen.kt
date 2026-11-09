@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -28,10 +29,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -195,6 +198,17 @@ private fun SeriesListContent(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
     }
+    val listState = rememberLazyListState()
+    // A new order starts from its top. The list would otherwise keep the previously first row in view,
+    // leaving the user somewhere in the middle; coming back to the tab keeps where they were.
+    val sortKey = "${state.sort.name}_${state.sortDirection.name}"
+    var shownSortKey by rememberSaveable { mutableStateOf(sortKey) }
+    LaunchedEffect(sortKey) {
+        if (sortKey != shownSortKey) {
+            shownSortKey = sortKey
+            listState.requestScrollToItem(0)
+        }
+    }
     if (state.isLoading) {
         ListSkeleton(modifier = Modifier.fillMaxSize())
         return
@@ -218,6 +232,7 @@ private fun SeriesListContent(
 
         else -> {
             LazyColumn(
+                state = listState,
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -226,6 +241,8 @@ private fun SeriesListContent(
                         series = series,
                         selected = series.key == state.selectedKey,
                         onClick = { onSeriesClick(series.key) },
+                        // Re-sorting reorders the rows; let them move instead of jumping.
+                        modifier = Modifier.animateItem(),
                     )
                 }
             }
@@ -290,6 +307,7 @@ private fun SeriesRow(
     series: Series,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedCard(
         onClick = onClick,
@@ -299,7 +317,7 @@ private fun SeriesRow(
                 1.dp,
                 if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
             ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             SeriesThumbnail(coverIsbn = series.coverIsbn, status = series.status)

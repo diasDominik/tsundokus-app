@@ -668,7 +668,11 @@ private fun OrdersLazyColumn(
     ) {
         state.grouped.forEach { (status, orders) ->
             item(key = "header_${status.name}") {
-                SectionHeader(label = stringResource(status.labelRes), count = orders.size)
+                SectionHeader(
+                    label = stringResource(status.labelRes),
+                    count = orders.size,
+                    modifier = Modifier.animateItem(),
+                )
             }
             items(items = orders, key = { it.id }) { order ->
                 OrderRow(
@@ -685,6 +689,8 @@ private fun OrdersLazyColumn(
                     checked = picked?.let { order.id in it },
                     onLongClick = { onAction(OrdersListAction.OnTogglePicked(order.id)) },
                     estimate = state.estimates[order.id],
+                    // A status change or a filter moves rows between sections; let them travel there.
+                    modifier = Modifier.animateItem(),
                 )
             }
         }
