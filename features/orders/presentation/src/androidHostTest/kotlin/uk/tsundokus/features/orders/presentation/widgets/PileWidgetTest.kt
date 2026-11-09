@@ -10,10 +10,13 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-// 2x1 on a small launcher grid, and 2x1 on a Pixel.
+// 2x1 on a small launcher grid, 2x1 on a Pixel, and 2x2 on a Pixel.
 private val SHORT = DpSize(110.dp, 60.dp)
 private val PIXEL_2X1 = DpSize(150.dp, 108.dp)
+private val PIXEL_2X2 = DpSize(150.dp, 200.dp)
 
 private val pile =
     PileUi(
@@ -51,6 +54,31 @@ class PileWidgetTest {
             onNode(hasText("Your pile")).assertExists()
             onNode(hasTestTag("detail")).assert(hasText("2 being read · oldest 30 days"))
         }
+
+    @Test
+    fun `a 2x2 draws the pile next to the count`() =
+        runGlanceAppWidgetUnitTest {
+            setContext(context)
+            setAppWidgetSize(PIXEL_2X2)
+            provideComposable {
+                PileContent(pile.copy(books = listOf(WidgetPileBook("1", "2026-01-01")), today = "2026-11-08"))
+            }
+
+            onNode(hasTestTag("count")).assert(hasText("12"))
+            onNode(hasTestTag("detail")).assert(hasText("2 being read · oldest 30 days"))
+        }
+
+    @Test
+    fun `a picture is drawn at the screen's density while it fits the budget`() {
+        // A 2x2 at 2.625 (Pixel 8) fits as it is.
+        assertEquals(2.625f, artScale(126f, 176f, density = 2.625f))
+        // At 3.0 it would not quite: a little coarser. A 4x4 at 3.0 a lot coarser.
+        listOf(126f to 176f, 330f to 420f).forEach { (width, height) ->
+            val scale = artScale(width, height, density = 3f)
+            assertTrue(scale < 3f)
+            assertTrue(width * scale * height * scale <= 160_001f)
+        }
+    }
 
     @Test
     fun `with nothing in the pile the message stands in`() =

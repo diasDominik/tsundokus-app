@@ -11,8 +11,13 @@ struct WidgetSnapshot: Decodable {
     var unread: Int
     var reading: Int
     var oldestUnreadSince: String?
+    /// Every unread volume, bottom of the pile first: the longest-waiting at the bottom. Optional so
+    /// a snapshot written by an older app still reads.
+    var pile: [WidgetPileBook]?
 
-    static let signedOut = WidgetSnapshot(signedIn: false, arrivals: [], unread: 0, reading: 0, oldestUnreadSince: nil)
+    var pileBooks: [WidgetPileBook] { pile ?? [] }
+
+    static let signedOut = WidgetSnapshot(signedIn: false, arrivals: [], unread: 0, reading: 0, oldestUnreadSince: nil, pile: nil)
 
     /// The snapshot the app last wrote; signed out when there is none or it can't be read.
     static func read() -> WidgetSnapshot {

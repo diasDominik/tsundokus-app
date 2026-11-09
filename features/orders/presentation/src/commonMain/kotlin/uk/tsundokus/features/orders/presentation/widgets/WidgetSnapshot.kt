@@ -25,6 +25,8 @@ data class WidgetSnapshot(
     val reading: Int = 0,
     /** When the longest-waiting unread volume (not one being read) arrived; null if none says. */
     val oldestUnreadSince: String? = null,
+    /** Every volume of [unread], bottom of the pile first: the longest-waiting at the bottom. */
+    val pile: List<WidgetPileBook> = emptyList(),
 ) {
     /** The arrivals still ahead on [today]: an order whose release date has passed drops off. */
     fun arrivalsOn(today: String): List<WidgetArrival> =
@@ -106,5 +108,10 @@ fun List<Order>.toWidgetSnapshot(today: String): WidgetSnapshot {
             pile
                 .filter { it.readState == ReadState.WANT && it.receivedDate.isNotBlank() }
                 .minOfOrNull { it.receivedDate },
+        // Undated ones at the bottom: whenever they came, it was before dates were kept.
+        pile =
+            pile
+                .sortedWith(compareBy<Order> { it.receivedDate }.thenBy { it.createdAt })
+                .map { WidgetPileBook(it.id, it.receivedDate, it.readState == ReadState.READING) },
     )
 }
