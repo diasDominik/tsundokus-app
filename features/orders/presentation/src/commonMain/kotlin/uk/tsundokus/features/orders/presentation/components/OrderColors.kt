@@ -10,7 +10,10 @@ import uk.tsundokus.features.orders.domain.models.ReadState
 
 /**
  * Maps the order/reading domain enums onto Material 3 color roles and `material-icons-core`
- * icons. Container/on-color pairs follow the design spec; icons fall back to the nearest icon
+ * icons. Loudness follows what needs attention: a delay is loudest, then a parcel on its way;
+ * an order still waiting is warm but quiet, and a received or cancelled one recedes, its state
+ * carried by the tinted icon rather than a filled colour. The reading states stay clear of the
+ * status colours, so a row's two badges never look like one. Container/on-color pairs follow the design spec; icons fall back to the nearest icon
  * that ships in `material-icons-core` (the only icon dependency available).
  */
 
@@ -18,22 +21,22 @@ import uk.tsundokus.features.orders.domain.models.ReadState
 @ReadOnlyComposable
 fun OrderStatus.containerColor(): Color =
     when (this) {
-        OrderStatus.ORDERED -> MaterialTheme.colorScheme.secondaryContainer
+        OrderStatus.ORDERED -> MaterialTheme.colorScheme.surfaceContainerHighest
         OrderStatus.SHIPPED -> MaterialTheme.colorScheme.primaryContainer
         OrderStatus.DELAYED -> MaterialTheme.colorScheme.errorContainer
-        OrderStatus.RECEIVED -> MaterialTheme.colorScheme.tertiaryContainer
-        OrderStatus.CANCELLED -> MaterialTheme.colorScheme.surfaceContainerHighest
+        OrderStatus.RECEIVED -> MaterialTheme.colorScheme.surfaceContainerHigh
+        OrderStatus.CANCELLED -> MaterialTheme.colorScheme.surfaceContainer
     }
 
 @Composable
 @ReadOnlyComposable
 fun OrderStatus.onContainerColor(): Color =
     when (this) {
-        OrderStatus.ORDERED -> MaterialTheme.colorScheme.onSecondaryContainer
+        OrderStatus.ORDERED -> MaterialTheme.colorScheme.secondary
         OrderStatus.SHIPPED -> MaterialTheme.colorScheme.onPrimaryContainer
         OrderStatus.DELAYED -> MaterialTheme.colorScheme.onErrorContainer
-        OrderStatus.RECEIVED -> MaterialTheme.colorScheme.onTertiaryContainer
-        OrderStatus.CANCELLED -> MaterialTheme.colorScheme.onSurfaceVariant
+        OrderStatus.RECEIVED -> MaterialTheme.colorScheme.tertiary
+        OrderStatus.CANCELLED -> MaterialTheme.colorScheme.outline
     }
 
 /** Stronger accent role used to tint the small date label on a row. */
@@ -53,8 +56,8 @@ fun OrderStatus.accentColor(): Color =
 fun ReadState.containerColor(): Color =
     when (this) {
         ReadState.WANT -> MaterialTheme.colorScheme.surfaceContainerHighest
-        ReadState.READING -> MaterialTheme.colorScheme.primaryContainer
-        ReadState.READ -> MaterialTheme.colorScheme.tertiaryContainer
+        ReadState.READING -> MaterialTheme.colorScheme.tertiaryContainer
+        ReadState.READ -> MaterialTheme.colorScheme.tertiary
     }
 
 @Composable
@@ -62,8 +65,8 @@ fun ReadState.containerColor(): Color =
 fun ReadState.onContainerColor(): Color =
     when (this) {
         ReadState.WANT -> MaterialTheme.colorScheme.onSurfaceVariant
-        ReadState.READING -> MaterialTheme.colorScheme.onPrimaryContainer
-        ReadState.READ -> MaterialTheme.colorScheme.onTertiaryContainer
+        ReadState.READING -> MaterialTheme.colorScheme.onTertiaryContainer
+        ReadState.READ -> MaterialTheme.colorScheme.onTertiary
     }
 
 /** Closest `material-icons-core` equivalent for each design Material Symbol. */

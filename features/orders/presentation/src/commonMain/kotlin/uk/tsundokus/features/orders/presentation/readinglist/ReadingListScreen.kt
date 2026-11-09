@@ -345,8 +345,8 @@ private fun EmptyShelf(
 private fun ReadState.dotColor(): Color =
     when (this) {
         ReadState.WANT -> MaterialTheme.colorScheme.onSurfaceVariant
-        ReadState.READING -> MaterialTheme.colorScheme.primary
-        ReadState.READ -> MaterialTheme.colorScheme.tertiary
+        ReadState.READING -> MaterialTheme.colorScheme.tertiary
+        ReadState.READ -> MaterialTheme.colorScheme.outline
     }
 
 private val previewShelf =
