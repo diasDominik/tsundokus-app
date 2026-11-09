@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import uk.tsundokus.core.designsystem.spacer.HorizontalSpacer
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.features.orders.domain.models.Order
+import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.ReadState
 import uk.tsundokus.features.orders.domain.stats.ArrivalEstimate
 
 /**
@@ -104,8 +106,12 @@ fun OrderRow(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f),
                     )
-                    HorizontalSpacer(8.dp)
-                    ReadStateBadge(readState = order.readState)
+                    // "Want to read" is the default for every book not yet in hand, so on those rows it
+                    // says nothing; it only means something once the book is on the pile.
+                    if (order.readState != ReadState.WANT || order.status == OrderStatus.RECEIVED) {
+                        HorizontalSpacer(8.dp)
+                        ReadStateBadge(readState = order.readState)
+                    }
                 }
             }
         }
