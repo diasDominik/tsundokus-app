@@ -238,6 +238,7 @@ private fun OrdersListScreen(
                     key(selectedId) {
                         OrderDetailRoot(
                             orderId = selectedId,
+                            navKey = null,
                             snackbar = snackbar,
                             onEdit = { onEditOrder(selectedId) },
                             onReportDelay = { onReportDelay(selectedId) },

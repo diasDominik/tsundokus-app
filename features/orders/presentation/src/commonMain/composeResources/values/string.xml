@@ -121,8 +121,6 @@
     <string name="order_delete_confirm_confirm">Delete</string>
     <string name="order_delete_confirm_cancel">Keep</string>
     <string name="order_detail_fact_store">Store</string>
-    <string name="order_detail_fact_price">Price</string>
-    <string name="order_detail_fact_ordered">Ordered</string>
     <string name="order_detail_fact_release">Release</string>
     <string name="order_detail_fact_shipped">Shipped</string>
     <string name="order_detail_fact_eta">ETA</string>

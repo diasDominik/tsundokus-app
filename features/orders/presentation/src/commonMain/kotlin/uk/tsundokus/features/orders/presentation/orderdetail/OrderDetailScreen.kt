@@ -1,5 +1,6 @@
 package uk.tsundokus.features.orders.presentation.orderdetail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -10,7 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,8 +40,6 @@ import tsundokuapp.features.orders.presentation.generated.resources.order_detail
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_delayed_to
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_eta
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_isbn
-import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_ordered
-import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_price
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_received
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_release
 import tsundokuapp.features.orders.presentation.generated.resources.order_detail_fact_shipped
@@ -53,9 +54,11 @@ import tsundokuapp.features.orders.presentation.generated.resources.timeline_ord
 import tsundokuapp.features.orders.presentation.generated.resources.timeline_shipped
 import uk.tsundokus.core.designsystem.buttons.TsundokuButton
 import uk.tsundokus.core.designsystem.buttons.TsundokuButtonStyle
+import uk.tsundokus.core.designsystem.icon.TsundokuIcons
 import uk.tsundokus.core.designsystem.preview.PreviewThemes
 import uk.tsundokus.core.designsystem.spacer.VerticalSpacer
 import uk.tsundokus.core.designsystem.theme.TsundokuTheme
+import uk.tsundokus.core.presentation.navigation.TopBarActions
 import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
@@ -79,6 +82,8 @@ import uk.tsundokus.features.orders.presentation.components.priceLabel
 @Composable
 fun OrderDetailRoot(
     orderId: String,
+    /** This screen's own route when it has one; null inside the orders list's detail pane. */
+    navKey: NavKey?,
     snackbar: SnackbarController,
     onEdit: () -> Unit,
     onReportDelay: () -> Unit,
@@ -99,15 +104,51 @@ fun OrderDetailRoot(
         }
     }
 
+    var confirmingDelete by remember { mutableStateOf(false) }
+    val order = state.order
+    // A routed detail screen puts Edit and Delete in its own top bar. In the list's detail pane
+    // there is no bar of its own, so the same buttons sit at the top of the content instead.
+    if (navKey != null && order != null) {
+        TopBarActions(navKey) {
+            OrderManageActions(onEdit = onEdit, onDelete = { confirmingDelete = true })
+        }
+    }
+
     OrderDetailScreen(
         state = state,
         onPrimaryAction = viewModel::onPrimaryAction,
         onSetReadState = viewModel::onSetReadState,
         onEdit = onEdit,
         onReportDelay = onReportDelay,
-        onDelete = viewModel::onDelete,
+        onDelete = { confirmingDelete = true },
+        showManageActions = navKey == null,
         modifier = modifier,
     )
+
+    if (confirmingDelete && order != null) {
+        OrderDeleteConfirmDialog(
+            orderTitle = order.title,
+            onConfirm = {
+                confirmingDelete = false
+                viewModel.onDelete()
+            },
+            onDismiss = { confirmingDelete = false },
+        )
+    }
+}
+
+/** Editing and deleting: occasional, so icons in the top bar rather than full-width buttons. */
+@Composable
+private fun OrderManageActions(
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    IconButton(onClick = onEdit) {
+        Icon(TsundokuIcons.Edit, contentDescription = stringResource(Res.string.order_detail_edit))
+    }
+    IconButton(onClick = onDelete) {
+        Icon(TsundokuIcons.Delete, contentDescription = stringResource(Res.string.order_detail_delete))
+    }
 }
 
 @Composable
@@ -118,6 +159,7 @@ private fun OrderDetailScreen(
     onEdit: () -> Unit,
     onReportDelay: () -> Unit,
     onDelete: () -> Unit,
+    showManageActions: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val order = state.order
@@ -151,6 +193,7 @@ private fun OrderDetailScreen(
                 onEdit = onEdit,
                 onReportDelay = onReportDelay,
                 onDelete = onDelete,
+                showManageActions = showManageActions,
             )
         }
     }
@@ -167,7 +210,13 @@ private fun ColumnScope.OrderDetailContent(
     onEdit: () -> Unit,
     onReportDelay: () -> Unit,
     onDelete: () -> Unit,
+    showManageActions: Boolean,
 ) {
+    if (showManageActions) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            OrderManageActions(onEdit = onEdit, onDelete = onDelete)
+        }
+    }
     Row(verticalAlignment = Alignment.Top) {
         if (order.hasCover && order.isbn.isNotBlank()) {
             BookCover(isbn = order.isbn, width = 88.dp, modifier = Modifier.padding(end = 16.dp))
@@ -208,54 +257,51 @@ private fun ColumnScope.OrderDetailContent(
     VerticalSpacer(8.dp)
     StatusTimeline(nodes = state.timeline)
 
-    VerticalSpacer(20.dp)
-    SectionLabel(stringResource(Res.string.order_detail_section_details))
-    VerticalSpacer(4.dp)
-    OrderFacts(order = order, estimate = state.estimate)
+    if (order.hasFactsBeyondTimeline()) {
+        VerticalSpacer(20.dp)
+        SectionLabel(stringResource(Res.string.order_detail_section_details))
+        VerticalSpacer(4.dp)
+        OrderFacts(order = order, estimate = state.estimate)
+    }
+    val canReportDelay = order.status != OrderStatus.RECEIVED && order.status != OrderStatus.CANCELLED
+    if (state.primaryAction != null || canReportDelay) {
+        VerticalSpacer(20.dp)
+        state.primaryAction?.let { action ->
+            TsundokuButton(
+                text = stringResource(action.labelRes),
+                onClick = onPrimaryAction,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        if (canReportDelay) {
+            if (state.primaryAction != null) VerticalSpacer(8.dp)
+            TsundokuButton(
+                text = stringResource(Res.string.order_detail_report_delay),
+                onClick = onReportDelay,
+                style = TsundokuButtonStyle.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
 
-    VerticalSpacer(20.dp)
-    state.primaryAction?.let { action ->
-        TsundokuButton(
-            text = stringResource(action.labelRes),
-            onClick = onPrimaryAction,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        VerticalSpacer(8.dp)
-    }
-    TsundokuButton(
-        text = stringResource(Res.string.order_detail_edit),
-        onClick = onEdit,
-        style = TsundokuButtonStyle.Secondary,
-        modifier = Modifier.fillMaxWidth(),
-    )
-    if (order.status != OrderStatus.RECEIVED && order.status != OrderStatus.CANCELLED) {
-        VerticalSpacer(8.dp)
-        TsundokuButton(
-            text = stringResource(Res.string.order_detail_report_delay),
-            onClick = onReportDelay,
-            style = TsundokuButtonStyle.Secondary,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-    VerticalSpacer(8.dp)
-    var confirmingDelete by remember { mutableStateOf(false) }
-    TsundokuButton(
-        text = stringResource(Res.string.order_detail_delete),
-        onClick = { confirmingDelete = true },
-        style = TsundokuButtonStyle.DestructiveSecondary,
-        modifier = Modifier.fillMaxWidth(),
-    )
-    if (confirmingDelete) {
-        OrderDeleteConfirmDialog(
-            orderTitle = order.title,
-            onConfirm = {
-                confirmingDelete = false
-                onDelete()
-            },
-            onDismiss = { confirmingDelete = false },
-        )
-    }
+    VerticalSpacer(16.dp)
 }
+
+/*
+ * The fact sheet lists only what the header and the timeline do not already show: the price is in
+ * the header, the order date is always on the timeline, and each status's timeline carries its own
+ * dates (see buildTimeline). Showing them again made the screen read every date twice.
+ */
+private val Order.showsShipDate get() = shipDate.isNotBlank() && status !in SHIPPED_OR_RECEIVED
+private val Order.showsRelease get() = releaseDate.isNotBlank() && status != OrderStatus.ORDERED
+private val Order.showsEta get() = status !in SHIPPED_OR_RECEIVED
+private val Order.showsDelayedTo get() = delayedTo.isNotBlank() && status != OrderStatus.DELAYED
+private val Order.showsReceived get() = receivedDate.isNotBlank() && status != OrderStatus.RECEIVED
+private val SHIPPED_OR_RECEIVED = setOf(OrderStatus.SHIPPED, OrderStatus.RECEIVED)
+
+private fun Order.hasFactsBeyondTimeline(): Boolean =
+    store.isNotBlank() || isbn.isNotBlank() || showsRelease || showsShipDate ||
+        (showsEta && eta.isNotBlank()) || showsDelayedTo || showsReceived
 
 @Composable
 private fun OrderFacts(
@@ -266,33 +312,28 @@ private fun OrderFacts(
         if (order.store.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_store), order.store)
         }
-        FactRow(stringResource(Res.string.order_detail_fact_price), priceLabel(order))
         if (order.isbn.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_isbn), order.isbn)
         }
-        if (order.orderDate.isNotBlank()) {
-            FactRow(stringResource(Res.string.order_detail_fact_ordered), fmtDate(order.orderDate))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        }
-        if (order.releaseDate.isNotBlank()) {
+        if (order.showsRelease) {
             FactRow(stringResource(Res.string.order_detail_fact_release), fmtDate(order.releaseDate))
         }
-        if (order.shipDate.isNotBlank()) {
+        if (order.showsShipDate) {
             FactRow(stringResource(Res.string.order_detail_fact_shipped), fmtDate(order.shipDate))
         }
-        if (order.eta.isNotBlank()) {
+        if (order.showsEta && order.eta.isNotBlank()) {
             FactRow(stringResource(Res.string.order_detail_fact_eta), fmtDate(order.eta))
-        } else if (estimate != null) {
+        } else if (order.showsEta && estimate != null) {
             FactRow(
                 label = stringResource(Res.string.order_detail_fact_eta),
                 value = ESTIMATE_MARK + fmtDate(estimate.date),
                 caption = estimateCaption(estimate),
             )
         }
-        if (order.delayedTo.isNotBlank()) {
+        if (order.showsDelayedTo) {
             FactRow(stringResource(Res.string.order_detail_fact_delayed_to), fmtDate(order.delayedTo))
         }
-        if (order.receivedDate.isNotBlank()) {
+        if (order.showsReceived) {
             FactRow(stringResource(Res.string.order_detail_fact_received), fmtDate(order.receivedDate))
         }
     }
@@ -369,6 +410,7 @@ private fun OrderDetailScreenPreview() {
                 onEdit = {},
                 onReportDelay = {},
                 onDelete = {},
+                showManageActions = false,
             )
         }
     }
