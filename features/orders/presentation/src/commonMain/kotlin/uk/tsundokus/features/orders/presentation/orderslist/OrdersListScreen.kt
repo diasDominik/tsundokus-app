@@ -219,6 +219,7 @@ private fun OrdersListScreen(
                     state = state,
                     onAction = onAction,
                     onOrderClick = { id -> onAction(OrdersListAction.OnOrderSelected(id)) },
+                    showSelection = true,
                 )
             }
             VerticalDivider(
@@ -570,6 +571,8 @@ private fun OrdersListBody(
     onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    // Only beside a detail pane does a highlighted row mean anything: it is the one shown there.
+    showSelection: Boolean = false,
 ) {
     // Until the local database has answered, nothing is known: showing "no orders" here would flash the
     // empty state on every cold start.
@@ -595,7 +598,13 @@ private fun OrdersListBody(
         onRefresh = { onAction(OrdersListAction.OnRefresh) },
         modifier = modifier.fillMaxSize(),
     ) {
-        OrdersLazyColumn(state = state, today = today, onAction = onAction, onOrderClick = onOrderClick)
+        OrdersLazyColumn(
+            state = state,
+            today = today,
+            onAction = onAction,
+            onOrderClick = onOrderClick,
+            showSelection = showSelection,
+        )
     }
 }
 
@@ -657,6 +666,7 @@ private fun OrdersLazyColumn(
     today: String,
     onAction: (OrdersListAction) -> Unit,
     onOrderClick: (String) -> Unit,
+    showSelection: Boolean,
 ) {
     val picked = state.picked
     LazyColumn(
@@ -685,7 +695,7 @@ private fun OrdersLazyColumn(
                             onOrderClick(order.id)
                         }
                     },
-                    selected = order.id == state.selectedOrderId,
+                    selected = showSelection && order.id == state.selectedOrderId,
                     checked = picked?.let { order.id in it },
                     onLongClick = { onAction(OrdersListAction.OnTogglePicked(order.id)) },
                     estimate = state.estimates[order.id],

@@ -78,6 +78,7 @@ import uk.tsundokus.features.orders.presentation.components.EmptyState
 import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.SeriesThumbnail
 import uk.tsundokus.features.orders.presentation.components.labelRes
+import uk.tsundokus.features.orders.presentation.components.selectedRowColors
 import uk.tsundokus.features.orders.presentation.seriesdetail.SeriesDetailRoot
 
 @Composable
@@ -127,6 +128,7 @@ private fun SeriesListScreen(
                     state = state,
                     onAction = onAction,
                     onSeriesClick = { key -> onAction(SeriesListAction.OnSeriesSelected(key)) },
+                    showSelection = true,
                 )
             }
             VerticalDivider(modifier = Modifier.fillMaxHeight(), color = MaterialTheme.colorScheme.outlineVariant)
@@ -167,6 +169,8 @@ private fun SeriesListContent(
     state: SeriesListState,
     onAction: (SeriesListAction) -> Unit,
     onSeriesClick: (String) -> Unit,
+    // Only beside a detail pane does a highlighted row mean anything: it is the one shown there.
+    showSelection: Boolean = false,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -239,7 +243,7 @@ private fun SeriesListContent(
                 items(items = state.series, key = Series::key) { series ->
                     SeriesRow(
                         series = series,
-                        selected = series.key == state.selectedKey,
+                        selected = showSelection && series.key == state.selectedKey,
                         onClick = { onSeriesClick(series.key) },
                         // Re-sorting reorders the rows; let them move instead of jumping.
                         modifier = Modifier.animateItem(),
@@ -317,6 +321,7 @@ private fun SeriesRow(
                 1.dp,
                 if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
             ),
+        colors = selectedRowColors(selected),
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {

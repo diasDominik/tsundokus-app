@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -55,6 +57,7 @@ fun OrderRow(
                 selected -> BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
             },
+        colors = selectedRowColors(selected),
         modifier =
             modifier
                 .fillMaxWidth()
@@ -117,6 +120,21 @@ fun OrderRow(
         }
     }
 }
+
+/**
+ * The row open in the detail pane beside the list is filled, not just outlined: an outline alone is
+ * a hairline that is easy to miss, and it is also what a picked row (a thicker outline) uses.
+ */
+@Composable
+internal fun selectedRowColors(selected: Boolean): CardColors =
+    if (selected) {
+        CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+    } else {
+        CardDefaults.outlinedCardColors()
+    }
 
 /**
  * A list row's taps: [onClick] opens the row, or toggles it while the list is picking orders
