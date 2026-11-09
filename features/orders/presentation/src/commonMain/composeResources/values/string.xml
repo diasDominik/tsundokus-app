@@ -215,9 +215,11 @@
     <string name="series_detail_extras">Also in this series</string>
     <string name="series_detail_order_next">Order vol. %1$d</string>
     <string name="series_detail_gone">This series has no orders any more.</string>
-    <string name="series_volume_received_cd">Volume %1$d, received</string>
+    <string name="series_volume_received_cd">Volume %1$d, received, %2$s</string>
     <string name="series_volume_on_the_way_cd">Volume %1$d, %2$s</string>
     <string name="series_volume_missing_cd">Volume %1$d, missing</string>
+    <string name="series_legend_on_the_way">On the way</string>
+    <string name="series_legend_missing">Missing</string>
 
     <string name="reminder_overdue_title">Still waiting for %1$s?</string>
     <string name="reminder_overdue_body">It was expected on %1$s. Tap to report a delay or mark it received.</string>
