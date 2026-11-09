@@ -1,7 +1,6 @@
 package uk.tsundokus.features.orders.presentation.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,12 +71,12 @@ fun OrderRow(
             HorizontalSpacer(12.dp)
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
+                    MarqueeTitle(
                         text = order.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        modifier = Modifier.weight(1f).basicMarquee(),
+                        startGap = 12.dp,
+                        modifier = Modifier.weight(1f),
                     )
                     HorizontalSpacer(8.dp)
                     Text(

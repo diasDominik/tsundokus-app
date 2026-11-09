@@ -1,6 +1,5 @@
 package uk.tsundokus.features.orders.presentation.components
 
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,12 +53,11 @@ fun NextArrivalHero(
             StatusTile(status = order.status)
             HorizontalSpacer(12.dp)
             Column(modifier = Modifier.weight(1f)) {
-                Text(
+                MarqueeTitle(
                     text = heroTitle(order),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    modifier = Modifier.basicMarquee(),
+                    startGap = 12.dp,
                 )
                 Text(
                     text = heroSubtitle(order, today, estimate),
