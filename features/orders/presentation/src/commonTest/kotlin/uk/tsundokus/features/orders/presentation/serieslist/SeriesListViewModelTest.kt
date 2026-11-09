@@ -17,6 +17,7 @@ import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
+import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.domain.order.OrderRepository
 import uk.tsundokus.features.orders.domain.series.toSeries
 import uk.tsundokus.features.orders.presentation.addeditorder.OrderPrefill
@@ -124,6 +125,25 @@ class SeriesListViewModelTest {
 
                 sut.onAction(SeriesListAction.OnSortSelected(SeriesSort.MISSING))
                 assertEquals("One Piece", expectMostRecentItem().series.first().title)
+            }
+        }
+
+    @Test
+    fun `picking the active sort again reverses it`() =
+        runTest {
+            val sut = SeriesListViewModel(StoredOrders(orders))
+
+            sut.state.test {
+                sut.onAction(SeriesListAction.OnSortSelected(SeriesSort.TITLE))
+                expectMostRecentItem()
+
+                sut.onAction(SeriesListAction.OnSortSelected(SeriesSort.TITLE))
+                val reversed = expectMostRecentItem()
+                assertEquals(SortDirection.DESCENDING, reversed.sortDirection)
+                assertEquals(listOf("One Piece", "Berserk", "Akira"), reversed.series.map { it.title })
+
+                sut.onAction(SeriesListAction.OnSortSelected(SeriesSort.RECENT))
+                assertEquals(SortDirection.DESCENDING, expectMostRecentItem().sortDirection)
             }
         }
 

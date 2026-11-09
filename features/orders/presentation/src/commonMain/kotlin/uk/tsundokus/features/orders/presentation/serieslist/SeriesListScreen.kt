@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -66,12 +67,14 @@ import uk.tsundokus.core.presentation.util.ObserveAsEvents
 import uk.tsundokus.core.presentation.util.SnackbarController
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
+import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.domain.series.Series
 import uk.tsundokus.features.orders.domain.series.toSeries
 import uk.tsundokus.features.orders.presentation.addeditorder.OrderPrefill
 import uk.tsundokus.features.orders.presentation.components.EmptyState
 import uk.tsundokus.features.orders.presentation.components.ListSkeleton
 import uk.tsundokus.features.orders.presentation.components.SeriesThumbnail
+import uk.tsundokus.features.orders.presentation.components.labelRes
 import uk.tsundokus.features.orders.presentation.seriesdetail.SeriesDetailRoot
 
 @Composable
@@ -188,6 +191,7 @@ private fun SeriesListContent(
                 }
             },
             singleLine = true,
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
     }
@@ -238,22 +242,47 @@ private fun SortMenu(
     Box {
         TextButton(onClick = { expanded = true }) {
             Text(stringResource(Res.string.series_list_sort, stringResource(state.sort.labelRes)))
+            SortDirectionIcon(state.sortDirection, modifier = Modifier.size(16.dp))
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             SeriesSort.entries.forEach { sort ->
+                val isSelected = sort == state.sort
                 DropdownMenuItem(
                     text = { Text(stringResource(sort.labelRes)) },
                     onClick = {
                         onAction(SeriesListAction.OnSortSelected(sort))
-                        expanded = false
+                        // Kept open on the active entry, as on Orders: reversing is a repeat tap.
+                        if (!isSelected) expanded = false
                     },
                     leadingIcon = {
-                        if (sort == state.sort) Icon(TsundokuIcons.Check, contentDescription = null)
+                        if (isSelected) Icon(TsundokuIcons.Check, contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (isSelected) SortDirectionIcon(state.sortDirection)
                     },
                 )
             }
         }
     }
+}
+
+@Composable
+private fun SortDirectionIcon(
+    direction: SortDirection,
+    modifier: Modifier = Modifier,
+) {
+    Icon(
+        imageVector =
+            if (direction ==
+                SortDirection.ASCENDING
+            ) {
+                TsundokuIcons.ArrowUpward
+            } else {
+                TsundokuIcons.ArrowDownward
+            },
+        contentDescription = stringResource(direction.labelRes),
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -306,7 +335,9 @@ internal fun SeriesSummary(series: Series) {
             listOf(stringResource(Res.string.series_one_shot))
         } else {
             listOfNotNull(
-                pluralStringResource(Res.plurals.series_volumes, series.receivedCount, series.receivedCount),
+                // "0 volumes · 1 on the way" led with a zero; with nothing in hand yet, say only what is coming.
+                pluralStringResource(Res.plurals.series_volumes, series.receivedCount, series.receivedCount)
+                    .takeIf { series.receivedCount > 0 || series.onTheWayCount == 0 },
                 series.onTheWayCount
                     .takeIf { it > 0 }
                     ?.let { stringResource(Res.string.series_on_the_way, it) },

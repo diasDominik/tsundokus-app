@@ -6,6 +6,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.series_sort_missing
 import tsundokuapp.features.orders.presentation.generated.resources.series_sort_recent
 import tsundokuapp.features.orders.presentation.generated.resources.series_sort_title
+import uk.tsundokus.features.orders.domain.models.SortDirection
 import uk.tsundokus.features.orders.domain.series.Series
 
 @Stable
@@ -13,6 +14,7 @@ data class SeriesListState(
     val isLoading: Boolean = true,
     val searchQuery: String = "",
     val sort: SeriesSort = SeriesSort.RECENT,
+    val sortDirection: SortDirection = SeriesSort.RECENT.defaultDirection,
     val series: List<Series> = emptyList(),
     /** The series shown beside the list on wide screens; null shows the placeholder. */
     val selectedKey: String? = null,
@@ -23,11 +25,13 @@ data class SeriesListState(
 
 enum class SeriesSort(
     val labelRes: StringResource,
+    /** The direction a sort starts in when picked; picking it again reverses it. */
+    val defaultDirection: SortDirection,
 ) {
     /** Where something last happened first: the series you are collecting right now. */
-    RECENT(Res.string.series_sort_recent),
-    TITLE(Res.string.series_sort_title),
+    RECENT(Res.string.series_sort_recent, SortDirection.DESCENDING),
+    TITLE(Res.string.series_sort_title, SortDirection.ASCENDING),
 
     /** Most gaps first: the series to complete. */
-    MISSING(Res.string.series_sort_missing),
+    MISSING(Res.string.series_sort_missing, SortDirection.DESCENDING),
 }
