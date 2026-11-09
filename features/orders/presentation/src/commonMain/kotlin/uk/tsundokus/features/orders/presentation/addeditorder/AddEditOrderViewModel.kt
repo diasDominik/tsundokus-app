@@ -86,6 +86,8 @@ private fun initialState(args: AddEditOrderArgs): AddEditOrderState {
         store = prefill.store,
         price = prefill.price,
         volume = prefill.volume,
+        // Required, and nearly always today: a new order is usually logged right after checkout.
+        orderDate = if (args.orderId == null) todayIso() else "",
         currency = prefill.currencyCode.takeIf(String::isNotBlank)?.let(AppCurrency::fromCode) ?: AppCurrency.EUR,
     )
 }

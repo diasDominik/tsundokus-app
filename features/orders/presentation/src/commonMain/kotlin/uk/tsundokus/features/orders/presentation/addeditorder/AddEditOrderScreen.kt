@@ -1,6 +1,5 @@
 package uk.tsundokus.features.orders.presentation.addeditorder
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -105,6 +104,7 @@ import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.features.orders.domain.models.Isbn
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.presentation.components.BookCover
+import uk.tsundokus.features.orders.presentation.components.FadingChipRow
 import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
@@ -232,10 +232,9 @@ private fun ColumnScope.AddEditOrderForm(
 ) {
     run {
         SectionLabel(Res.string.add_edit_order_section_status)
-        Row(
-            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+        // One line, so the form stays short enough to reach Add order without scrolling; the fade
+        // shows the statuses past the edge, which before looked like they did not exist.
+        FadingChipRow {
             OrderStatus.entries.forEach { status ->
                 FilterChip(
                     selected = state.status == status,

@@ -15,6 +15,7 @@ import uk.tsundokus.core.domain.preferences.ThemeMode
 import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.EmptyResult
 import uk.tsundokus.core.domain.util.Result
+import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
@@ -122,6 +123,8 @@ class AddEditOrderValidationTest {
     fun `an empty form reports every required field at once`() =
         runTest {
             val sut = viewModel()
+            // A new form arrives dated today; cleared, the date is as required as the rest.
+            sut.onAction(AddEditOrderAction.OnOrderDateChange(""))
             sut.onAction(AddEditOrderAction.OnSave)
             // Listed rather than OrderFormField.entries: the optional date fields can also carry an
             // error, but only for an impossible sequence — never for being left empty.
@@ -137,6 +140,14 @@ class AddEditOrderValidationTest {
                 ),
                 sut.state.value.errors,
             )
+        }
+
+    @Test
+    fun `a new order is dated today and that alone leaves nothing to discard`() =
+        runTest {
+            val sut = viewModel()
+            assertEquals(todayIso(), sut.state.value.orderDate)
+            assertEquals(false, sut.state.value.isDirty)
         }
 
     @Test
