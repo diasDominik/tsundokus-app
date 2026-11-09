@@ -1,3 +1,3 @@
-• A shipped order without an expected date now gets an estimate from your own past deliveries from that store. It is marked with ≈, and overdue reminders and the Next arrivals widget use it. A date you enter yourself always wins.
-• Setting a widget's background to None now removes the card instead of leaving it translucent.
-• The app now refuses unencrypted connections.
+• The Your pile widget now draws your pile. The longer a volume waits, the more dust it gathers, then cobwebs, and finally a spider moves in. Make the widget 2x2 or larger to see it.
+• Unsaved order forms are no longer lost when you switch tabs or go back.
+• A round of polish: smoother transitions, rows that move into their new section, placeholder rows while loading, edit and delete in the top bar, and a reading shelf split into your pile and what is on the way.
