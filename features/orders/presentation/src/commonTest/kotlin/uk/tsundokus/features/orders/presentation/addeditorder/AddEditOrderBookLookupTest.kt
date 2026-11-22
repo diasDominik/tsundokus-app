@@ -19,6 +19,7 @@ import uk.tsundokus.core.domain.util.DataError
 import uk.tsundokus.core.domain.util.EmptyResult
 import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.features.orders.domain.book.BookInfo
+import uk.tsundokus.features.orders.domain.dates.todayIso
 import uk.tsundokus.features.orders.domain.models.Order
 import uk.tsundokus.features.orders.domain.models.OrderStatus
 import uk.tsundokus.features.orders.domain.models.ReadState
@@ -289,5 +290,95 @@ class AddEditOrderBookLookupTest {
 
             assertEquals("", sut.state.value.title)
             assertNull(sut.state.value.coverIsbn)
+        }
+
+    @Test
+    fun `scanning a new order marks it received`() =
+        runTest(dispatcher) {
+            val sut = viewModel()
+            advanceUntilIdle()
+
+            sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
+            advanceUntilIdle()
+
+            assertEquals(OrderStatus.RECEIVED, sut.state.value.status)
+        }
+
+    @Test
+    fun `an order started from a scan opens received with nothing to discard`() =
+        runTest(dispatcher) {
+            // Checked before the lookup lands: what it fills in counts as an edit of its own.
+            val sut = viewModel(args = AddEditOrderArgs(initialIsbn = ISBN))
+
+            assertEquals(OrderStatus.RECEIVED, sut.state.value.status)
+            assertFalse(sut.state.value.isDirty)
+        }
+
+    @Test
+    fun `a typed ISBN leaves the status alone`() =
+        runTest(dispatcher) {
+            val sut = viewModel()
+            advanceUntilIdle()
+
+            sut.onAction(AddEditOrderAction.OnIsbnChange(ISBN))
+            advanceUntilIdle()
+
+            assertEquals(OrderStatus.ORDERED, sut.state.value.status)
+        }
+
+    @Test
+    fun `a status the user picked survives a scan`() =
+        runTest(dispatcher) {
+            val sut = viewModel()
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnStatusSelected(OrderStatus.SHIPPED))
+
+            sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
+            advanceUntilIdle()
+
+            assertEquals(OrderStatus.SHIPPED, sut.state.value.status)
+        }
+
+    @Test
+    fun `scanning while editing leaves the status alone`() =
+        runTest(dispatcher) {
+            val existing =
+                Order(
+                    id = "1",
+                    title = "t",
+                    author = "a",
+                    publisher = "p",
+                    store = "s",
+                    price = 1.0,
+                    orderDate = "2026-09-01",
+                    isbn = OTHER_ISBN,
+                    status = OrderStatus.SHIPPED,
+                )
+            val sut =
+                viewModel(orders = SavingOrderRepository(existing), args = AddEditOrderArgs(orderId = "1"))
+            advanceUntilIdle()
+
+            sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
+            advanceUntilIdle()
+
+            assertEquals(OrderStatus.SHIPPED, sut.state.value.status)
+        }
+
+    @Test
+    fun `a scanned order saves as received today`() =
+        runTest(dispatcher) {
+            val orders = SavingOrderRepository()
+            val sut = viewModel(orders = orders)
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnIsbnScanned(ISBN))
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnStoreChange("Amazon"))
+            sut.onAction(AddEditOrderAction.OnPriceChange("7"))
+
+            sut.onAction(AddEditOrderAction.OnSave)
+            advanceUntilIdle()
+
+            assertEquals(OrderStatus.RECEIVED, orders.saved?.status)
+            assertEquals(todayIso(), orders.saved?.receivedDate)
         }
 }
