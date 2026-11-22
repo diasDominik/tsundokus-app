@@ -1,0 +1,3 @@
+• O Tsundoku já fala a sua língua: mais 21 línguas europeias, 22 no total. A app segue o idioma do telemóvel, ou pode escolher outro nas definições de idioma das apps do Android.
+• Ao adicionar uma encomenda digitalizando o código de barras do livro, esta fica agora logo marcada como "Recebido": o livro já está nas suas mãos.
+• A alteração da palavra-passe segue agora as mesmas regras do registo: 8 a 40 caracteres, com pelo menos um número ou símbolo.

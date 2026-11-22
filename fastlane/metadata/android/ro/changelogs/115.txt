@@ -1,0 +1,3 @@
+• Tsundoku vorbește acum limba ta: încă 21 de limbi europene, 22 în total. Aplicația folosește limba telefonului sau poți alege alta din setările Android pentru limba aplicațiilor.
+• Când adaugi o comandă scanând codul de bare al cărții, aceasta e marcată acum direct ca „Primită” – doar ai deja cartea în mână.
+• Schimbarea parolei urmează acum aceleași reguli ca înregistrarea: între 8 și 40 de caractere, cu cel puțin o cifră sau un simbol.

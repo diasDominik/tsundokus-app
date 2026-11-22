@@ -1,0 +1,4 @@
+• Tsundoku now speaks your language: 21 more European languages, 22 in total. It follows your phone's language, or pick another one in Android's app language settings.
+• Adding an order by scanning the book's barcode now marks it as received, since the book is already in your hands.
+• Changing your password now follows the same rules as signing up: 8 to 40 characters with at least one number or symbol.
+• Fixed a stray backslash in the About text.

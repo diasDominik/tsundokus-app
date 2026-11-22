@@ -1,0 +1,3 @@
+• Tsundoku teď mluví vaším jazykem: o 21 evropských jazyků víc, celkem 22. Aplikace se řídí jazykem telefonu, nebo si jiný vyberte v nastavení jazyka aplikací v Androidu.
+• Když přidáte objednávku naskenováním čárového kódu knihy, označí se teď rovnou jako „Doručeno“ – knihu už přece držíte v ruce.
+• Při změně hesla teď platí stejná pravidla jako při registraci: 8 až 40 znaků, alespoň jedna číslice nebo symbol.

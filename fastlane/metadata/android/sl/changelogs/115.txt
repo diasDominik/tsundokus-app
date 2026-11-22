@@ -1,0 +1,3 @@
+• Tsundoku zdaj govori vaš jezik: 21 dodatnih evropskih jezikov, skupaj 22. Aplikacija sledi jeziku telefona, lahko pa izberete drugega v Androidovih nastavitvah jezika aplikacij.
+• Ko dodate naročilo s skeniranjem črtne kode knjige, se zdaj takoj označi kot »Prejeto« – knjigo imate namreč že v rokah.
+• Za spremembo gesla zdaj veljajo enaka pravila kot pri registraciji: od 8 do 40 znakov, vsaj ena številka ali simbol.

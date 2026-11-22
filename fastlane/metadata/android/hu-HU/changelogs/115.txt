@@ -1,0 +1,3 @@
+• A Tsundoku mostantól a te nyelveden is beszél: 21 új európai nyelv, összesen 22. Az alkalmazás a telefon nyelvét követi, de az Android alkalmazásnyelv-beállításaiban másikat is választhatsz.
+• Ha egy rendelést a könyv vonalkódjának beolvasásával adsz hozzá, az mostantól rögtön „Megérkezett” állapotba kerül – hiszen a könyv már a kezedben van.
+• Jelszóváltoztatáskor mostantól ugyanazok a szabályok érvényesek, mint regisztrációkor: 8–40 karakter, legalább egy számmal vagy szimbólummal.

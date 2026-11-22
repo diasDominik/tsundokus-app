@@ -1,0 +1,3 @@
+• Tsundoku ya habla tu idioma: 21 idiomas europeos más, 22 en total. La app sigue el idioma de tu móvil, o puedes elegir otro en los ajustes de idioma de aplicaciones de Android.
+• Si añades un pedido escaneando el código de barras del libro, ahora se marca como «Recibido»: el libro ya está en tus manos.
+• Cambiar la contraseña sigue ahora las mismas reglas que el registro: de 8 a 40 caracteres, con al menos un número o un símbolo.
