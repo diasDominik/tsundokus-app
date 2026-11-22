@@ -1,0 +1,35 @@
+Tsundoku pitää kirjaa tilaamistasi mangoista maksuhetkestä siihen asti, kun ne ovat hyllyssä – ja myös lukupinosta, joka odottaa vielä lukemista.
+
+Ennakkotilaukset siirtyvät, paketit tulevat eri kaupoista ja keskiyön heräteostokset unohtuvat helposti. Tsundoku kokoaa kaikki tilauksesi yhteen paikkaan, joten tiedät aina, mitä on tulossa ja mikä on myöhässä.
+
+📦 Kaikki tilaukset yhdellä silmäyksellä
+Tilattu, matkalla, myöhässä tai saapunut: näet jokaisen tilauksen tilan, hinnan, kaupan ja arvioidun päivän. Hae, suodata ja järjestä sekunneissa.
+
+📷 Skannaa kirjoittamisen sijaan
+Skannaa takakannen viivakoodi, niin Tsundoku etsii kirjan ISBN:n perusteella. Kun paketti saapuu, skannaa se uudelleen, niin tilaus merkitään saapuneeksi.
+
+⏳ Viivästykset hallinnassa
+Kun julkaisu siirtyy, syötä uusi päivä, ja Tsundoku tallentaa jokaisen muutoksen aikajanalle. Toimitusarvio oppii siitä, kuinka nopeasti kukin kauppa on aiemmin toimittanut sinulle.
+
+🔔 Muistutukset
+Saat ilmoituksen, kun tilaus ei ole saapunut ajallaan tai kun viivästyneen tilauksen uusi päivä koittaa – valitsemaasi aikaan.
+
+📚 Sarjat ja lukupino
+Näe, mitkä sarjan osat sinulla on, mitkä ovat matkalla ja mitkä puuttuvat. Merkitse osat tilaan ”Haluan lukea”, ”Luen nyt” tai ”Luettu” ja katso, kuinka pino pienenee.
+
+📊 Tilastot
+Paljonko olet käyttänyt rahaa, kauanko toimitukset kestävät, mitkä kaupat myöhästyvät usein sekä suosikkikauppasi ja -kustantajasi.
+
+🏠 Widgetit aloitusnäytölle
+Seuraavaksi saapuvat ja lukupinosi suoraan aloitusnäytöllä.
+
+📶 Toimii offline-tilassa
+Tilauksesi tallennetaan laitteellesi, joten voit katsoa niitä missä tahansa. Muutokset synkronoidaan tiliisi heti, kun olet taas verkossa.
+
+🔒 Sinun tietosi, sinun valintasi
+Kirjaudu pääsyavaimella sormenjäljen, kasvojen tai näytön lukituksen avulla. Vie kaikki tilauksesi CSV- tai JSON-muodossa milloin tahansa ja poista tilisi, kun haluat.
+
+🌍 Omalla kielelläsi
+Saatavilla 22 kielellä.
+
+Tsundoku (積ん読) on japaninkielinen sana kirjojen ostamiselle ja niiden jättämiselle lukemattomina pinoon. Tämä sovellus ei estä pinoasi kasvamasta, mutta tiedät aina, mitä siinä on.

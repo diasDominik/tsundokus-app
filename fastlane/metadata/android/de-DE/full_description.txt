@@ -1,0 +1,35 @@
+Tsundoku behält deine Manga-Bestellungen im Blick, von der Kasse bis ins Regal, und dazu den Stapel, den du noch lesen willst.
+
+Vorbestellungen verschieben sich, Pakete kommen aus verschiedenen Shops, und der nächtliche Spontankauf ist schnell vergessen. Tsundoku sammelt alle Bestellungen an einem Ort, damit du immer weißt, was kommt und was sich verspätet.
+
+📦 Alle Bestellungen auf einen Blick
+Bestellt, unterwegs, verspätet oder erhalten: Status, Preis, Shop und erwartetes Datum jeder Bestellung auf einen Blick. Suchen, filtern und sortieren in Sekunden.
+
+📷 Scannen statt tippen
+Scanne den Barcode auf der Rückseite, und Tsundoku sucht das Buch anhand der ISBN heraus. Kommt das Paket an, scannst du es noch einmal, und die Bestellung ist als erhalten markiert.
+
+⏳ Verspätungen im Griff
+Verschiebt sich ein Termin, trägst du das neue Datum ein, und Tsundoku hält jede Änderung im Verlauf fest. Die Lieferschätzung lernt, wie schnell jeder Shop bisher an dich geliefert hat.
+
+🔔 Erinnerungen
+Lass dich benachrichtigen, wenn eine Bestellung überfällig ist oder der neue Termin einer verspäteten Bestellung erreicht ist, zu einer Uhrzeit deiner Wahl.
+
+📚 Reihen und Lesestapel
+Sieh, welche Bände einer Reihe du hast, welche unterwegs sind und welche fehlen. Markiere Bände mit „Will ich lesen“, „Lese ich gerade“ oder „Gelesen“ und sieh zu, wie dein Stapel schrumpft.
+
+📊 Statistiken
+Was du ausgegeben hast, wie lange Lieferungen dauern, welche Shops oft zu spät sind und welche Shops und Verlage du am häufigsten nutzt.
+
+🏠 Widgets für den Startbildschirm
+Deine nächsten Lieferungen und dein Lesestapel direkt auf dem Startbildschirm.
+
+📶 Funktioniert offline
+Deine Bestellungen liegen auf deinem Gerät, du kannst sie also überall ansehen. Änderungen werden mit deinem Konto synchronisiert, sobald du wieder online bist.
+
+🔒 Deine Daten, deine Entscheidung
+Melde dich per Passkey mit Fingerabdruck, Gesicht oder Displaysperre an. Exportiere alle Bestellungen jederzeit als CSV oder JSON und lösche dein Konto, wann immer du willst.
+
+🌍 In deiner Sprache
+Verfügbar in 22 Sprachen.
+
+Tsundoku (積ん読) ist das japanische Wort dafür, Bücher zu kaufen und ungelesen zu stapeln. Die App hält deinen Stapel nicht vom Wachsen ab, aber du weißt immer, was drinsteckt.

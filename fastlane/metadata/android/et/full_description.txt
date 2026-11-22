@@ -1,0 +1,35 @@
+Tsundoku hoiab silma peal sinu tellitud mangadel alates maksmisest kuni hetkeni, mil need riiulis on – ja ka virnal, mis ootab veel lugemist.
+
+Eeltellimused lükkuvad edasi, pakid tulevad eri poodidest ja kesköised ostud ununevad kergesti. Tsundoku koondab kõik tellimused ühte kohta, nii et tead alati, mis on tulekul ja mis hilineb.
+
+📦 Kõik tellimused ühe pilguga
+Tellitud, teel, hilineb või kätte saadud: näed iga tellimuse olekut, hinda, poodi ja eeldatavat kuupäeva. Otsi, filtreeri ja sorteeri sekunditega.
+
+📷 Skanni, ära trüki
+Skanni tagakaane vöötkood ja Tsundoku leiab raamatu ISBN-i järgi. Kui pakk saabub, skanni see uuesti ja tellimus märgitakse kättesaaduks.
+
+⏳ Hilinemised kontrolli all
+Kui ilmumine lükkub edasi, sisesta uus kuupäev ja Tsundoku salvestab iga muudatuse ajajoonele. Tarneaja hinnang õpib sellest, kui kiiresti iga pood on sulle varem tarninud.
+
+🔔 Meeldetuletused
+Saa teavitus, kui tellimus pole õigel ajal saabunud või kui hilinenud tellimuse uus kuupäev kätte jõuab – sinu valitud kellaajal.
+
+📚 Sarjad ja lugemisvirn
+Vaata, millised sarja köited sul on, millised on teel ja millised puuduvad. Märgi köited olekuga „Tahan lugeda“, „Loen praegu“ või „Loetud“ ja vaata, kuidas virn väheneb.
+
+📊 Statistika
+Kui palju oled kulutanud, kui kaua tarned võtavad, millised poed hilinevad sageli ning sinu lemmikpoed ja -kirjastused.
+
+🏠 Avakuva vidinad
+Järgmised saabumised ja sinu lugemisvirn otse avakuval.
+
+📶 Töötab võrguühenduseta
+Tellimused on salvestatud sinu seadmesse, nii et saad neid vaadata kõikjal. Muudatused sünkroonitakse sinu kontoga kohe, kui oled taas võrgus.
+
+🔒 Sinu andmed, sinu valik
+Logi sisse pääsuvõtmega sõrmejälje, näo või ekraaniluku abil. Ekspordi kõik tellimused igal ajal CSV- või JSON-failina ja kustuta oma konto, millal soovid.
+
+🌍 Sinu keeles
+Saadaval 22 keeles.
+
+Tsundoku (積ん読) on jaapani sõna raamatute ostmise kohta, mis jäävad lugemata ja kuhjuvad virnadesse. See rakendus ei takista su virnal kasvamast, kuid sa tead alati, mis seal on.

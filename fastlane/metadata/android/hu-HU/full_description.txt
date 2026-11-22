@@ -1,0 +1,35 @@
+A Tsundoku nyomon követi a mangarendeléseidet a fizetéstől egészen addig, amíg a polcodra kerülnek, és azt a kupacot is, amit még el kell olvasnod.
+
+Az előrendelések csúsznak, a csomagok különböző boltokból érkeznek, az éjféli vásárlásokról pedig könnyű megfeledkezni. A Tsundoku egy helyre gyűjti az összes rendelésedet, így mindig tudod, mi érkezik és mi késik.
+
+📦 Minden rendelés egy pillantással
+Megrendelve, úton, késik vagy megérkezett: minden rendelésnél látod az állapotot, az árat, a boltot és a várható dátumot. Keress, szűrj és rendezz másodpercek alatt.
+
+📷 Szkennelj gépelés helyett
+Szkenneld be a hátsó borítón lévő vonalkódot, és a Tsundoku az ISBN alapján megkeresi a könyvet. Amikor megjön a csomag, szkenneld be újra, és a rendelés megérkezettként lesz megjelölve.
+
+⏳ Késések kézben tartva
+Ha csúszik egy megjelenés, add meg az új dátumot, és a Tsundoku minden változást rögzít az előzményekben. A szállítási becslés abból tanul, milyen gyorsan szállított neked eddig az egyes bolt.
+
+🔔 Emlékeztetők
+Kapj értesítést, ha egy rendelés nem érkezett meg időben, vagy ha elérkezik egy késő rendelés új dátuma, az általad választott időpontban.
+
+📚 Sorozatok és olvasási kupac
+Nézd meg, egy sorozat mely kötetei vannak meg, melyek úton vannak és melyek hiányoznak. Jelöld a köteteket „Olvasandó”, „Épp olvasom” vagy „Elolvasva” állapotúnak, és nézd, ahogy fogy a kupacod.
+
+📊 Statisztikák
+Mennyit költöttél, mennyi ideig tart a szállítás, mely boltok késnek gyakran, és melyek a kedvenc boltjaid és kiadóid.
+
+🏠 Widgetek a kezdőképernyőre
+A következő érkezések és az olvasási kupacod közvetlenül a kezdőképernyőn.
+
+📶 Offline is működik
+A rendeléseid az eszközödön tárolódnak, így bárhol megnézheted őket. A módosítások szinkronizálódnak a fiókoddal, amint újra online vagy.
+
+🔒 A te adataid, a te döntésed
+Jelentkezz be azonosítókulccsal ujjlenyomattal, arccal vagy képernyőzárral. Bármikor exportálhatod az összes rendelésedet CSV vagy JSON formátumban, és amikor csak akarod, törölheted a fiókodat.
+
+🌍 A te nyelveden
+22 nyelven érhető el.
+
+A tsundoku (積ん読) japán szó, és azt jelenti, hogy könyveket veszünk, aztán olvasatlanul halmozódnak. Ez az alkalmazás nem állítja meg a kupacod növekedését, de mindig tudni fogod, mi van benne.

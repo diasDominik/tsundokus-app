@@ -1,0 +1,35 @@
+Tsundoku prati vaše narudžbe mange od plaćanja do trenutka kad stignu na policu, a uz to i hrpu koju tek trebate pročitati.
+
+Prednarudžbe kasne, paketi stižu iz različitih trgovina, a ponoćne kupnje lako se zaborave. Tsundoku skuplja sve narudžbe na jednom mjestu pa uvijek znate što stiže, a što kasni.
+
+📦 Sve narudžbe na prvi pogled
+Naručeno, na putu, kasni ili primljeno: za svaku narudžbu vidite status, cijenu, trgovinu i očekivani datum. Pretražujte, filtrirajte i razvrstavajte u nekoliko sekundi.
+
+📷 Skenirajte umjesto tipkanja
+Skenirajte crtični kod na poleđini i Tsundoku pronalazi knjigu prema ISBN-u. Kad paket stigne, skenirajte ga ponovno i narudžba će biti označena kao primljena.
+
+⏳ Kašnjenja pod kontrolom
+Kad se izdanje odgodi, unesite novi datum i Tsundoku bilježi svaku promjenu u povijesti. Procjena dostave uči iz toga koliko vam je brzo svaka trgovina dosad dostavljala.
+
+🔔 Podsjetnici
+Primite obavijest kad narudžba nije stigla na vrijeme ili kad dođe novi datum odgođene narudžbe, u vrijeme koje sami odaberete.
+
+📚 Serijali i hrpa za čitanje
+Pogledajte koje sveske serijala imate, koji su na putu, a koji nedostaju. Označite sveske kao „Želim pročitati”, „Upravo čitam” ili „Pročitano” i gledajte kako se vaša hrpa smanjuje.
+
+📊 Statistika
+Koliko ste potrošili, koliko traju dostave, koje trgovine često kasne te vaše omiljene trgovine i izdavači.
+
+🏠 Widgeti za početni zaslon
+Sljedeće dostave i vaša hrpa za čitanje izravno na početnom zaslonu.
+
+📶 Radi izvanmrežno
+Narudžbe su spremljene na vašem uređaju pa ih možete pregledati bilo gdje. Promjene se sinkroniziraju s vašim računom čim ponovno budete na mreži.
+
+🔒 Vaši podaci, vaš izbor
+Prijavite se pristupnim ključem pomoću otiska prsta, lica ili zaključavanja zaslona. Izvezite sve narudžbe u CSV ili JSON kad god želite i izbrišite račun u bilo kojem trenutku.
+
+🌍 Na vašem jeziku
+Dostupno na 22 jezika.
+
+Tsundoku (積ん読) japanska je riječ za kupovanje knjiga koje se zatim nepročitane gomilaju. Ova aplikacija neće zaustaviti rast vaše hrpe, ali uvijek ćete znati što je u njoj.

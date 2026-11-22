@@ -1,0 +1,35 @@
+Tsundoku houdt je mangabestellingen bij, van de kassa tot je boekenkast, en ook de stapel die je nog moet lezen.
+
+Pre-orders schuiven op, pakketjes komen van verschillende winkels en die aankoop van middernacht vergeet je zo. Tsundoku zet al je bestellingen op één plek, zodat je altijd weet wat eraan komt en wat vertraagd is.
+
+📦 Alle bestellingen in één oogopslag
+Besteld, onderweg, vertraagd of ontvangen: zie van elke bestelling de status, prijs, winkel en verwachte datum. Zoek, filter en sorteer in een paar seconden.
+
+📷 Scannen in plaats van typen
+Scan de barcode op de achterkant en Tsundoku zoekt het boek op via het ISBN. Komt het pakket binnen, scan het dan nog een keer om de bestelling als ontvangen te markeren.
+
+⏳ Vertragingen onder controle
+Schuift een release op, vul dan de nieuwe datum in en Tsundoku houdt een tijdlijn van elke wijziging bij. De leverschatting leert van hoe snel elke winkel eerder aan je heeft geleverd.
+
+🔔 Herinneringen
+Krijg een melding als een bestelling te laat is of als de nieuwe datum van een vertraagde bestelling is bereikt, op een tijdstip dat jij kiest.
+
+📚 Series en leesstapel
+Zie welke delen van een serie je hebt, welke onderweg zijn en welke nog ontbreken. Markeer delen als ‘Wil ik lezen’, ‘Aan het lezen’ of ‘Gelezen’ en zie je stapel slinken.
+
+📊 Statistieken
+Wat je hebt uitgegeven, hoe lang leveringen duren, welke winkels vaak te laat zijn en je favoriete winkels en uitgevers.
+
+🏠 Widgets voor je startscherm
+Wat binnenkort binnenkomt en je leesstapel, direct op je startscherm.
+
+📶 Werkt offline
+Je bestellingen staan op je apparaat, dus je kunt ze overal bekijken. Wijzigingen worden met je account gesynchroniseerd zodra je weer online bent.
+
+🔒 Jouw gegevens, jouw keuze
+Log in met een passkey via je vingerafdruk, gezicht of schermvergrendeling. Exporteer al je bestellingen op elk moment als CSV of JSON en verwijder je account wanneer je wilt.
+
+🌍 In jouw taal
+Beschikbaar in 22 talen.
+
+Tsundoku (積ん読) is het Japanse woord voor boeken kopen en ze ongelezen laten opstapelen. Deze app houdt je stapel niet tegen, maar je weet altijd wat erin zit.

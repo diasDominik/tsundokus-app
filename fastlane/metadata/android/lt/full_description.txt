@@ -1,0 +1,35 @@
+Tsundoku seka jūsų mangų užsakymus nuo apmokėjimo iki tol, kol jie atsiduria lentynoje, ir krūvelę, kurią dar reikia perskaityti.
+
+Išankstiniai užsakymai nukeliami, siuntos ateina iš skirtingų parduotuvių, o vidurnakčio pirkiniai greitai pasimiršta. Tsundoku surenka visus užsakymus vienoje vietoje, todėl visada žinote, kas atkeliauja ir kas vėluoja.
+
+📦 Visi užsakymai vienu žvilgsniu
+Užsakyta, pakeliui, vėluoja ar gauta: matote kiekvieno užsakymo būseną, kainą, parduotuvę ir numatomą datą. Ieškokite, filtruokite ir rūšiuokite per kelias sekundes.
+
+📷 Skenuokite, o ne rašykite
+Nuskenuokite brūkšninį kodą ant galinio viršelio, ir Tsundoku suras knygą pagal ISBN. Kai siunta atkeliaus, nuskenuokite ją dar kartą, ir užsakymas bus pažymėtas kaip gautas.
+
+⏳ Vėlavimai kontroliuojami
+Kai leidimas nukeliamas, įveskite naują datą, ir Tsundoku išsaugos kiekvieną pakeitimą istorijoje. Pristatymo prognozė mokosi iš to, kaip greitai kiekviena parduotuvė jums pristatydavo anksčiau.
+
+🔔 Priminimai
+Gaukite pranešimą, kai užsakymas neatkeliavo laiku arba kai ateina naujoji vėluojančio užsakymo data, jūsų pasirinktu laiku.
+
+📚 Serijos ir skaitymo krūvelė
+Matykite, kuriuos serijos tomus turite, kurie pakeliui ir kurių trūksta. Žymėkite tomus kaip „Skaitysiu“, „Dabar skaitau“ arba „Perskaityta“ ir stebėkite, kaip krūvelė mažėja.
+
+📊 Statistika
+Kiek išleidote, kiek trunka pristatymai, kurios parduotuvės dažnai vėluoja, ir jūsų mėgstamiausios parduotuvės bei leidyklos.
+
+🏠 Valdikliai pradžios ekranui
+Artimiausi pristatymai ir jūsų skaitymo krūvelė tiesiai pradžios ekrane.
+
+📶 Veikia neprisijungus
+Užsakymai saugomi jūsų įrenginyje, todėl galite juos peržiūrėti bet kur. Pakeitimai sinchronizuojami su jūsų paskyra, kai tik vėl prisijungiate.
+
+🔒 Jūsų duomenys, jūsų pasirinkimas
+Prisijunkite prieigos raktu naudodami piršto atspaudą, veidą arba ekrano užraktą. Bet kada eksportuokite visus užsakymus CSV ar JSON formatu ir ištrinkite paskyrą, kada tik norite.
+
+🌍 Jūsų kalba
+Prieinama 22 kalbomis.
+
+Tsundoku (積ん読) – japoniškas žodis, reiškiantis knygų pirkimą ir jų kaupimą neperskaitytų. Ši programėlė nesustabdys jūsų krūvelės augimo, bet visada žinosite, kas joje yra.

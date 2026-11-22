@@ -1,0 +1,35 @@
+Tsundoku sleduje vaše objednávky mangy od zaplatenia až po chvíľu, keď stoja na polici, a k tomu aj kôpku, ktorú ešte musíte prečítať.
+
+Predobjednávky sa odkladajú, balíky chodia z rôznych obchodov a nočné nákupy sa ľahko zabudnú. Tsundoku zhromaždí všetky objednávky na jednom mieste, takže vždy viete, čo je na ceste a čo mešká.
+
+📦 Všetky objednávky na prvý pohľad
+Objednané, na ceste, oneskorené alebo doručené: pri každej objednávke uvidíte stav, cenu, obchod a očakávaný dátum. Hľadajte, filtrujte a triedte za pár sekúnd.
+
+📷 Skenujte namiesto písania
+Naskenujte čiarový kód na zadnej strane obálky a Tsundoku knihu vyhľadá podľa ISBN. Keď balík dorazí, naskenujte ho znova a objednávka sa označí ako doručená.
+
+⏳ Meškania pod kontrolou
+Keď sa vydanie posunie, zadajte nový dátum a Tsundoku si každú zmenu zapíše do histórie. Odhad doručenia sa učí z toho, ako rýchlo vám jednotlivé obchody doručovali predtým.
+
+🔔 Pripomenutia
+Dostaňte upozornenie, keď objednávka nedorazila načas alebo keď nastane nový dátum oneskorenej objednávky, v čase, ktorý si zvolíte.
+
+📚 Série a kôpka
+Pozrite sa, ktoré zväzky série máte, ktoré sú na ceste a ktoré chýbajú. Označujte zväzky ako „Na prečítanie“, „Práve čítam“ alebo „Prečítané“ a sledujte, ako sa vaša kôpka zmenšuje.
+
+📊 Štatistiky
+Koľko ste minuli, ako dlho trvá doručenie, ktoré obchody často meškajú a vaše najobľúbenejšie obchody a vydavateľstvá.
+
+🏠 Widgety na plochu
+Najbližšie doručenia a vaša kôpka priamo na ploche.
+
+📶 Funguje offline
+Objednávky sú uložené vo vašom zariadení, takže si ich môžete pozrieť kdekoľvek. Zmeny sa synchronizujú s vaším účtom, len čo budete znova online.
+
+🔒 Vaše dáta, vaša voľba
+Prihláste sa prístupovým kľúčom pomocou odtlačku prsta, tváre alebo zámky obrazovky. Kedykoľvek exportujte všetky objednávky do CSV alebo JSON a zmažte účet, kedy chcete.
+
+🌍 Vo vašom jazyku
+Dostupné v 22 jazykoch.
+
+Tsundoku (積ん読) je japonské slovo pre kupovanie kníh, ktoré sa potom neprečítané hromadia. Táto aplikácia vašu kôpku nezastaví, ale vždy budete vedieť, čo v nej je.

@@ -1,0 +1,91 @@
+name: Store screenshots
+
+# Takes the Play Store screenshots in every store language on an emulator (`fastlane screenshots`,
+# see docs/RELEASING.md) and pushes them to a branch `store-screenshots/<run number>`. The run
+# summary links to open a pull request from it; the screenshots are also kept as an artifact.
+#
+# The app runs against a fake server inside the test, so no secrets are needed.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: store-screenshots
+  cancel-in-progress: true
+
+env:
+  # A debug build that talks to the test's fake server on the emulator's localhost.
+  API_KEY: store-screenshots
+  BASE_URL_HTTP: http://localhost:8080
+
+jobs:
+  screenshots:
+    name: Take screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 25 (Temurin)
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Built before the emulator starts, so the two don't compete for memory.
+      - name: Build app and test APKs
+        run: ./gradlew :androidApp:assembleDebug :androidApp:assembleDebugAndroidTest --no-daemon
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Android 13+ is required: the test sets the app language per app.
+      - name: Take screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bundle exec fastlane android screenshots skip_build:true
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v7
+        with:
+          name: store-screenshots
+          path: fastlane/metadata/android/*/images/phoneScreenshots/
+          if-no-files-found: error
+          retention-days: 14
+
+      # The screenshots are stored in Git LFS: the filter and pre-push hook have to be in place.
+      - name: Push to a branch
+        run: |
+          git lfs install --local
+          if [[ -z "$(git status --porcelain -- fastlane/metadata/android)" ]]; then
+            echo "The screenshots haven't changed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          branch="store-screenshots/${GITHUB_RUN_NUMBER}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add -- fastlane/metadata/android
+          git commit -m "chore: update store screenshots"
+          git push origin "$branch"
+          echo "New screenshots are on \`$branch\`: [open a pull request](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/${branch}?expand=1)" >> "$GITHUB_STEP_SUMMARY"

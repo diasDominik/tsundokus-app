@@ -1,0 +1,2 @@
+fastlane/metadata/android/**/*.png filter=lfs diff=lfs merge=lfs -text
+fastlane/metadata/android/**/*.jpg filter=lfs diff=lfs merge=lfs -text

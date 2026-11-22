@@ -1,0 +1,35 @@
+Tsundoku tiene traccia dei manga che hai ordinato, dal pagamento fino allo scaffale, e della pila che devi ancora leggere.
+
+I preordini slittano, i pacchi arrivano da negozi diversi e gli acquisti di mezzanotte si dimenticano in fretta. Tsundoku raccoglie tutti i tuoi ordini in un unico posto, così sai sempre cosa sta arrivando e cosa è in ritardo.
+
+📦 Tutti gli ordini a colpo d'occhio
+Ordinato, in arrivo, in ritardo o ricevuto: vedi stato, prezzo, negozio e data prevista di ogni ordine. Cerca, filtra e ordina in pochi secondi.
+
+📷 Scansiona invece di scrivere
+Scansiona il codice a barre sul retro e Tsundoku trova il libro tramite l'ISBN. Quando arriva il pacco, scansionalo di nuovo per segnare l'ordine come ricevuto.
+
+⏳ Ritardi sotto controllo
+Quando un'uscita slitta, inserisci la nuova data e Tsundoku conserva la cronologia di ogni modifica. Le stime di consegna imparano da quanto velocemente ogni negozio ti ha spedito finora.
+
+🔔 Promemoria
+Ricevi una notifica quando un ordine non è arrivato alla data prevista o quando arriva la nuova data di un ordine in ritardo, all'ora che preferisci.
+
+📚 Serie e pila da leggere
+Scopri quali volumi di una serie hai, quali sono in arrivo e quali mancano. Segna i volumi come «Da leggere», «In lettura» o «Letto» e guarda la tua pila diminuire.
+
+📊 Statistiche
+Quanto hai speso, quanto durano le consegne, quali negozi sono spesso in ritardo e i tuoi negozi ed editori preferiti.
+
+🏠 Widget per la schermata Home
+I tuoi prossimi arrivi e la tua pila da leggere, direttamente nella schermata Home.
+
+📶 Funziona offline
+I tuoi ordini sono salvati sul dispositivo, quindi puoi consultarli ovunque. Le modifiche si sincronizzano con il tuo account appena torni online.
+
+🔒 I tuoi dati, la tua scelta
+Accedi con una passkey usando impronta, volto o blocco schermo. Esporta tutti i tuoi ordini in CSV o JSON quando vuoi ed elimina il tuo account in qualsiasi momento.
+
+🌍 Nella tua lingua
+Disponibile in 22 lingue.
+
+Tsundoku (積ん読) è la parola giapponese che indica l'abitudine di comprare libri e lasciarli accumulare senza leggerli. Questa app non impedirà alla tua pila di crescere, ma saprai sempre cosa c'è dentro.

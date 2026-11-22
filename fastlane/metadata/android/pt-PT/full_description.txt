@@ -1,0 +1,35 @@
+O Tsundoku acompanha as suas encomendas de manga, desde o pagamento até chegarem à estante, e também a pilha que ainda tem por ler.
+
+As pré-encomendas são adiadas, as encomendas chegam de lojas diferentes e as compras de madrugada esquecem-se depressa. O Tsundoku junta todas as suas encomendas num só lugar, para saber sempre o que está a chegar e o que está atrasado.
+
+📦 Todas as encomendas num relance
+Encomendada, a caminho, atrasada ou recebida: veja o estado, o preço, a loja e a data prevista de cada encomenda. Pesquise, filtre e ordene em segundos.
+
+📷 Leia o código em vez de escrever
+Leia o código de barras na contracapa e o Tsundoku encontra o livro pelo ISBN. Quando a encomenda chegar, leia-o novamente para a marcar como recebida.
+
+⏳ Atrasos sob controlo
+Quando um lançamento é adiado, indique a nova data e o Tsundoku guarda o histórico de cada alteração. As estimativas de entrega aprendem com a rapidez com que cada loja lhe entregou até agora.
+
+🔔 Lembretes
+Receba uma notificação quando uma encomenda não chegou na data prevista ou quando chega a nova data de uma encomenda atrasada, à hora que escolher.
+
+📚 Séries e pilha por ler
+Veja que volumes de uma série tem, quais estão a caminho e quais faltam. Marque volumes como «Quero ler», «A ler» ou «Lido» e veja a sua pilha diminuir.
+
+📊 Estatísticas
+Quanto gastou, quanto tempo demoram as entregas, que lojas se atrasam com frequência e as suas lojas e editoras favoritas.
+
+🏠 Widgets para o ecrã principal
+As suas próximas chegadas e a sua pilha por ler, diretamente no ecrã principal.
+
+📶 Funciona offline
+As suas encomendas ficam guardadas no dispositivo, por isso pode consultá-las em qualquer lugar. As alterações são sincronizadas com a sua conta assim que voltar a estar online.
+
+🔒 Os seus dados, a sua escolha
+Inicie sessão com uma chave de acesso usando a impressão digital, o rosto ou o bloqueio de ecrã. Exporte todas as encomendas em CSV ou JSON quando quiser e elimine a sua conta a qualquer momento.
+
+🌍 No seu idioma
+Disponível em 22 idiomas.
+
+Tsundoku (積ん読) é a palavra japonesa para comprar livros e deixá-los acumular sem os ler. Esta app não impede a sua pilha de crescer, mas vai saber sempre o que está nela.

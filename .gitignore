@@ -26,3 +26,8 @@ kotzilla.json
 androidApp/keystore/
 # Release build outputs (.aab/.apk)
 androidApp/release/
+
+# fastlane: run reports, the listing downloaded by `fastlane fetch_listing` and screengrab's summary
+fastlane/report.xml
+fastlane/metadata/play/
+fastlane/metadata/android/screenshots.html

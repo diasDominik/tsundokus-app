@@ -1,7 +1,8 @@
 name: Release
 
 # Builds the Android App Bundle and APK for a version tag and uploads the bundle to the Play Store
-# internal track. Once Play has accepted it, the APK is published as a GitHub release.
+# internal track with fastlane. Once Play has accepted it, the APK is published as a GitHub release.
+# Promoting to production is a separate, manual step (play.yml). docs/RELEASING.md has the whole flow.
 #
 # The two are signed differently. The bundle uses the upload key and Play re-signs it for its users;
 # the APK uses the distribution key. Android only updates an app with the certificate it was
@@ -13,8 +14,9 @@ name: Release
 # build-logic), so v1.2.3 builds versionName 1.2.3, versionCode 10203. Play rejects a versionCode
 # it has seen before, so every release needs a higher tag than the last one.
 #
-# Update distribution/whatsnew/whatsnew-en-US before tagging: it becomes the Play release notes, and
-# the release fails if it hasn't changed since the last tag.
+# Add the release notes before tagging: fastlane/metadata/android/en-US/changelogs/<versionCode>.txt,
+# plus the same file for any other store language that should get its own. The release fails without
+# the English one; other languages show it where their translation is missing.
 #
 # Run it from the Actions tab instead (workflow_dispatch) for a dry run: same builds and signature
 # checks on an untagged commit (version "<latest tag>-dev"), the outputs are kept as a workflow
@@ -84,26 +86,17 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      # Fails before the long builds. A dry run checks the file but has no release to compare it for.
-      - name: Check Play release notes
-        run: |
-          notes=distribution/whatsnew/whatsnew-en-US
-          if [[ ! -s "$notes" ]]; then
-            echo "::error::$notes is missing or empty"
-            exit 1
-          fi
-          length=$(LC_ALL=C.UTF-8 wc -m < "$notes")
-          if (( length > 500 )); then
-            echo "::error::$notes has $length characters, Play allows 500"
-            exit 1
-          fi
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-            previous=$(git describe --tags --abbrev=0 --match 'v*' "${GITHUB_SHA}^" 2>/dev/null || true)
-            if [[ -n "$previous" ]] && git diff --quiet "$previous" "$GITHUB_SHA" -- "$notes"; then
-              echo "::error::$notes has not changed since $previous"
-              exit 1
-            fi
-          fi
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Fails before the long builds. A tag needs English release notes for its version; a dry run
+      # has no version and only checks the listing. Screenshots stay in Git LFS and aren't fetched.
+      - name: Check store metadata
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: bundle exec fastlane android check_metadata ${VERSION:+version:$VERSION}
 
       - name: Check secrets
         env:
@@ -205,10 +198,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      # For the release notes. Not part of the artifact: a path outside build/outputs would move
-      # everything in it under androidApp/.
+      # For fastlane and the release notes. Not part of the artifact: a path outside build/outputs
+      # would move everything in it under androidApp/.
       - name: Checkout Repository
         uses: actions/checkout@v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
 
       - name: Download bundle
         uses: actions/download-artifact@v8
@@ -216,14 +214,12 @@ jobs:
           name: tsundoku-${{ needs.build.outputs.version }}
 
       - name: Upload to internal track
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: uk.tsundokus
-          releaseFiles: bundle/release/androidApp-release.aab
-          mappingFile: mapping/release/mapping.txt
-          tracks: internal
-          whatsNewDirectory: distribution/whatsnew
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: >-
+          bundle exec fastlane android internal
+          aab:bundle/release/androidApp-release.aab
+          mapping:mapping/release/mapping.txt
 
   github-release:
     name: GitHub release

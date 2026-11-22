@@ -1,0 +1,35 @@
+Tsundoku śledzi Twoje zamówienia mang od zapłaty aż do chwili, gdy trafią na półkę, a do tego stosik, który wciąż czeka na przeczytanie.
+
+Premiery się przesuwają, paczki przychodzą z różnych sklepów, a nocne zakupy łatwo wylatują z głowy. Tsundoku zbiera wszystkie zamówienia w jednym miejscu, więc zawsze wiesz, co jest w drodze, a co się spóźnia.
+
+📦 Wszystkie zamówienia w jednym miejscu
+Zamówione, w drodze, opóźnione czy odebrane: sprawdź status, cenę, sklep i przewidywaną datę każdego zamówienia. Szukaj, filtruj i sortuj w kilka sekund.
+
+📷 Skanuj zamiast wpisywać
+Zeskanuj kod kreskowy z tyłu okładki, a Tsundoku znajdzie książkę po numerze ISBN. Gdy paczka dotrze, zeskanuj go ponownie, aby oznaczyć zamówienie jako odebrane.
+
+⏳ Opóźnienia pod kontrolą
+Gdy premiera się przesunie, wpisz nową datę, a Tsundoku zapisze każdą zmianę w historii. Szacowany termin dostawy uwzględnia to, jak szybko dany sklep dostarczał Ci wcześniej.
+
+🔔 Przypomnienia
+Otrzymuj powiadomienie, gdy zamówienie nie dotarło w terminie albo gdy nadejdzie nowa data opóźnionego zamówienia, o wybranej przez Ciebie godzinie.
+
+📚 Serie i stosik
+Zobacz, które tomy serii już masz, które są w drodze, a których brakuje. Oznaczaj tomy jako „Chcę przeczytać”, „Czytam” lub „Przeczytane” i patrz, jak Twój stosik maleje.
+
+📊 Statystyki
+Ile wydajesz, jak długo trwają dostawy, które sklepy często się spóźniają oraz Twoje ulubione sklepy i wydawnictwa.
+
+🏠 Widżety na ekran główny
+Najbliższe dostawy i Twój stosik prosto na ekranie głównym.
+
+📶 Działa offline
+Zamówienia są zapisane na Twoim urządzeniu, więc możesz je przeglądać wszędzie. Zmiany synchronizują się z kontem, gdy tylko wrócisz do sieci.
+
+🔒 Twoje dane, Twój wybór
+Loguj się kluczem dostępu za pomocą odcisku palca, twarzy lub blokady ekranu. Eksportuj wszystkie zamówienia do CSV lub JSON w dowolnej chwili i usuń konto, kiedy zechcesz.
+
+🌍 W Twoim języku
+Dostępna w 22 językach.
+
+Tsundoku (積ん読) to japońskie słowo oznaczające kupowanie książek i odkładanie ich na stos bez czytania. Ta aplikacja nie powstrzyma Twojego stosiku przed rośnięciem, ale zawsze będziesz wiedzieć, co na nim leży.

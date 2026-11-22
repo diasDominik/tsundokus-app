@@ -1,0 +1,35 @@
+Tsundoku spremlja vaša naročila mang od plačila do trenutka, ko stojijo na polici, poleg tega pa še kup, ki ga morate še prebrati.
+
+Prednaročila se zamikajo, paketi prihajajo iz različnih trgovin in nakupe sredi noči hitro pozabimo. Tsundoku zbere vsa naročila na enem mestu, tako da vedno veste, kaj prihaja in kaj zamuja.
+
+📦 Vsa naročila na en pogled
+Naročeno, na poti, zamuja ali prejeto: pri vsakem naročilu vidite stanje, ceno, trgovino in pričakovani datum. Iščite, filtrirajte in razvrščajte v nekaj sekundah.
+
+📷 Skenirajte namesto tipkanja
+Skenirajte črtno kodo na zadnji strani platnice in Tsundoku poišče knjigo po ISBN. Ko paket prispe, ga skenirajte še enkrat in naročilo bo označeno kot prejeto.
+
+⏳ Zamude pod nadzorom
+Ko se izid zamakne, vnesite nov datum in Tsundoku vsako spremembo zabeleži v zgodovino. Ocena dostave se uči iz tega, kako hitro so vam posamezne trgovine dostavljale doslej.
+
+🔔 Opomniki
+Prejmite obvestilo, ko naročilo ni prispelo pravočasno ali ko napoči nov datum zamujenega naročila, ob uri, ki jo izberete sami.
+
+📚 Serije in kup za branje
+Oglejte si, katere zvezke serije imate, kateri so na poti in kateri manjkajo. Zvezke označite kot »Želim prebrati«, »Trenutno berem« ali »Prebrano« in opazujte, kako se vaš kup manjša.
+
+📊 Statistika
+Koliko ste porabili, kako dolgo trajajo dostave, katere trgovine pogosto zamujajo ter vaše najljubše trgovine in založbe.
+
+🏠 Pripomočki za začetni zaslon
+Naslednje dostave in vaš kup za branje neposredno na začetnem zaslonu.
+
+📶 Deluje brez povezave
+Naročila so shranjena v vaši napravi, zato jih lahko pregledate kjer koli. Spremembe se sinhronizirajo z vašim računom, ko ste spet povezani.
+
+🔒 Vaši podatki, vaša izbira
+Prijavite se s ključem za dostop s prstnim odtisom, obrazom ali zaklepanjem zaslona. Vsa naročila kadar koli izvozite v CSV ali JSON in izbrišite račun, kadar želite.
+
+🌍 V vašem jeziku
+Na voljo v 22 jezikih.
+
+Tsundoku (積ん読) je japonska beseda za kupovanje knjig, ki se nato neprebrane kopičijo. Ta aplikacija vašega kupa ne bo ustavila, vedno pa boste vedeli, kaj je v njem.

@@ -19,6 +19,8 @@ android {
         applicationId = "uk.tsundokus"
         versionCode = versionCodeOf(appVersion)
         versionName = appVersion
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -77,4 +79,8 @@ dependencies {
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    // Store screenshots (fastlane screengrab): a fake server and the screenshot writer.
+    androidTestImplementation(libs.okhttp.mockwebserver)
+    androidTestImplementation(libs.screengrab)
 }

@@ -89,3 +89,24 @@ jobs:
         with:
           sarif_file: androidApp/build/reports/lint-results-debug.sarif
           category: lint
+
+  store_metadata:
+    name: Check store metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Store listing and release notes against Play's limits and the app's languages.
+      - name: Check store metadata
+        run: bundle exec fastlane android check_metadata
