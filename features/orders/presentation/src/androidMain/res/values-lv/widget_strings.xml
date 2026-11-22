@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Nākamās piegādes</string>
+    <string name="widget_next_arrivals_description">Pasūtījumi, kas pienāks nākamie, un kad</string>
+    <string name="widget_pile_label">Lasāmā kaudze</string>
+    <string name="widget_pile_description">Cik saņemto sējumu gaida, lai tos izlasītu</string>
+</resources>

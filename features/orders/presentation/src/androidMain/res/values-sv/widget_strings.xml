@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Nästa leveranser</string>
+    <string name="widget_next_arrivals_description">Beställningarna som kommer härnäst, och när</string>
+    <string name="widget_pile_label">Din läshög</string>
+    <string name="widget_pile_description">Hur många mottagna volymer som väntar på att läsas</string>
+</resources>

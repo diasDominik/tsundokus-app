@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ups, úložisko je plné!</string>
+    <string name="error_not_found">Požadovaná položka sa nenašla</string>
+    <string name="error_unknown">Nastala neznáma chyba</string>
+    <string name="error_bad_request">Neplatná požiadavka</string>
+    <string name="error_request_timeout">Časový limit požiadavky vypršal</string>
+    <string name="error_unauthorized">Neplatné prihlasovacie údaje</string>
+    <string name="error_forbidden">Na to nemáte oprávnenie</string>
+    <string name="error_conflict">Nastal konflikt</string>
+    <string name="error_too_many_requests">Príliš veľa požiadaviek. Chvíľu počkajte a skúste to znova.</string>
+    <string name="error_no_internet">Nedá sa pripojiť. Skontrolujte pripojenie k internetu.</string>
+    <string name="error_payload_too_large">Priložený súbor je príliš veľký</string>
+    <string name="error_server">Ups, na serveri nastala chyba</string>
+    <string name="error_service_unavailable">Služba je nedostupná, skúste to neskôr</string>
+    <string name="error_serialization">Údaje sa nepodarilo načítať</string>
+    <string name="error_message_send_failed">Správu sa nepodarilo odoslať</string>
+    <string name="currency_picker_title">Mena</string>
+    <string name="currency_picker_search">Hľadať podľa kódu alebo názvu</string>
+    <string name="currency_picker_suggested">Navrhované</string>
+    <string name="currency_picker_all">Všetky meny</string>
+    <string name="currency_picker_no_match">Výrazu „%1$s“ nezodpovedá žiadna mena</string>
+    <string name="currency_picker_close">Zavrieť</string>
+    <string name="currency_field_cd">Mena: %1$s. Zmeniť</string>
+</resources>

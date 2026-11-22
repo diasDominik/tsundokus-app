@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Oih, salvestusruum on täis!</string>
+    <string name="error_not_found">Otsitavat ei leitud</string>
+    <string name="error_unknown">Tekkis tundmatu viga</string>
+    <string name="error_bad_request">Vigane päring</string>
+    <string name="error_request_timeout">Päring võttis liiga kaua aega</string>
+    <string name="error_unauthorized">Valed sisselogimisandmed</string>
+    <string name="error_forbidden">Sul pole selleks õigust</string>
+    <string name="error_conflict">Tekkis konflikt</string>
+    <string name="error_too_many_requests">Liiga palju päringuid. Oota veidi ja proovi uuesti.</string>
+    <string name="error_no_internet">Ühendus puudub. Kontrolli internetiühendust.</string>
+    <string name="error_payload_too_large">Manustatud fail on liiga suur</string>
+    <string name="error_server">Oih, serveris läks midagi valesti</string>
+    <string name="error_service_unavailable">Teenus pole saadaval, proovi hiljem uuesti</string>
+    <string name="error_serialization">Andmeid ei õnnestunud lugeda</string>
+    <string name="error_message_send_failed">Sõnumi saatmine ebaõnnestus</string>
+    <string name="currency_picker_title">Valuuta</string>
+    <string name="currency_picker_search">Otsi koodi või nime järgi</string>
+    <string name="currency_picker_suggested">Soovitatud</string>
+    <string name="currency_picker_all">Kõik valuutad</string>
+    <string name="currency_picker_no_match">Päringule „%1$s” ei vasta ükski valuuta</string>
+    <string name="currency_picker_close">Sulge</string>
+    <string name="currency_field_cd">Valuuta: %1$s. Muuda</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Следващи доставки</string>
+    <string name="widget_next_arrivals_description">Поръчките, които пристигат следващи, и кога</string>
+    <string name="widget_pile_label">Купчина за четене</string>
+    <string name="widget_pile_description">Колко пристигнали тома чакат да бъдат прочетени</string>
+</resources>

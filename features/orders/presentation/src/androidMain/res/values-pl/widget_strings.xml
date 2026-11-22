@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Najbliższe dostawy</string>
+    <string name="widget_next_arrivals_description">Zamówienia, które dotrą najszybciej, i kiedy</string>
+    <string name="widget_pile_label">Twój stosik</string>
+    <string name="widget_pile_description">Ile dostarczonych tomów czeka na przeczytanie</string>
+</resources>

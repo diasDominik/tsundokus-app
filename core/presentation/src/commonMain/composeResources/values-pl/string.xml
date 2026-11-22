@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ups, pamięć jest pełna!</string>
+    <string name="error_not_found">Nie znaleziono tego, czego szukasz</string>
+    <string name="error_unknown">Wystąpił nieznany błąd</string>
+    <string name="error_bad_request">Nieprawidłowe żądanie</string>
+    <string name="error_request_timeout">Żądanie trwało zbyt długo</string>
+    <string name="error_unauthorized">Nieprawidłowe dane logowania</string>
+    <string name="error_forbidden">Nie masz uprawnień, aby to zrobić</string>
+    <string name="error_conflict">Wystąpił konflikt</string>
+    <string name="error_too_many_requests">Zbyt wiele żądań. Odczekaj chwilę i spróbuj ponownie.</string>
+    <string name="error_no_internet">Brak połączenia. Sprawdź połączenie z internetem.</string>
+    <string name="error_payload_too_large">Załączony plik jest za duży</string>
+    <string name="error_server">Ups, wystąpił błąd po stronie serwera</string>
+    <string name="error_service_unavailable">Usługa niedostępna. Spróbuj ponownie później.</string>
+    <string name="error_serialization">Nie udało się odczytać danych</string>
+    <string name="error_message_send_failed">Nie udało się wysłać wiadomości</string>
+    <string name="currency_picker_title">Waluta</string>
+    <string name="currency_picker_search">Szukaj po kodzie lub nazwie</string>
+    <string name="currency_picker_suggested">Sugerowane</string>
+    <string name="currency_picker_all">Wszystkie waluty</string>
+    <string name="currency_picker_no_match">Żadna waluta nie pasuje do „%1$s”</string>
+    <string name="currency_picker_close">Zamknij</string>
+    <string name="currency_field_cd">Waluta: %1$s. Zmień</string>
+</resources>

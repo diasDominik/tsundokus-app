@@ -185,7 +185,13 @@ private fun SeriesListContent(
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onAction(SeriesListAction.OnSearchQueryChange(it)) },
-            placeholder = { Text(stringResource(Res.string.series_list_search_placeholder)) },
+            placeholder = {
+                Text(
+                    text = stringResource(Res.string.series_list_search_placeholder),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             leadingIcon = { Icon(TsundokuIcons.Search, contentDescription = null) },
             trailingIcon = {
                 if (state.searchQuery.isNotEmpty()) {

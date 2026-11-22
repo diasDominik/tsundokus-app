@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Hups, tallennustila on täynnä!</string>
+    <string name="error_not_found">Hakemaasi kohdetta ei löytynyt</string>
+    <string name="error_unknown">Tapahtui tuntematon virhe</string>
+    <string name="error_bad_request">Virheellinen pyyntö</string>
+    <string name="error_request_timeout">Pyyntö kesti liian kauan</string>
+    <string name="error_unauthorized">Virheelliset kirjautumistiedot</string>
+    <string name="error_forbidden">Sinulla ei ole oikeutta tähän</string>
+    <string name="error_conflict">Tapahtui ristiriita</string>
+    <string name="error_too_many_requests">Liian monta pyyntöä. Odota hetki ja yritä uudelleen.</string>
+    <string name="error_no_internet">Ei yhteyttä. Tarkista internetyhteys.</string>
+    <string name="error_payload_too_large">Liitetty tiedosto on liian suuri</string>
+    <string name="error_server">Hups, palvelimella meni jokin vikaan</string>
+    <string name="error_service_unavailable">Palvelu ei ole käytettävissä, yritä myöhemmin</string>
+    <string name="error_serialization">Tietoja ei voitu lukea</string>
+    <string name="error_message_send_failed">Viestin lähetys epäonnistui</string>
+    <string name="currency_picker_title">Valuutta</string>
+    <string name="currency_picker_search">Hae koodilla tai nimellä</string>
+    <string name="currency_picker_suggested">Ehdotetut</string>
+    <string name="currency_picker_all">Kaikki valuutat</string>
+    <string name="currency_picker_no_match">Ei valuuttoja haulla ”%1$s”</string>
+    <string name="currency_picker_close">Sulje</string>
+    <string name="currency_field_cd">Valuutta: %1$s. Vaihda</string>
+</resources>

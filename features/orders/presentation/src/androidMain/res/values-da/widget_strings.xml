@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Næste leveringer</string>
+    <string name="widget_next_arrivals_description">De bestillinger, der kommer næste gang, og hvornår</string>
+    <string name="widget_pile_label">Din læsebunke</string>
+    <string name="widget_pile_description">Hvor mange modtagne bind der venter på at blive læst</string>
+</resources>

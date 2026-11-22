@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Prochaines arrivées</string>
+    <string name="widget_next_arrivals_description">Les prochaines commandes à arriver, et quand</string>
+    <string name="widget_pile_label">Votre PAL</string>
+    <string name="widget_pile_description">Combien de tomes reçus attendent d\'être lus</string>
+</resources>

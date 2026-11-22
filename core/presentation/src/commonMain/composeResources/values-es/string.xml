@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">¡Vaya, tu almacenamiento está lleno!</string>
+    <string name="error_not_found">No se ha encontrado lo que buscabas</string>
+    <string name="error_unknown">Se ha producido un error desconocido</string>
+    <string name="error_bad_request">Solicitud no válida</string>
+    <string name="error_request_timeout">La solicitud ha tardado demasiado</string>
+    <string name="error_unauthorized">Credenciales no válidas</string>
+    <string name="error_forbidden">No tienes permiso para hacer eso</string>
+    <string name="error_conflict">Se ha producido un conflicto</string>
+    <string name="error_too_many_requests">Demasiadas solicitudes. Espera un momento y vuelve a intentarlo.</string>
+    <string name="error_no_internet">No hay conexión. Comprueba tu conexión a internet.</string>
+    <string name="error_payload_too_large">El archivo adjunto es demasiado grande</string>
+    <string name="error_server">Vaya, se ha producido un error en el servidor</string>
+    <string name="error_service_unavailable">Servicio no disponible. Inténtalo más tarde.</string>
+    <string name="error_serialization">No se han podido leer los datos</string>
+    <string name="error_message_send_failed">No se ha podido enviar el mensaje</string>
+    <string name="currency_picker_title">Moneda</string>
+    <string name="currency_picker_search">Buscar por código o nombre</string>
+    <string name="currency_picker_suggested">Sugeridas</string>
+    <string name="currency_picker_all">Todas las monedas</string>
+    <string name="currency_picker_no_match">Ninguna moneda coincide con «%1$s»</string>
+    <string name="currency_picker_close">Cerrar</string>
+    <string name="currency_field_cd">Moneda: %1$s. Cambiar</string>
+</resources>

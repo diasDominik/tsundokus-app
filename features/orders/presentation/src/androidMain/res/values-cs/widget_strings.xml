@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Nejbližší doručení</string>
+    <string name="widget_next_arrivals_description">Objednávky, které dorazí nejdřív, a kdy</string>
+    <string name="widget_pile_label">Vaše hromádka</string>
+    <string name="widget_pile_description">Kolik doručených svazků čeká na přečtení</string>
+</resources>

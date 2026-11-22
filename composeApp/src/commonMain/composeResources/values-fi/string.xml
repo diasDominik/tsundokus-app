@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Takaisin</string>
+    <string name="new_order">Uusi tilaus</string>
+    <string name="close">Sulje</string>
+    <string name="update_dialog_title">Päivitys saatavilla</string>
+    <string name="update_dialog_message_optional">Tsundokusta on uusi versio. Päivitä nyt, niin saat uusimmat ominaisuudet ja korjaukset.</string>
+    <string name="update_dialog_message_forced">Tätä Tsundokun versiota ei enää tueta. Päivitä jatkaaksesi.</string>
+    <string name="update_dialog_confirm">Päivitä</string>
+    <string name="update_dialog_dismiss">Myöhemmin</string>
+</resources>

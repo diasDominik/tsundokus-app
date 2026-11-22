@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Πίσω</string>
+    <string name="new_order">Νέα παραγγελία</string>
+    <string name="close">Κλείσιμο</string>
+    <string name="update_dialog_title">Διαθέσιμη ενημέρωση</string>
+    <string name="update_dialog_message_optional">Κυκλοφόρησε νέα έκδοση του Tsundoku. Ενημερώστε τώρα για τις νεότερες λειτουργίες και διορθώσεις.</string>
+    <string name="update_dialog_message_forced">Αυτή η έκδοση του Tsundoku δεν υποστηρίζεται πλέον. Ενημερώστε για να συνεχίσετε.</string>
+    <string name="update_dialog_confirm">Ενημέρωση</string>
+    <string name="update_dialog_dismiss">Αργότερα</string>
+</resources>

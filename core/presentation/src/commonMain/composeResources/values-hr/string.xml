@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ups, pohrana je puna!</string>
+    <string name="error_not_found">Traženi sadržaj nije pronađen</string>
+    <string name="error_unknown">Došlo je do nepoznate pogreške</string>
+    <string name="error_bad_request">Neispravan zahtjev</string>
+    <string name="error_request_timeout">Zahtjev je trajao predugo</string>
+    <string name="error_unauthorized">Neispravni podaci za prijavu</string>
+    <string name="error_forbidden">Nemate dopuštenje za to</string>
+    <string name="error_conflict">Došlo je do sukoba</string>
+    <string name="error_too_many_requests">Previše zahtjeva. Pričekajte trenutak i pokušajte ponovno.</string>
+    <string name="error_no_internet">Povezivanje nije uspjelo. Provjerite internetsku vezu.</string>
+    <string name="error_payload_too_large">Priložena datoteka je prevelika</string>
+    <string name="error_server">Ups, došlo je do pogreške na poslužitelju</string>
+    <string name="error_service_unavailable">Usluga nije dostupna, pokušajte kasnije</string>
+    <string name="error_serialization">Podaci se ne mogu pročitati</string>
+    <string name="error_message_send_failed">Slanje poruke nije uspjelo</string>
+    <string name="currency_picker_title">Valuta</string>
+    <string name="currency_picker_search">Pretraži po kodu ili nazivu</string>
+    <string name="currency_picker_suggested">Predložene</string>
+    <string name="currency_picker_all">Sve valute</string>
+    <string name="currency_picker_no_match">Nijedna valuta ne odgovara „%1$s”</string>
+    <string name="currency_picker_close">Zatvori</string>
+    <string name="currency_field_cd">Valuta: %1$s. Promijeni</string>
+</resources>

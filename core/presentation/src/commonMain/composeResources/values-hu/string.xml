@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Hoppá, megtelt a tárhely!</string>
+    <string name="error_not_found">A keresett elem nem található</string>
+    <string name="error_unknown">Ismeretlen hiba történt</string>
+    <string name="error_bad_request">Érvénytelen kérés</string>
+    <string name="error_request_timeout">A kérés túl sokáig tartott</string>
+    <string name="error_unauthorized">Érvénytelen bejelentkezési adatok</string>
+    <string name="error_forbidden">Ehhez nincs jogosultságod</string>
+    <string name="error_conflict">Ütközés történt</string>
+    <string name="error_too_many_requests">Túl sok kérés. Várj egy kicsit, és próbáld újra.</string>
+    <string name="error_no_internet">Nincs kapcsolat. Ellenőrizd az internetkapcsolatot.</string>
+    <string name="error_payload_too_large">A csatolt fájl túl nagy</string>
+    <string name="error_server">Hoppá, hiba történt a szerveren</string>
+    <string name="error_service_unavailable">A szolgáltatás nem érhető el, próbáld újra később</string>
+    <string name="error_serialization">Az adatokat nem sikerült beolvasni</string>
+    <string name="error_message_send_failed">Nem sikerült elküldeni az üzenetet</string>
+    <string name="currency_picker_title">Pénznem</string>
+    <string name="currency_picker_search">Keresés kód vagy név alapján</string>
+    <string name="currency_picker_suggested">Javasolt</string>
+    <string name="currency_picker_all">Összes pénznem</string>
+    <string name="currency_picker_no_match">Nincs találat erre: „%1$s”</string>
+    <string name="currency_picker_close">Bezárás</string>
+    <string name="currency_field_cd">Pénznem: %1$s. Módosítás</string>
+</resources>

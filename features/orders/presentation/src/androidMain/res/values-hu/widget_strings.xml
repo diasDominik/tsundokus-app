@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Következő érkezések</string>
+    <string name="widget_next_arrivals_description">A legközelebb érkező rendelések, és hogy mikor</string>
+    <string name="widget_pile_label">A kupacod</string>
+    <string name="widget_pile_description">Hány megérkezett kötet vár olvasásra</string>
+</resources>

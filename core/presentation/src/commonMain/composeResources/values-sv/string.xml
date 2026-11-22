@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Hoppsan, lagringsutrymmet är fullt!</string>
+    <string name="error_not_found">Det du letade efter hittades inte</string>
+    <string name="error_unknown">Ett okänt fel uppstod</string>
+    <string name="error_bad_request">Ogiltig begäran</string>
+    <string name="error_request_timeout">Begäran tog för lång tid</string>
+    <string name="error_unauthorized">Ogiltiga inloggningsuppgifter</string>
+    <string name="error_forbidden">Du har inte behörighet att göra det</string>
+    <string name="error_conflict">En konflikt uppstod</string>
+    <string name="error_too_many_requests">För många förfrågningar. Vänta en stund och försök igen.</string>
+    <string name="error_no_internet">Ingen anslutning. Kontrollera din internetanslutning.</string>
+    <string name="error_payload_too_large">Den bifogade filen är för stor</string>
+    <string name="error_server">Hoppsan, något gick fel på servern</string>
+    <string name="error_service_unavailable">Tjänsten är inte tillgänglig, försök igen senare</string>
+    <string name="error_serialization">Datan kunde inte läsas</string>
+    <string name="error_message_send_failed">Meddelandet kunde inte skickas</string>
+    <string name="currency_picker_title">Valuta</string>
+    <string name="currency_picker_search">Sök på kod eller namn</string>
+    <string name="currency_picker_suggested">Förslag</string>
+    <string name="currency_picker_all">Alla valutor</string>
+    <string name="currency_picker_no_match">Ingen valuta matchar ”%1$s”</string>
+    <string name="currency_picker_close">Stäng</string>
+    <string name="currency_field_cd">Valuta: %1$s. Ändra</string>
+</resources>

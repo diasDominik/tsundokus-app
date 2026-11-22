@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Atpakaļ</string>
+    <string name="new_order">Jauns pasūtījums</string>
+    <string name="close">Aizvērt</string>
+    <string name="update_dialog_title">Pieejams atjauninājums</string>
+    <string name="update_dialog_message_optional">Ir pieejama jauna Tsundoku versija. Atjauniniet tagad, lai saņemtu jaunākās funkcijas un labojumus.</string>
+    <string name="update_dialog_message_forced">Šī Tsundoku versija vairs netiek atbalstīta. Lai turpinātu, atjauniniet to.</string>
+    <string name="update_dialog_confirm">Atjaunināt</string>
+    <string name="update_dialog_dismiss">Vēlāk</string>
+</resources>

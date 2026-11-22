@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Artimiausi pristatymai</string>
+    <string name="widget_next_arrivals_description">Artimiausiai atvyksiantys užsakymai ir kada</string>
+    <string name="widget_pile_label">Skaitymo krūvelė</string>
+    <string name="widget_pile_description">Kiek gautų tomų laukia skaitymo</string>
+</resources>
