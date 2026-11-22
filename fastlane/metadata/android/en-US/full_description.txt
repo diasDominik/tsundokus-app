@@ -1,0 +1,35 @@
+Tsundoku keeps track of the manga you've ordered, from checkout until it's on your shelf, and of the pile you still have to read.
+
+Pre-orders slip, parcels come from different shops, and late-night hauls are easy to forget. Tsundoku puts every order in one place, so you always know what's coming and what's late.
+
+📦 Every order at a glance
+Ordered, on the way, delayed or received: see each order's status, price, shop and expected date. Search, filter and sort your list in seconds.
+
+📷 Scan instead of typing
+Scan the barcode on the back cover and Tsundoku looks the book up by its ISBN. When the parcel arrives, scan it again to mark the order as received.
+
+⏳ Delays under control
+When a release slips, enter the new date and Tsundoku keeps a timeline of every change. Delivery estimates learn from how fast each shop has delivered to you before.
+
+🔔 Reminders
+Get a notification when an order is overdue or when a delayed order's new date comes around, at a time you choose.
+
+📚 Series and reading pile
+See which volumes of a series you have, which are on the way and which are missing. Mark volumes as want to read, reading or read, and watch your pile shrink.
+
+📊 Stats
+What you've spent, how long deliveries take, which shops are often late, and your favourite shops and publishers.
+
+🏠 Home screen widgets
+Your next arrivals and your reading pile, right on your home screen.
+
+📶 Works offline
+Your orders are stored on your device, so you can check them anywhere. Changes sync to your account as soon as you're back online.
+
+🔒 Your data, your choice
+Sign in with a passkey using your fingerprint, face or screen lock. Export all your orders as CSV or JSON at any time, and delete your account whenever you want.
+
+🌍 In your language
+Available in 22 languages.
+
+Tsundoku (積ん読) is the Japanese word for buying books and letting them pile up unread. This app won't stop your pile from growing, but you'll always know what's in it.

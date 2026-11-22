@@ -1,0 +1,77 @@
+name: Google Play
+
+# Manual Play Store tasks, run from the Actions tab. Each one is a fastlane lane (fastlane/Fastfile);
+# docs/RELEASING.md describes when to use which.
+#
+#   promote      newest internal release (or `version`) to production, for `rollout` of users
+#   rollout      change how many users the production release reaches; 1 releases to everyone
+#   listing      upload the store texts and screenshots from fastlane/metadata/android
+#   screenshots  upload only the screenshots, leaving the texts on Play as they are
+#
+# "Dry run" has Play validate the change without committing it.
+#
+# Repository secrets:
+#   PLAY_SERVICE_ACCOUNT_JSON   Google Play service account key
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: What to do
+        type: choice
+        options:
+          - promote
+          - rollout
+          - listing
+          - screenshots
+      rollout:
+        description: "Share of users for promote/rollout: 1 = everyone, 0.2 = 20%"
+        type: string
+        default: "1"
+      version:
+        description: "promote only: version to promote, e.g. 1.2.3 (default: newest internal release)"
+        type: string
+        default: ""
+      dry_run:
+        description: Dry run (validate only)
+        type: boolean
+        default: false
+
+# Shares the group with release.yml: Play allows one open edit per app.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  play:
+    name: ${{ inputs.task }}${{ inputs.dry_run && ' (dry run)' || '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      # The screenshots are in Git LFS; only the tasks that upload them need the files.
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          lfs: ${{ inputs.task == 'listing' || inputs.task == 'screenshots' }}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run fastlane
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          TASK: ${{ inputs.task }}
+          ROLLOUT: ${{ inputs.rollout }}
+          VERSION: ${{ inputs.version }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          case "$TASK" in
+            promote) bundle exec fastlane android promote "rollout:$ROLLOUT" ${VERSION:+"version:$VERSION"} "dry_run:$DRY_RUN" ;;
+            rollout) bundle exec fastlane android rollout "rollout:$ROLLOUT" "dry_run:$DRY_RUN" ;;
+            listing) bundle exec fastlane android listing "dry_run:$DRY_RUN" ;;
+            screenshots) bundle exec fastlane android listing screenshots_only:true "dry_run:$DRY_RUN" ;;
+            *) echo "::error::Unknown task '$TASK'"; exit 1 ;;
+          esac

@@ -1,0 +1,35 @@
+Tsundoku urmărește comenzile tale de manga, de la plată până ajung pe raft, și teancul pe care încă îl ai de citit.
+
+Precomenzile se amână, coletele vin din magazine diferite, iar cumpărăturile de la miezul nopții se uită ușor. Tsundoku adună toate comenzile într-un singur loc, ca să știi mereu ce urmează să sosească și ce întârzie.
+
+📦 Toate comenzile dintr-o privire
+Comandată, pe drum, întârziată sau primită: vezi starea, prețul, magazinul și data estimată a fiecărei comenzi. Caută, filtrează și sortează în câteva secunde.
+
+📷 Scanează în loc să tastezi
+Scanează codul de bare de pe coperta din spate, iar Tsundoku găsește cartea după ISBN. Când sosește coletul, scanează-l din nou ca să marchezi comanda ca primită.
+
+⏳ Întârzieri sub control
+Când o apariție se amână, introdu noua dată, iar Tsundoku păstrează un istoric al fiecărei schimbări. Estimările de livrare învață din cât de repede ți-a livrat fiecare magazin până acum.
+
+🔔 Mementouri
+Primește o notificare când o comandă nu a sosit la timp sau când vine noua dată a unei comenzi întârziate, la ora pe care o alegi.
+
+📚 Serii și teancul de citit
+Vezi ce volume dintr-o serie ai, care sunt pe drum și care lipsesc. Marchează volumele cu „Vreau să citesc”, „Citesc acum” sau „Citit” și urmărește cum se micșorează teancul.
+
+📊 Statistici
+Cât ai cheltuit, cât durează livrările, ce magazine întârzie des și magazinele și editurile tale preferate.
+
+🏠 Widgeturi pentru ecranul de pornire
+Următoarele sosiri și teancul tău de citit, direct pe ecranul de pornire.
+
+📶 Funcționează offline
+Comenzile tale sunt salvate pe dispozitiv, așa că le poți vedea oriunde. Modificările se sincronizează cu contul tău imediat ce revii online.
+
+🔒 Datele tale, alegerea ta
+Conectează-te cu o cheie de acces folosind amprenta, fața sau blocarea ecranului. Exportă oricând toate comenzile în CSV sau JSON și șterge-ți contul când vrei.
+
+🌍 În limba ta
+Disponibilă în 22 de limbi.
+
+Tsundoku (積ん読) este cuvântul japonez pentru obiceiul de a cumpăra cărți și a le lăsa să se adune necitite. Aplicația nu va opri teancul să crească, dar vei ști mereu ce conține.

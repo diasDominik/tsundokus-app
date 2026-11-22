@@ -49,6 +49,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -431,8 +433,15 @@ private fun SortMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box {
-        TextButton(onClick = { expanded = true }) {
-            Text(stringResource(Res.string.orders_list_sort, stringResource(state.sort.labelRes)))
+        // Shows only the chosen order ("Recent ↓"): with the "Sort · " prefix the button pushed the
+        // screen title into an ellipsis in longer languages. Screen readers still hear the prefix.
+        val sortLabel = stringResource(state.sort.labelRes)
+        val sortDescription = stringResource(Res.string.orders_list_sort, sortLabel)
+        TextButton(
+            onClick = { expanded = true },
+            modifier = Modifier.semantics { contentDescription = sortDescription },
+        ) {
+            Text(sortLabel)
             Icon(
                 imageVector =
                     if (state.sortDirection == SortDirection.ASCENDING) {

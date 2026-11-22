@@ -1,0 +1,35 @@
+Tsundoku suit vos commandes de mangas, du panier jusqu'à l'étagère, ainsi que votre pile à lire.
+
+Les précommandes sont repoussées, les colis arrivent de boutiques différentes et les achats de minuit s'oublient vite. Tsundoku réunit toutes vos commandes au même endroit : vous savez toujours ce qui arrive et ce qui a du retard.
+
+📦 Toutes vos commandes en un coup d'œil
+Commandée, en chemin, en retard ou reçue : voyez le statut, le prix, la boutique et la date prévue de chaque commande. Recherchez, filtrez et triez en quelques secondes.
+
+📷 Scannez au lieu de taper
+Scannez le code-barres au dos du livre et Tsundoku le retrouve grâce à son ISBN. Quand le colis arrive, scannez-le à nouveau pour marquer la commande comme reçue.
+
+⏳ Les retards sous contrôle
+Quand une sortie est repoussée, indiquez la nouvelle date : Tsundoku garde l'historique de chaque changement. Les estimations de livraison tiennent compte de la rapidité de chaque boutique lors de vos commandes précédentes.
+
+🔔 Rappels
+Recevez une notification quand une commande n'est pas arrivée à la date prévue ou quand la nouvelle date d'une commande repoussée arrive, à l'heure de votre choix.
+
+📚 Séries et PAL
+Voyez quels tomes d'une série vous possédez, lesquels sont en chemin et lesquels manquent. Marquez vos tomes « À lire », « En cours » ou « Lu » et regardez votre PAL diminuer.
+
+📊 Statistiques
+Combien vous avez dépensé, combien de temps prennent les livraisons, quelles boutiques sont souvent en retard, et vos boutiques et éditeurs préférés.
+
+🏠 Widgets pour l'écran d'accueil
+Vos prochaines livraisons et votre PAL, directement sur votre écran d'accueil.
+
+📶 Fonctionne hors ligne
+Vos commandes sont enregistrées sur votre appareil : vous pouvez les consulter partout. Les modifications se synchronisent avec votre compte dès que vous êtes de nouveau en ligne.
+
+🔒 Vos données, vos choix
+Connectez-vous avec une clé d'accès : empreinte, visage ou verrouillage de l'écran. Exportez toutes vos commandes en CSV ou JSON à tout moment et supprimez votre compte quand vous le souhaitez.
+
+🌍 Dans votre langue
+Disponible en 22 langues.
+
+Tsundoku (積ん読) est le mot japonais qui désigne le fait d'acheter des livres et de les laisser s'empiler sans les lire. Cette appli n'empêchera pas votre PAL de grandir, mais vous saurez toujours ce qu'elle contient.

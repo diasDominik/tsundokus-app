@@ -1,0 +1,2 @@
+# The service account key comes from PLAY_SERVICE_ACCOUNT_JSON, see the Fastfile.
+package_name("uk.tsundokus")

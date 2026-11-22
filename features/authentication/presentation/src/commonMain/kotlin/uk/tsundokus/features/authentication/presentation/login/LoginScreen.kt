@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -188,15 +189,16 @@ private fun LoginScreen(
                 )
             }
             VerticalSpacer(4.dp)
+            // The test tags let the store screenshot test (androidApp androidTest) sign in.
             TsundokuTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("login:email"),
                 state = emailTextFieldState,
                 placeholder = stringResource(Res.string.register_email_hint),
                 keyboardType = KeyboardType.Email,
                 contentType = ContentType.EmailAddress,
             )
             TsundokuPasswordTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("login:password"),
                 state = passwordTextFieldState,
                 placeholder = stringResource(Res.string.register_password_hint),
                 isPasswordVisible = isPasswordVisible,
@@ -210,7 +212,7 @@ private fun LoginScreen(
                 onLinkClick = onForgotPasswordClick,
             )
             TsundokuButton(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("login:submit"),
                 text = stringResource(Res.string.login),
                 onClick = onLoginClick,
                 enabled = canLogin,

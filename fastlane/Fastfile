@@ -1,0 +1,302 @@
+# Google Play publishing for the Android app. CI runs these lanes (.github/workflows/release.yml and
+# play.yml); locally run them from the repository root with `bundle exec fastlane <lane>`.
+# docs/RELEASING.md describes the whole release flow.
+#
+# Lanes that talk to Play read the service account key from PLAY_SERVICE_ACCOUNT_JSON (the JSON
+# itself, not a path). Lanes that change Play accept dry_run:true, which has Play validate the change
+# without committing it.
+#
+# The store listing and the release notes live in fastlane/metadata/android/<locale>/:
+#   title.txt, short_description.txt, full_description.txt   store listing
+#   changelogs/<versionCode>.txt                              release notes for that version
+
+default_platform(:android)
+
+PACKAGE = "uk.tsundokus"
+REPO = File.expand_path("..", __dir__)
+METADATA = File.expand_path("metadata/android", __dir__)
+LOCALES_CONFIG = File.join(REPO, "androidApp", "src", "main", "res", "xml", "locales_config.xml")
+
+# Play's limits, in characters.
+LISTING_LIMITS = {
+  "title.txt" => 30,
+  "short_description.txt" => 80,
+  "full_description.txt" => 4000,
+}.freeze
+CHANGELOG_LIMIT = 500
+
+# supply sends files as they are, so a final newline would end up in the title on Play.
+SINGLE_LINE = %w[title.txt short_description.txt].freeze
+
+# The listing's default language. Its release notes are required; other languages fall back to it.
+DEFAULT_LOCALE = "en-US"
+
+# Same rule as versionCodeOf in build-logic: v1.2.3 is versionCode 10203.
+def version_code(version)
+  parts = version.to_s.delete_prefix("v").split(".")
+  valid = parts.size == 3 && parts.all? { |part| part.match?(/\A(0|[1-9]\d?)\z/) }
+  UI.user_error!("Version '#{version}' must be x.y.z with each part 0-99") unless valid
+  major, minor, patch = parts.map(&:to_i)
+  [major * 10_000 + minor * 100 + patch, 1].max
+end
+
+def play_key
+  key = ENV.fetch("PLAY_SERVICE_ACCOUNT_JSON", "").strip
+  UI.user_error!("Set PLAY_SERVICE_ACCOUNT_JSON to the Play service account key (the JSON itself)") if key.empty?
+  key
+end
+
+def rollout_fraction(value)
+  fraction = Float(value.to_s, exception: false)
+  UI.user_error!("rollout must be a fraction above 0 and at most 1, like 0.2 for 20%, not '#{value}'") unless fraction&.positive? && fraction <= 1
+  fraction
+end
+
+def dry_run?(options)
+  options[:dry_run].to_s == "true"
+end
+
+def locales
+  Dir.children(METADATA).select { |entry| File.directory?(File.join(METADATA, entry)) }.sort
+end
+
+# Images are stored in Git LFS; a checkout without LFS has small pointer files in their place.
+def lfs_pointer?(path)
+  File.binread(path, 24).to_s.start_with?("version https://git-lfs")
+end
+
+# Play's rules for screenshots: PNG or JPEG, each side 320-3840 px, the long side at most twice the
+# short one. Only PNG is produced here, so only PNG is accepted; its size is in the header.
+def screenshot_problem(path)
+  header = File.binread(path, 24)
+  return "not a PNG" unless header&.start_with?("\x89PNG".b)
+
+  width, height = header[16, 8].unpack("NN")
+  short, long = [width, height].minmax
+  return "#{width}x#{height}, each side must be 320 to 3840 px" unless short >= 320 && long <= 3840
+  return "#{width}x#{height}, the long side may be at most twice the short one" if long > 2 * short
+
+  nil
+end
+
+def track_version_codes(track)
+  google_play_track_version_codes(track: track, json_key_data: play_key).map(&:to_i)
+end
+
+platform :android do
+  desc "Checks the store listing and release notes against Play's limits and the app's languages"
+  desc "version:1.2.3 also requires English (en-US) release notes for that version; other languages"
+  desc "are optional. Screenshots still in Git LFS are only counted, unless images:true requires them"
+  lane :check_metadata do |options|
+    errors = []
+    pointers = 0
+
+    # Every app language gets a listing, and a listing only makes sense for an app language.
+    app_languages = File.read(LOCALES_CONFIG).scan(/android:name="([^"]+)"/).flatten
+    listed = locales.map { |locale| locale.split("-").first }
+    (app_languages - listed).each { |language| errors << "No store listing for app language '#{language}'" }
+    (listed - app_languages).each { |language| errors << "Store listing for '#{language}', which the app isn't translated into" }
+
+    code = version_code(options[:version]) if options[:version]
+
+    locales.each do |locale|
+      LISTING_LIMITS.each do |file, limit|
+        path = File.join(METADATA, locale, file)
+        next errors << "#{locale}/#{file} is missing" unless File.file?(path)
+
+        text = File.read(path, encoding: "UTF-8")
+        errors << "#{locale}/#{file} is empty" if text.strip.empty?
+        errors << "#{locale}/#{file} has #{text.length} characters, Play allows #{limit}" if text.length > limit
+        errors << "#{locale}/#{file} must be a single line without a final newline" if SINGLE_LINE.include?(file) && text.include?("\n")
+      end
+
+      screenshots = Dir[File.join(METADATA, locale, "images", "phoneScreenshots", "*")].sort
+      unless screenshots.empty? || screenshots.size.between?(2, 8)
+        errors << "#{locale} has #{screenshots.size} phone screenshots, Play takes 2 to 8"
+      end
+      screenshots.each do |path|
+        next pointers += 1 if lfs_pointer?(path)
+
+        problem = screenshot_problem(path)
+        errors << "#{locale}/images/phoneScreenshots/#{File.basename(path)}: #{problem}" if problem
+      end
+
+      Dir[File.join(METADATA, locale, "changelogs", "*.txt")].sort.each do |path|
+        length = File.read(path, encoding: "UTF-8").strip.length
+        errors << "#{locale}/changelogs/#{File.basename(path)} has #{length} characters, Play allows #{CHANGELOG_LIMIT}" if length > CHANGELOG_LIMIT
+      end
+
+    end
+
+    # Play shows the default language's notes where a translation is missing.
+    if code
+      notes = File.join(METADATA, DEFAULT_LOCALE, "changelogs", "#{code}.txt")
+      unless File.file?(notes) && !File.read(notes, encoding: "UTF-8").strip.empty?
+        errors << "No release notes for #{options[:version]}: add #{DEFAULT_LOCALE}/changelogs/#{code}.txt"
+      end
+    end
+
+    if pointers.positive?
+      message = "#{pointers} screenshots are Git LFS pointers (fetch them with `git lfs pull`)"
+      options[:images] ? errors << message : UI.important("#{message}; their size is not checked")
+    end
+
+    UI.user_error!("Store metadata has problems:\n#{errors.join("\n")}") unless errors.empty?
+    UI.success("Store metadata is fine for #{locales.size} languages#{" and version #{options[:version]}" if code}")
+  end
+
+  desc "Uploads the release App Bundle to the internal track with its release notes"
+  desc "aab:<path> mapping:<path> default to the Gradle release outputs"
+  lane :internal do |options|
+    aab = File.expand_path(options[:aab] || "androidApp/build/outputs/bundle/release/androidApp-release.aab", REPO)
+    mapping = File.expand_path(options[:mapping] || "androidApp/build/outputs/mapping/release/mapping.txt", REPO)
+    UI.user_error!("No App Bundle at #{aab}") unless File.file?(aab)
+
+    upload_to_play_store(
+      json_key_data: play_key,
+      track: "internal",
+      release_status: "completed",
+      aab: aab,
+      mapping: (mapping if File.file?(mapping)),
+      metadata_path: METADATA,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: dry_run?(options),
+    )
+  end
+
+  desc "Promotes an internal release to production, for everyone by default"
+  desc "rollout:0.2 starts a staged rollout to 20% instead; version:1.2.3 picks the release, the newest"
+  desc "internal one otherwise"
+  lane :promote do |options|
+    fraction = rollout_fraction(options[:rollout] || "1")
+    code = options[:version] ? version_code(options[:version]) : track_version_codes("internal").max
+    UI.user_error!("The internal track has no release to promote") unless code
+    UI.user_error!("Version code #{code} is already in production; change its rollout with the rollout lane") if track_version_codes("production").include?(code)
+
+    UI.message("Promoting version code #{code} to production for #{(fraction * 100).round(1)}% of users")
+    upload_to_play_store(
+      json_key_data: play_key,
+      track: "internal",
+      track_promote_to: "production",
+      track_promote_release_status: "completed",
+      version_code: code,
+      rollout: fraction.to_s,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: dry_run?(options),
+    )
+  end
+
+  desc "Changes the share of users the production rollout reaches, e.g. rollout:0.5; rollout:1 completes it"
+  lane :rollout do |options|
+    UI.user_error!("Pass rollout, e.g. rollout:0.5") unless options[:rollout]
+    fraction = rollout_fraction(options[:rollout])
+
+    upload_to_play_store(
+      json_key_data: play_key,
+      track: "production",
+      rollout: fraction.to_s,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: dry_run?(options),
+    )
+  end
+
+  desc "Uploads the store listing in every language: title, descriptions and phone screenshots"
+  desc "screenshots_only:true leaves the texts on Play as they are"
+  lane :listing do |options|
+    check_metadata(images: true)
+    # supply attaches listing uploads to a release; the newest internal one always exists.
+    code = track_version_codes("internal").max
+    UI.user_error!("The internal track has no release") unless code
+
+    upload_to_play_store(
+      json_key_data: play_key,
+      track: "internal",
+      version_code: code,
+      metadata_path: METADATA,
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      skip_upload_metadata: options[:screenshots_only].to_s == "true",
+      # Icon and feature graphic stay as they are on Play; screenshots replace Play's per language,
+      # and only languages whose screenshots changed are uploaded again.
+      skip_upload_images: true,
+      sync_image_upload: true,
+      validate_only: dry_run?(options),
+    )
+  end
+
+  desc "Takes the store screenshots in every store language on a running emulator or device"
+  desc "(Android 13+). The app runs against a fake server inside the test (StoreScreenshots), so"
+  desc "nothing may listen on the device's port 8080. skip_build:true reuses the APKs already built;"
+  desc "serial:<adb serial> picks the device when several are connected"
+  lane :screenshots do |options|
+    unless options[:skip_build]
+      # Debug builds talk to BASE_URL_HTTP; the test's fake server listens on the device's
+      # localhost and accepts any API key.
+      ENV["BASE_URL_HTTP"] = "http://localhost:8080"
+      ENV["API_KEY"] = "store-screenshots"
+      gradle(project_dir: REPO, tasks: [":androidApp:assembleDebug", ":androidApp:assembleDebugAndroidTest"])
+    end
+
+    adb_prefix = options[:serial] ? "adb -s #{options[:serial].shellescape}" : "adb"
+    adb = ->(command, errors: true) { sh("#{adb_prefix} #{command}", error_callback: (->(_) {} unless errors)) }
+
+    # Play takes screenshots up to an aspect ratio of 2:1.
+    adb.call("shell wm size 1080x2160")
+    adb.call("shell wm density 420")
+    # A forwarded port (adb reverse) would take 8080 from the fake server.
+    adb.call("reverse --remove tcp:8080", errors: false)
+    # Start signed out, without another account's orders.
+    adb.call("shell pm clear #{PACKAGE}", errors: false)
+    # A tidy status bar: SystemUI demo mode.
+    adb.call("shell settings put global sysui_demo_allowed 1")
+    [
+      "-e command enter",
+      "-e command clock -e hhmm 1000",
+      "-e command battery -e level 100 -e plugged false",
+      "-e command network -e wifi show -e level 4",
+      "-e command network -e mobile hide",
+      "-e command notifications -e visible false",
+    ].each { |extras| adb.call("shell am broadcast -a com.android.systemui.demo #{extras}") }
+
+    begin
+      capture_android_screenshots(
+        locales: locales,
+        output_directory: METADATA,
+        clear_previous_screenshots: true,
+        use_timestamp_suffix: false,
+        app_package_name: PACKAGE,
+        tests_package_name: "#{PACKAGE}.test",
+        app_apk_path: File.join(REPO, "androidApp/build/outputs/apk/debug/androidApp-debug.apk"),
+        tests_apk_path: File.join(REPO, "androidApp/build/outputs/apk/androidTest/debug/androidApp-debug-androidTest.apk"),
+        use_tests_in_classes: ["uk.tsundokus.androidapp.screenshots.StoreScreenshots"],
+        test_instrumentation_runner: "androidx.test.runner.AndroidJUnitRunner",
+        specific_device: options[:serial],
+        exit_on_test_failure: true,
+        skip_open_summary: true,
+      )
+    ensure
+      adb.call("shell am broadcast -a com.android.systemui.demo -e command exit", errors: false)
+      adb.call("shell wm size reset", errors: false)
+      adb.call("shell wm density reset", errors: false)
+    end
+  end
+
+  desc "Downloads the listing as it is on Play to fastlane/metadata/play (git-ignored), to compare"
+  lane :fetch_listing do
+    download_from_play_store(json_key_data: play_key, metadata_path: File.join(REPO, "fastlane", "metadata", "play"))
+  end
+end

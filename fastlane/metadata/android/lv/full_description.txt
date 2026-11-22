@@ -1,0 +1,35 @@
+Tsundoku seko jūsu mangu pasūtījumiem no apmaksas līdz brīdim, kad tie ir plauktā, kā arī kaudzei, kas vēl jāizlasa.
+
+Priekšpasūtījumi tiek atlikti, sūtījumi nāk no dažādiem veikaliem, un pusnakts pirkumi viegli aizmirstas. Tsundoku apkopo visus pasūtījumus vienuviet, lai jūs vienmēr zinātu, kas ir ceļā un kas kavējas.
+
+📦 Visi pasūtījumi vienā skatā
+Pasūtīts, ceļā, kavējas vai saņemts: katram pasūtījumam redzat statusu, cenu, veikalu un paredzamo datumu. Meklējiet, filtrējiet un kārtojiet dažās sekundēs.
+
+📷 Skenējiet, nevis rakstiet
+Noskenējiet svītrkodu uz aizmugurējā vāka, un Tsundoku atradīs grāmatu pēc ISBN. Kad sūtījums pienāk, noskenējiet to vēlreiz, un pasūtījums tiks atzīmēts kā saņemts.
+
+⏳ Kavējumi kontrolē
+Ja izdošana tiek atlikta, ievadiet jauno datumu, un Tsundoku saglabās katras izmaiņas vēsturē. Piegādes prognoze mācās no tā, cik ātri katrs veikals jums līdz šim ir piegādājis.
+
+🔔 Atgādinājumi
+Saņemiet paziņojumu, kad pasūtījums nav pienācis laikā vai kad pienāk kavēta pasūtījuma jaunais datums – jūsu izvēlētajā laikā.
+
+📚 Sērijas un lasāmā kaudze
+Skatiet, kuri sērijas sējumi jums ir, kuri ir ceļā un kuri trūkst. Atzīmējiet sējumus kā “Gribu izlasīt”, “Pašlaik lasu” vai “Izlasīts” un vērojiet, kā kaudze sarūk.
+
+📊 Statistika
+Cik esat iztērējis, cik ilgi aizņem piegādes, kuri veikali bieži kavējas, kā arī jūsu iecienītākie veikali un izdevniecības.
+
+🏠 Logrīki sākuma ekrānam
+Nākamās piegādes un jūsu lasāmā kaudze tieši sākuma ekrānā.
+
+📶 Darbojas bezsaistē
+Pasūtījumi tiek glabāti jūsu ierīcē, tāpēc varat tos apskatīt jebkur. Izmaiņas tiek sinhronizētas ar jūsu kontu, tiklīdz atkal esat tiešsaistē.
+
+🔒 Jūsu dati, jūsu izvēle
+Piesakieties ar piekļuves atslēgu, izmantojot pirkstu nospiedumu, seju vai ekrāna bloķēšanu. Jebkurā laikā eksportējiet visus pasūtījumus CSV vai JSON formātā un dzēsiet kontu, kad vēlaties.
+
+🌍 Jūsu valodā
+Pieejama 22 valodās.
+
+Tsundoku (積ん読) ir japāņu vārds grāmatu pirkšanai, kuras pēc tam neizlasītas krājas kaudzēs. Šī lietotne neapturēs jūsu kaudzes augšanu, bet jūs vienmēr zināsiet, kas tajā ir.

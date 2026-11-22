@@ -1,0 +1,35 @@
+Tsundoku sleduje vaše objednávky mang od zaplacení až po chvíli, kdy stojí na poličce, a k tomu hromádku, kterou ještě musíte přečíst.
+
+Předobjednávky se odkládají, balíky chodí z různých obchodů a noční nákupy se snadno zapomenou. Tsundoku shromáždí všechny objednávky na jednom místě, takže vždy víte, co je na cestě a co má zpoždění.
+
+📦 Všechny objednávky na první pohled
+Objednáno, na cestě, zpožděno nebo doručeno: u každé objednávky uvidíte stav, cenu, obchod a očekávané datum. Hledejte, filtrujte a řaďte během pár sekund.
+
+📷 Skenujte místo psaní
+Naskenujte čárový kód na zadní straně obálky a Tsundoku knihu dohledá podle ISBN. Až balík dorazí, naskenujte ho znovu a objednávka se označí jako doručená.
+
+⏳ Zpoždění pod kontrolou
+Když se vydání posune, zadejte nové datum a Tsundoku si každou změnu zapíše do historie. Odhad doručení se učí z toho, jak rychle vám jednotlivé obchody doručovaly dřív.
+
+🔔 Připomenutí
+Dostaňte upozornění, když objednávka nedorazila včas nebo když nastane nové datum zpožděné objednávky, v čase, který si sami zvolíte.
+
+📚 Série a hromádka
+Podívejte se, které svazky série máte, které jsou na cestě a které chybí. Označujte svazky jako „Chci si přečíst“, „Právě čtu“ nebo „Přečteno“ a sledujte, jak se vaše hromádka zmenšuje.
+
+📊 Statistiky
+Kolik jste utratili, jak dlouho trvá doručení, které obchody často zpožďují a vaše nejoblíbenější obchody a nakladatelství.
+
+🏠 Widgety na plochu
+Nejbližší doručení a vaše hromádka přímo na ploše.
+
+📶 Funguje offline
+Objednávky jsou uložené ve vašem zařízení, takže je můžete prohlížet kdekoli. Změny se synchronizují s vaším účtem, jakmile budete opět online.
+
+🔒 Vaše data, vaše volba
+Přihlaste se přístupovým klíčem pomocí otisku prstu, obličeje nebo zámku obrazovky. Kdykoli exportujte všechny objednávky do CSV nebo JSON a smažte účet, kdy budete chtít.
+
+🌍 Ve vašem jazyce
+Dostupné ve 22 jazycích.
+
+Tsundoku (積ん読) je japonské slovo pro nakupování knih, které se pak nepřečtené hromadí. Tahle aplikace vaši hromádku nezastaví, ale vždy budete vědět, co v ní je.

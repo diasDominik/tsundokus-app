@@ -1,0 +1,35 @@
+Tsundoku håller koll på mangan du har beställt, från att du betalar tills den står i bokhyllan – och på högen du fortfarande har kvar att läsa.
+
+Förbeställningar skjuts upp, paket kommer från olika butiker och nattliga impulsköp är lätta att glömma. Tsundoku samlar alla dina beställningar på ett ställe, så att du alltid vet vad som är på väg och vad som är försenat.
+
+📦 Alla beställningar i en överblick
+Beställd, på väg, försenad eller mottagen: se status, pris, butik och väntat datum för varje beställning. Sök, filtrera och sortera på några sekunder.
+
+📷 Skanna i stället för att skriva
+Skanna streckkoden på baksidan så letar Tsundoku upp boken via ISBN. När paketet kommer skannar du den igen, och beställningen markeras som mottagen.
+
+⏳ Förseningar under kontroll
+När en utgivning skjuts upp anger du det nya datumet, och Tsundoku sparar en tidslinje över varje ändring. Leveransuppskattningen lär sig av hur snabbt varje butik har levererat till dig tidigare.
+
+🔔 Påminnelser
+Få en avisering när en beställning inte har kommit fram i tid eller när det nya datumet för en försenad beställning infaller – vid en tid du själv väljer.
+
+📚 Serier och läshög
+Se vilka volymer i en serie du har, vilka som är på väg och vilka som saknas. Markera volymer som ”Vill läsa”, ”Läser just nu” eller ”Läst” och se högen krympa.
+
+📊 Statistik
+Vad du har spenderat, hur lång tid leveranser tar, vilka butiker som ofta är sena och dina favoritbutiker och förlag.
+
+🏠 Widgetar för hemskärmen
+Dina nästa leveranser och din läshög direkt på hemskärmen.
+
+📶 Fungerar offline
+Dina beställningar sparas på enheten, så du kan se dem var som helst. Ändringar synkas med ditt konto så fort du är online igen.
+
+🔒 Din data, ditt val
+Logga in med en nyckel via fingeravtryck, ansikte eller skärmlås. Exportera alla dina beställningar som CSV eller JSON när du vill och radera ditt konto när som helst.
+
+🌍 På ditt språk
+Finns på 22 språk.
+
+Tsundoku (積ん読) är det japanska ordet för att köpa böcker och låta dem bli liggande olästa i högar. Appen hindrar inte din hög från att växa, men du vet alltid vad som finns i den.
