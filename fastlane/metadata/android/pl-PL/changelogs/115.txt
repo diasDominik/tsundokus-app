@@ -1,0 +1,3 @@
+• Tsundoku mówi teraz Twoim językiem: 21 nowych języków europejskich, łącznie 22. Aplikacja używa języka telefonu, a inny możesz wybrać w ustawieniach języka aplikacji w Androidzie.
+• Gdy dodajesz zamówienie, skanując kod kreskowy książki, jest ono teraz od razu oznaczane jako „Odebrane” – przecież masz już tom w rękach.
+• Zmiana hasła podlega teraz tym samym zasadom co rejestracja: od 8 do 40 znaków, w tym co najmniej jedna cyfra lub symbol.

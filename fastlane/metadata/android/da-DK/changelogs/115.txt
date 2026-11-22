@@ -1,0 +1,3 @@
+• Tsundoku taler nu dit sprog: 21 nye europæiske sprog, 22 i alt. Appen følger telefonens sprog, eller du kan vælge et andet i Androids indstillinger for appsprog.
+• Tilføjer du en bestilling ved at scanne bogens stregkode, bliver den nu straks markeret som "Modtaget" – du har jo allerede bogen i hånden.
+• Skift af adgangskode følger nu de samme regler som oprettelse: 8 til 40 tegn med mindst ét tal eller symbol.

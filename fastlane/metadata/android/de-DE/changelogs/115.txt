@@ -1,0 +1,3 @@
+• Tsundoku gibt es jetzt in deiner Sprache: 21 weitere europäische Sprachen, 22 insgesamt. Die App folgt der Handysprache, oder du wählst eine andere in den Android-Einstellungen unter App-Sprachen.
+• Scannst du beim Hinzufügen einer Bestellung den Barcode des Buchs, wird sie jetzt gleich als „Erhalten“ markiert – das Buch hältst du ja schon in der Hand.
+• Neue Passwörter folgen jetzt denselben Regeln wie bei der Registrierung: 8 bis 40 Zeichen, mindestens eine Zahl oder ein Sonderzeichen.

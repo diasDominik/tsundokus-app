@@ -1,0 +1,3 @@
+• Tsundoku parle maintenant votre langue : 21 nouvelles langues européennes, 22 au total. L'application suit la langue du téléphone, ou choisissez-en une autre dans les paramètres Android de langue des applications.
+• Une commande ajoutée en scannant le code-barres du livre est désormais marquée « Reçue » : le livre est déjà entre vos mains.
+• Le changement de mot de passe suit maintenant les mêmes règles que l'inscription : 8 à 40 caractères, dont au moins un chiffre ou un symbole.

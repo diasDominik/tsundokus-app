@@ -1,0 +1,3 @@
+• Tsundoku puhuu nyt sinun kieltäsi: 21 uutta eurooppalaista kieltä, yhteensä 22. Sovellus käyttää puhelimen kieltä, tai voit valita toisen Androidin sovellusten kieliasetuksista.
+• Kun lisäät tilauksen skannaamalla kirjan viivakoodin, se merkitään nyt suoraan tilaan ”Saapunut” – kirjahan on jo kädessäsi.
+• Salasanan vaihdossa pätevät nyt samat säännöt kuin rekisteröitymisessä: 8–40 merkkiä, joista vähintään yksi numero tai erikoismerkki.

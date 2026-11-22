@@ -1,0 +1,3 @@
+• Tsundoku sada govori vaš jezik: još 21 europski jezik, ukupno 22. Aplikacija prati jezik telefona, a drugi možete odabrati u Androidovim postavkama jezika aplikacija.
+• Kad dodate narudžbu skeniranjem crtičnog koda knjige, sada se odmah označava kao „Primljeno” – knjigu ionako već držite u rukama.
+• Za promjenu lozinke sada vrijede ista pravila kao pri registraciji: od 8 do 40 znakova, barem jedan broj ili simbol.
