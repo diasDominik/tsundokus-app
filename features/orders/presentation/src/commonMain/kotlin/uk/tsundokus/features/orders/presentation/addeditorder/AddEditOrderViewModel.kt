@@ -77,20 +77,32 @@ data class AddEditOrderArgs(
  */
 private fun initialState(args: AddEditOrderArgs): AddEditOrderState {
     val prefill = args.prefill ?: OrderPrefill()
-    return AddEditOrderState(
-        isEdit = args.orderId != null,
-        isbn = args.initialIsbn,
-        title = prefill.title,
-        author = prefill.author,
-        publisher = prefill.publisher,
-        store = prefill.store,
-        price = prefill.price,
-        volume = prefill.volume,
-        // Required, and nearly always today: a new order is usually logged right after checkout.
-        orderDate = if (args.orderId == null) todayIso() else "",
-        currency = prefill.currencyCode.takeIf(String::isNotBlank)?.let(AppCurrency::fromCode) ?: AppCurrency.EUR,
-    )
+    val blank =
+        AddEditOrderState(
+            isEdit = args.orderId != null,
+            isbn = args.initialIsbn,
+            title = prefill.title,
+            author = prefill.author,
+            publisher = prefill.publisher,
+            store = prefill.store,
+            price = prefill.price,
+            volume = prefill.volume,
+            // Required, and nearly always today: a new order is usually logged right after checkout.
+            orderDate = if (args.orderId == null) todayIso() else "",
+            currency =
+                prefill.currencyCode.takeIf(String::isNotBlank)?.let(AppCurrency::fromCode) ?: AppCurrency.EUR,
+        )
+    return if (args.initialIsbn.isNotBlank()) blank.receivedOnScan() else blank
 }
+
+/**
+ * A barcode is read off the book itself, so a new order logged by scanning one is a book already in
+ * hand: it is marked received. The received date is left blank and so saved as today, as when the
+ * status is picked by hand. An order being edited is left alone — scanning there fixes its ISBN, it
+ * says nothing about where the book is.
+ */
+private fun AddEditOrderState.receivedOnScan(): AddEditOrderState =
+    if (isEdit) this else copy(status = OrderStatus.RECEIVED)
 
 @KoinViewModel
 class AddEditOrderViewModel(
@@ -193,7 +205,11 @@ class AddEditOrderViewModel(
             }
 
             is AddEditOrderAction.OnIsbnScanned -> {
-                updateForm { it.withIsbn(action.isbn) }
+                updateForm { current ->
+                    val scanned = current.withIsbn(action.isbn)
+                    // A status the user picked themselves stands; only the one the form opened on gives way.
+                    if (scanned.status == pristine.status) scanned.receivedOnScan() else scanned
+                }
                 lookUpBook(delayMillis = 0)
             }
 
