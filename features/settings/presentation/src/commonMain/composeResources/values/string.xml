@@ -43,7 +43,7 @@
     <!-- About screen -->
     <string name="about_app_name">Tsundoku</string>
     <string name="about_version">Version %1$s</string>
-    <string name="about_description">Track every manga order from checkout to bookshelf — shipping, delays, and what you\'re reading next, all in one place.</string>
+    <string name="about_description">Track every manga order from checkout to bookshelf — shipping, delays, and what you're reading next, all in one place.</string>
     <string name="about_footer">Made with care for manga readers.</string>
 
     <!-- Edit profile -->
@@ -67,7 +67,7 @@
     <string name="change_password_new">New password</string>
     <string name="change_password_confirm">Confirm new password</string>
     <string name="change_password_error_fields_required">Please fill in all fields</string>
-    <string name="change_password_error_too_short">Password must be at least 6 characters</string>
+    <string name="change_password_error_requirements">Password must be 8–40 characters and include a number or symbol</string>
     <string name="change_password_error_mismatch">Passwords do not match</string>
 
     <!-- Delete account -->

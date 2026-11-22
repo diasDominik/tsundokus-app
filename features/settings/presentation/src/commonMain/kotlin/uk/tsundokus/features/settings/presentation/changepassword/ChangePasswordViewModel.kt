@@ -14,9 +14,10 @@ import org.koin.core.annotation.KoinViewModel
 import tsundokuapp.features.settings.presentation.generated.resources.Res
 import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_fields_required
 import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_mismatch
-import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_too_short
+import tsundokuapp.features.settings.presentation.generated.resources.change_password_error_requirements
 import uk.tsundokus.core.domain.util.onFailure
 import uk.tsundokus.core.domain.util.onSuccess
+import uk.tsundokus.core.domain.validation.PasswordValidator
 import uk.tsundokus.core.presentation.util.UiText
 import uk.tsundokus.core.presentation.util.toUiText
 import uk.tsundokus.features.settings.domain.account.AccountService
@@ -44,8 +45,8 @@ class ChangePasswordViewModel(
             send(ChangePasswordEvent.Error(UiText.Resource(Res.string.change_password_error_fields_required)))
             return
         }
-        if (new.length < MIN_PASSWORD_LENGTH) {
-            send(ChangePasswordEvent.Error(UiText.Resource(Res.string.change_password_error_too_short)))
+        if (!PasswordValidator.validate(new)) {
+            send(ChangePasswordEvent.Error(UiText.Resource(Res.string.change_password_error_requirements)))
             return
         }
         if (new != confirm) {
@@ -68,9 +69,5 @@ class ChangePasswordViewModel(
 
     private fun send(event: ChangePasswordEvent) {
         viewModelScope.launch { eventChannel.send(event) }
-    }
-
-    private companion object {
-        private const val MIN_PASSWORD_LENGTH = 6
     }
 }
