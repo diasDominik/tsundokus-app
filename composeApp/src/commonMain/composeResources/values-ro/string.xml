@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Înapoi</string>
+    <string name="new_order">Comandă nouă</string>
+    <string name="close">Închide</string>
+    <string name="update_dialog_title">Actualizare disponibilă</string>
+    <string name="update_dialog_message_optional">A apărut o versiune nouă de Tsundoku. Actualizează acum pentru cele mai noi funcții și remedieri.</string>
+    <string name="update_dialog_message_forced">Această versiune de Tsundoku nu mai este acceptată. Actualizează ca să continui.</string>
+    <string name="update_dialog_confirm">Actualizează</string>
+    <string name="update_dialog_dismiss">Mai târziu</string>
+</resources>

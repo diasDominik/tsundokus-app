@@ -50,6 +50,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
@@ -296,6 +297,8 @@ private fun ListHeader(
                     text = stringResource(Res.string.orders_list_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = onScanToReceive) {
@@ -312,7 +315,13 @@ private fun ListHeader(
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onAction(OrdersListAction.OnSearchQueryChange(it)) },
-            placeholder = { Text(stringResource(Res.string.orders_list_search_placeholder)) },
+            placeholder = {
+                Text(
+                    text = stringResource(Res.string.orders_list_search_placeholder),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             leadingIcon = { Icon(TsundokuIcons.Search, contentDescription = null) },
             trailingIcon = {
                 if (state.searchQuery.isNotEmpty()) {

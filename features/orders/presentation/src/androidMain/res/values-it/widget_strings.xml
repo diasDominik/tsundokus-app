@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Prossimi arrivi</string>
+    <string name="widget_next_arrivals_description">Gli ordini in arrivo e quando arrivano</string>
+    <string name="widget_pile_label">La tua pila da leggere</string>
+    <string name="widget_pile_description">Quanti volumi arrivati aspettano di essere letti</string>
+</resources>

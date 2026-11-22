@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Vissza</string>
+    <string name="new_order">Új rendelés</string>
+    <string name="close">Bezárás</string>
+    <string name="update_dialog_title">Frissítés érhető el</string>
+    <string name="update_dialog_message_optional">Megjelent a Tsundoku új verziója. Frissíts most a legújabb funkciókért és javításokért.</string>
+    <string name="update_dialog_message_forced">A Tsundoku ezen verziója már nem támogatott. A folytatáshoz frissíts.</string>
+    <string name="update_dialog_confirm">Frissítés</string>
+    <string name="update_dialog_dismiss">Később</string>
+</resources>

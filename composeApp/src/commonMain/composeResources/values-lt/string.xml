@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Atgal</string>
+    <string name="new_order">Naujas užsakymas</string>
+    <string name="close">Uždaryti</string>
+    <string name="update_dialog_title">Yra naujinys</string>
+    <string name="update_dialog_message_optional">Išleista nauja „Tsundoku“ versija. Atnaujinkite dabar ir gaukite naujausias funkcijas bei pataisymus.</string>
+    <string name="update_dialog_message_forced">Ši „Tsundoku“ versija nebepalaikoma. Norėdami tęsti, atnaujinkite.</string>
+    <string name="update_dialog_confirm">Atnaujinti</string>
+    <string name="update_dialog_dismiss">Vėliau</string>
+</resources>

@@ -172,7 +172,13 @@ private fun ReadingListScreen(
             OutlinedTextField(
                 value = state.searchQuery,
                 onValueChange = onSearchQueryChange,
-                placeholder = { Text(stringResource(Res.string.orders_list_search_placeholder)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(Res.string.orders_list_search_placeholder),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 leadingIcon = { Icon(TsundokuIcons.Search, contentDescription = null) },
                 trailingIcon = {
                     if (state.searchQuery.isNotEmpty()) {

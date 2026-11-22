@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Hopa, spațiul de stocare e plin!</string>
+    <string name="error_not_found">Elementul căutat nu a fost găsit</string>
+    <string name="error_unknown">A apărut o eroare necunoscută</string>
+    <string name="error_bad_request">Cerere nevalidă</string>
+    <string name="error_request_timeout">Cererea a durat prea mult</string>
+    <string name="error_unauthorized">Date de autentificare nevalide</string>
+    <string name="error_forbidden">Nu ai permisiunea să faci asta</string>
+    <string name="error_conflict">A apărut un conflict</string>
+    <string name="error_too_many_requests">Prea multe cereri. Așteaptă puțin și încearcă din nou.</string>
+    <string name="error_no_internet">Nu există conexiune. Verifică-ți conexiunea la internet.</string>
+    <string name="error_payload_too_large">Fișierul atașat este prea mare</string>
+    <string name="error_server">Hopa, a apărut o eroare pe server</string>
+    <string name="error_service_unavailable">Serviciu indisponibil, încearcă mai târziu</string>
+    <string name="error_serialization">Datele nu au putut fi citite</string>
+    <string name="error_message_send_failed">Mesajul nu a putut fi trimis</string>
+    <string name="currency_picker_title">Monedă</string>
+    <string name="currency_picker_search">Caută după cod sau nume</string>
+    <string name="currency_picker_suggested">Sugerate</string>
+    <string name="currency_picker_all">Toate monedele</string>
+    <string name="currency_picker_no_match">Nicio monedă nu corespunde cu „%1$s”</string>
+    <string name="currency_picker_close">Închide</string>
+    <string name="currency_field_cd">Monedă: %1$s. Schimbă</string>
+</resources>

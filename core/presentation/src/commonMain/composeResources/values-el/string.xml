@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ωχ, ο αποθηκευτικός χώρος είναι γεμάτος!</string>
+    <string name="error_not_found">Το στοιχείο που ζητήσατε δεν βρέθηκε</string>
+    <string name="error_unknown">Παρουσιάστηκε άγνωστο σφάλμα</string>
+    <string name="error_bad_request">Μη έγκυρο αίτημα</string>
+    <string name="error_request_timeout">Το αίτημα άργησε πολύ</string>
+    <string name="error_unauthorized">Μη έγκυρα στοιχεία σύνδεσης</string>
+    <string name="error_forbidden">Δεν έχετε άδεια για αυτή την ενέργεια</string>
+    <string name="error_conflict">Παρουσιάστηκε διένεξη</string>
+    <string name="error_too_many_requests">Πάρα πολλά αιτήματα. Περιμένετε λίγο και δοκιμάστε ξανά.</string>
+    <string name="error_no_internet">Δεν υπάρχει σύνδεση. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.</string>
+    <string name="error_payload_too_large">Το συνημμένο αρχείο είναι πολύ μεγάλο</string>
+    <string name="error_server">Ωχ, παρουσιάστηκε σφάλμα στον διακομιστή</string>
+    <string name="error_service_unavailable">Η υπηρεσία δεν είναι διαθέσιμη, δοκιμάστε αργότερα</string>
+    <string name="error_serialization">Δεν ήταν δυνατή η ανάγνωση των δεδομένων</string>
+    <string name="error_message_send_failed">Η αποστολή του μηνύματος απέτυχε</string>
+    <string name="currency_picker_title">Νόμισμα</string>
+    <string name="currency_picker_search">Αναζήτηση με κωδικό ή όνομα</string>
+    <string name="currency_picker_suggested">Προτεινόμενα</string>
+    <string name="currency_picker_all">Όλα τα νομίσματα</string>
+    <string name="currency_picker_no_match">Κανένα νόμισμα δεν ταιριάζει με «%1$s»</string>
+    <string name="currency_picker_close">Κλείσιμο</string>
+    <string name="currency_field_cd">Νόμισμα: %1$s. Αλλαγή</string>
+</resources>

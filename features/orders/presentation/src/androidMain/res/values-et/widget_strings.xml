@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Järgmised saabumised</string>
+    <string name="widget_next_arrivals_description">Järgmisena saabuvad tellimused ja millal</string>
+    <string name="widget_pile_label">Sinu lugemisvirn</string>
+    <string name="widget_pile_description">Mitu saabunud köidet ootab lugemist</string>
+</resources>

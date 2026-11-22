@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Oeps, je opslag is vol!</string>
+    <string name="error_not_found">Het gevraagde item is niet gevonden</string>
+    <string name="error_unknown">Er is een onbekende fout opgetreden</string>
+    <string name="error_bad_request">Ongeldig verzoek</string>
+    <string name="error_request_timeout">Het verzoek duurde te lang</string>
+    <string name="error_unauthorized">Ongeldige inloggegevens</string>
+    <string name="error_forbidden">Dat mag je niet doen</string>
+    <string name="error_conflict">Er is een conflict opgetreden</string>
+    <string name="error_too_many_requests">Te veel verzoeken. Wacht even en probeer het opnieuw.</string>
+    <string name="error_no_internet">Geen verbinding. Controleer je internetverbinding.</string>
+    <string name="error_payload_too_large">Het bijgevoegde bestand is te groot</string>
+    <string name="error_server">Oeps, er ging iets mis op de server</string>
+    <string name="error_service_unavailable">Dienst niet beschikbaar. Probeer het later opnieuw.</string>
+    <string name="error_serialization">De gegevens konden niet worden gelezen</string>
+    <string name="error_message_send_failed">Bericht versturen mislukt</string>
+    <string name="currency_picker_title">Valuta</string>
+    <string name="currency_picker_search">Zoeken op code of naam</string>
+    <string name="currency_picker_suggested">Voorgesteld</string>
+    <string name="currency_picker_all">Alle valuta</string>
+    <string name="currency_picker_no_match">Geen valuta komt overeen met ‘%1$s’</string>
+    <string name="currency_picker_close">Sluiten</string>
+    <string name="currency_field_cd">Valuta: %1$s. Wijzigen</string>
+</resources>

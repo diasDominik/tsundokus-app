@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Назад</string>
+    <string name="new_order">Нова поръчка</string>
+    <string name="close">Затвори</string>
+    <string name="update_dialog_title">Налична е актуализация</string>
+    <string name="update_dialog_message_optional">Излезе нова версия на Tsundoku. Актуализирайте сега за най-новите функции и поправки.</string>
+    <string name="update_dialog_message_forced">Тази версия на Tsundoku вече не се поддържа. Актуализирайте, за да продължите.</string>
+    <string name="update_dialog_confirm">Актуализиране</string>
+    <string name="update_dialog_dismiss">По-късно</string>
+</resources>

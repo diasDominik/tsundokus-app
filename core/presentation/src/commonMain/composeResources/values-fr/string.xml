@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Oups, votre stockage est plein !</string>
+    <string name="error_not_found">L'élément demandé est introuvable</string>
+    <string name="error_unknown">Une erreur inconnue s'est produite</string>
+    <string name="error_bad_request">Requête invalide</string>
+    <string name="error_request_timeout">La requête a pris trop de temps</string>
+    <string name="error_unauthorized">Identifiants incorrects</string>
+    <string name="error_forbidden">Vous n'avez pas l'autorisation de faire ça</string>
+    <string name="error_conflict">Un conflit s'est produit</string>
+    <string name="error_too_many_requests">Trop de requêtes. Patientez un instant, puis réessayez.</string>
+    <string name="error_no_internet">Connexion impossible. Vérifiez votre connexion Internet.</string>
+    <string name="error_payload_too_large">Le fichier joint est trop volumineux</string>
+    <string name="error_server">Oups, une erreur s'est produite sur le serveur</string>
+    <string name="error_service_unavailable">Service indisponible, réessayez plus tard</string>
+    <string name="error_serialization">Impossible de lire les données</string>
+    <string name="error_message_send_failed">Échec de l'envoi du message</string>
+    <string name="currency_picker_title">Devise</string>
+    <string name="currency_picker_search">Rechercher par code ou par nom</string>
+    <string name="currency_picker_suggested">Suggestions</string>
+    <string name="currency_picker_all">Toutes les devises</string>
+    <string name="currency_picker_no_match">Aucune devise ne correspond à « %1$s »</string>
+    <string name="currency_picker_close">Fermer</string>
+    <string name="currency_field_cd">Devise : %1$s. Modifier</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Binnenkort binnen</string>
+    <string name="widget_next_arrivals_description">De bestellingen die als eerste binnenkomen, en wanneer</string>
+    <string name="widget_pile_label">Je leesstapel</string>
+    <string name="widget_pile_description">Hoeveel ontvangen delen nog gelezen moeten worden</string>
+</resources>

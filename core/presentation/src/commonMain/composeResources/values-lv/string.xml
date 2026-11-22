@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ak vai, krātuve ir pilna!</string>
+    <string name="error_not_found">Meklētais netika atrasts</string>
+    <string name="error_unknown">Radās nezināma kļūda</string>
+    <string name="error_bad_request">Nederīgs pieprasījums</string>
+    <string name="error_request_timeout">Pieprasījums aizņēma pārāk ilgu laiku</string>
+    <string name="error_unauthorized">Nederīgi pieteikšanās dati</string>
+    <string name="error_forbidden">Jums nav atļaujas to darīt</string>
+    <string name="error_conflict">Radās konflikts</string>
+    <string name="error_too_many_requests">Pārāk daudz pieprasījumu. Mazliet uzgaidiet un mēģiniet vēlreiz.</string>
+    <string name="error_no_internet">Nav savienojuma. Pārbaudiet interneta savienojumu.</string>
+    <string name="error_payload_too_large">Pievienotais fails ir pārāk liels</string>
+    <string name="error_server">Ak vai, serverī radās kļūda</string>
+    <string name="error_service_unavailable">Pakalpojums nav pieejams, mēģiniet vēlāk</string>
+    <string name="error_serialization">Datus neizdevās nolasīt</string>
+    <string name="error_message_send_failed">Ziņojumu neizdevās nosūtīt</string>
+    <string name="currency_picker_title">Valūta</string>
+    <string name="currency_picker_search">Meklēt pēc koda vai nosaukuma</string>
+    <string name="currency_picker_suggested">Ieteiktās</string>
+    <string name="currency_picker_all">Visas valūtas</string>
+    <string name="currency_picker_no_match">Neviena valūta neatbilst vaicājumam “%1$s”</string>
+    <string name="currency_picker_close">Aizvērt</string>
+    <string name="currency_field_cd">Valūta: %1$s. Mainīt</string>
+</resources>

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import tsundokuapp.features.orders.presentation.generated.resources.Res
@@ -62,8 +63,14 @@ fun OrderDateField(
     OutlinedTextField(
         value = fmtDate(value),
         onValueChange = {},
-        label = { Text(labelText) },
-        placeholder = { Text(stringResource(Res.string.order_date_field_placeholder)) },
+        label = { Text(labelText, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        placeholder = {
+            Text(
+                text = stringResource(Res.string.order_date_field_placeholder),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
         readOnly = true,
         singleLine = true,
         isError = isError,

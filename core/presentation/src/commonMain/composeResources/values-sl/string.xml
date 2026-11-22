@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ojoj, shramba je polna!</string>
+    <string name="error_not_found">Zahtevanega elementa ni bilo mogoče najti</string>
+    <string name="error_unknown">Prišlo je do neznane napake</string>
+    <string name="error_bad_request">Neveljavna zahteva</string>
+    <string name="error_request_timeout">Zahteva je trajala predolgo</string>
+    <string name="error_unauthorized">Neveljavni podatki za prijavo</string>
+    <string name="error_forbidden">Za to nimate dovoljenja</string>
+    <string name="error_conflict">Prišlo je do spora</string>
+    <string name="error_too_many_requests">Preveč zahtev. Počakajte trenutek in poskusite znova.</string>
+    <string name="error_no_internet">Povezava ni mogoča. Preverite internetno povezavo.</string>
+    <string name="error_payload_too_large">Priložena datoteka je prevelika</string>
+    <string name="error_server">Ojoj, na strežniku je prišlo do napake</string>
+    <string name="error_service_unavailable">Storitev ni na voljo, poskusite pozneje</string>
+    <string name="error_serialization">Podatkov ni bilo mogoče prebrati</string>
+    <string name="error_message_send_failed">Sporočila ni bilo mogoče poslati</string>
+    <string name="currency_picker_title">Valuta</string>
+    <string name="currency_picker_search">Iščite po kodi ali imenu</string>
+    <string name="currency_picker_suggested">Predlagane</string>
+    <string name="currency_picker_all">Vse valute</string>
+    <string name="currency_picker_no_match">Nobena valuta se ne ujema z »%1$s«</string>
+    <string name="currency_picker_close">Zapri</string>
+    <string name="currency_field_cd">Valuta: %1$s. Spremeni</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Tillbaka</string>
+    <string name="new_order">Ny beställning</string>
+    <string name="close">Stäng</string>
+    <string name="update_dialog_title">Uppdatering tillgänglig</string>
+    <string name="update_dialog_message_optional">En ny version av Tsundoku finns. Uppdatera nu för de senaste funktionerna och rättningarna.</string>
+    <string name="update_dialog_message_forced">Den här versionen av Tsundoku stöds inte längre. Uppdatera för att fortsätta.</string>
+    <string name="update_dialog_confirm">Uppdatera</string>
+    <string name="update_dialog_dismiss">Senare</string>
+</resources>

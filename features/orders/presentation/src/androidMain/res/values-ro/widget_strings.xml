@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Următoarele sosiri</string>
+    <string name="widget_next_arrivals_description">Comenzile care sosesc primele și când</string>
+    <string name="widget_pile_label">Teancul tău de citit</string>
+    <string name="widget_pile_description">Câte volume sosite așteaptă să fie citite</string>
+</resources>

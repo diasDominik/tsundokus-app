@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Oi, saugykla pilna!</string>
+    <string name="error_not_found">To, ko ieškojote, rasti nepavyko</string>
+    <string name="error_unknown">Įvyko nežinoma klaida</string>
+    <string name="error_bad_request">Netinkama užklausa</string>
+    <string name="error_request_timeout">Užklausa užtruko per ilgai</string>
+    <string name="error_unauthorized">Neteisingi prisijungimo duomenys</string>
+    <string name="error_forbidden">Neturite leidimo tai daryti</string>
+    <string name="error_conflict">Įvyko konfliktas</string>
+    <string name="error_too_many_requests">Per daug užklausų. Šiek tiek palaukite ir bandykite dar kartą.</string>
+    <string name="error_no_internet">Nėra ryšio. Patikrinkite interneto ryšį.</string>
+    <string name="error_payload_too_large">Pridėtas failas per didelis</string>
+    <string name="error_server">Oi, serveryje įvyko klaida</string>
+    <string name="error_service_unavailable">Paslauga nepasiekiama, bandykite vėliau</string>
+    <string name="error_serialization">Nepavyko nuskaityti duomenų</string>
+    <string name="error_message_send_failed">Nepavyko išsiųsti pranešimo</string>
+    <string name="currency_picker_title">Valiuta</string>
+    <string name="currency_picker_search">Ieškoti pagal kodą arba pavadinimą</string>
+    <string name="currency_picker_suggested">Siūlomos</string>
+    <string name="currency_picker_all">Visos valiutos</string>
+    <string name="currency_picker_no_match">Pagal „%1$s“ valiutų nerasta</string>
+    <string name="currency_picker_close">Uždaryti</string>
+    <string name="currency_field_cd">Valiuta: %1$s. Keisti</string>
+</resources>

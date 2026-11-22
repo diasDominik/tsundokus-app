@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Sljedeće dostave</string>
+    <string name="widget_next_arrivals_description">Narudžbe koje stižu sljedeće i kada</string>
+    <string name="widget_pile_label">Vaša hrpa za čitanje</string>
+    <string name="widget_pile_description">Koliko primljenih svezaka čeka da bude pročitano</string>
+</resources>

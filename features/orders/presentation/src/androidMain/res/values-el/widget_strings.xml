@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Επόμενες αφίξεις</string>
+    <string name="widget_next_arrivals_description">Οι παραγγελίες που φτάνουν πρώτες, και πότε</string>
+    <string name="widget_pile_label">Η στοίβα σας</string>
+    <string name="widget_pile_description">Πόσοι τόμοι που έφτασαν περιμένουν να διαβαστούν</string>
+</resources>

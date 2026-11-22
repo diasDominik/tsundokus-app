@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Natrag</string>
+    <string name="new_order">Nova narudžba</string>
+    <string name="close">Zatvori</string>
+    <string name="update_dialog_title">Dostupno je ažuriranje</string>
+    <string name="update_dialog_message_optional">Dostupna je nova verzija aplikacije Tsundoku. Ažurirajte je za najnovije značajke i ispravke.</string>
+    <string name="update_dialog_message_forced">Ova verzija aplikacije Tsundoku više nije podržana. Ažurirajte je za nastavak.</string>
+    <string name="update_dialog_confirm">Ažuriraj</string>
+    <string name="update_dialog_dismiss">Kasnije</string>
+</resources>

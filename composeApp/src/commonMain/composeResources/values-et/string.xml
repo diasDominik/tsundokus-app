@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="back">Tagasi</string>
+    <string name="new_order">Uus tellimus</string>
+    <string name="close">Sulge</string>
+    <string name="update_dialog_title">Saadaval on uuendus</string>
+    <string name="update_dialog_message_optional">Tsundokust on uus versioon. Uuenda kohe, et saada uusimad funktsioonid ja parandused.</string>
+    <string name="update_dialog_message_forced">Seda Tsundoku versiooni enam ei toetata. Jätkamiseks uuenda.</string>
+    <string name="update_dialog_confirm">Uuenda</string>
+    <string name="update_dialog_dismiss">Hiljem</string>
+</resources>

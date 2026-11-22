@@ -1,0 +1,144 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSCameraUsageDescription": {
+      "comment": "Camera permission prompt",
+      "extractionState": "manual",
+      "localizations": {
+        "bg": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku използва камерата, за да чете ISBN баркода на книгите ви и да маркира поръчките им като получени."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku používá fotoaparát ke čtení čárového kódu ISBN na vašich knihách, aby mohl jejich objednávky označit jako doručené."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku bruger kameraet til at læse ISBN-stregkoden på dine bøger og markere bestillingerne som modtaget."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku nutzt die Kamera, um den ISBN-Barcode deiner Bücher zu lesen und die passenden Bestellungen als erhalten zu markieren."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Το Tsundoku χρησιμοποιεί την κάμερα για να διαβάζει τον γραμμωτό κώδικα ISBN των βιβλίων σας και να σημειώνει τις παραγγελίες τους ως παραληφθείσες."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku uses the camera to read the ISBN barcode on your books, so it can mark their orders as received."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku usa la cámara para leer el código de barras ISBN de tus libros y marcar sus pedidos como recibidos."
+          }
+        },
+        "et": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku kasutab kaamerat sinu raamatute ISBN-vöötkoodi lugemiseks, et märkida nende tellimused kättesaaduks."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku käyttää kameraa kirjojesi ISBN-viivakoodien lukemiseen, jotta niiden tilaukset voidaan merkitä saapuneiksi."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku utilise la caméra pour lire le code-barres ISBN de vos livres et marquer les commandes correspondantes comme reçues."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku koristi kameru za čitanje ISBN crtičnog koda na vašim knjigama kako bi njihove narudžbe označio kao primljene."
+          }
+        },
+        "hu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Tsundoku a kamerával olvassa be a könyveid ISBN-vonalkódját, hogy megérkezettnek jelölhesse a hozzájuk tartozó rendeléseket."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku usa la fotocamera per leggere il codice a barre ISBN dei tuoi libri e segnare i relativi ordini come ricevuti."
+          }
+        },
+        "lt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„Tsundoku“ naudoja kamerą jūsų knygų ISBN brūkšniniam kodui nuskaityti, kad galėtų pažymėti jų užsakymus kaip gautus."
+          }
+        },
+        "lv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku izmanto kameru, lai nolasītu jūsu grāmatu ISBN svītrkodu un atzīmētu to pasūtījumus kā saņemtus."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku gebruikt de camera om de ISBN-barcode op je boeken te lezen, zodat de bijbehorende bestellingen als ontvangen worden gemarkeerd."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku używa aparatu, aby odczytać kod kreskowy ISBN z Twoich książek i oznaczyć ich zamówienia jako odebrane."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Tsundoku usa a câmara para ler o código de barras ISBN dos seus livros e marcar as respetivas encomendas como recebidas."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku folosește camera ca să citească codul de bare ISBN de pe cărțile tale și să le marcheze comenzile ca primite."
+          }
+        },
+        "sk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku používa fotoaparát na čítanie čiarového kódu ISBN na vašich knihách, aby mohol ich objednávky označiť ako doručené."
+          }
+        },
+        "sl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku uporablja kamero za branje črtne kode ISBN na vaših knjigah, da lahko njihova naročila označi kot prejeta."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tsundoku använder kameran för att läsa ISBN-streckkoden på dina böcker och markera beställningarna som mottagna."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

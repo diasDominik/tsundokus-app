@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Опа, хранилището е пълно!</string>
+    <string name="error_not_found">Търсеният елемент не е намерен</string>
+    <string name="error_unknown">Възникна неизвестна грешка</string>
+    <string name="error_bad_request">Невалидна заявка</string>
+    <string name="error_request_timeout">Заявката отне твърде дълго</string>
+    <string name="error_unauthorized">Невалидни данни за вход</string>
+    <string name="error_forbidden">Нямате разрешение за това</string>
+    <string name="error_conflict">Възникна конфликт</string>
+    <string name="error_too_many_requests">Твърде много заявки. Изчакайте малко и опитайте отново.</string>
+    <string name="error_no_internet">Няма връзка. Проверете интернет връзката си.</string>
+    <string name="error_payload_too_large">Прикаченият файл е твърде голям</string>
+    <string name="error_server">Опа, възникна грешка на сървъра</string>
+    <string name="error_service_unavailable">Услугата не е достъпна, опитайте по-късно</string>
+    <string name="error_serialization">Данните не можаха да бъдат прочетени</string>
+    <string name="error_message_send_failed">Съобщението не можа да бъде изпратено</string>
+    <string name="currency_picker_title">Валута</string>
+    <string name="currency_picker_search">Търсене по код или име</string>
+    <string name="currency_picker_suggested">Предложени</string>
+    <string name="currency_picker_all">Всички валути</string>
+    <string name="currency_picker_no_match">Няма валута, съвпадаща с „%1$s“</string>
+    <string name="currency_picker_close">Затвори</string>
+    <string name="currency_field_cd">Валута: %1$s. Промяна</string>
+</resources>

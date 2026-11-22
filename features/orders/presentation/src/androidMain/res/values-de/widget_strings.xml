@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_arrivals_label">Nächste Lieferungen</string>
+    <string name="widget_next_arrivals_description">Die nächsten Lieferungen und wann sie kommen</string>
+    <string name="widget_pile_label">Dein Lesestapel</string>
+    <string name="widget_pile_description">Wie viele angekommene Bände noch ungelesen sind</string>
+</resources>

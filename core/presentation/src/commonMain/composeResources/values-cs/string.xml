@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Jejda, úložiště je plné!</string>
+    <string name="error_not_found">Požadovaná položka nebyla nalezena</string>
+    <string name="error_unknown">Došlo k neznámé chybě</string>
+    <string name="error_bad_request">Neplatný požadavek</string>
+    <string name="error_request_timeout">Vypršel časový limit požadavku</string>
+    <string name="error_unauthorized">Neplatné přihlašovací údaje</string>
+    <string name="error_forbidden">K tomu nemáte oprávnění</string>
+    <string name="error_conflict">Došlo ke konfliktu</string>
+    <string name="error_too_many_requests">Příliš mnoho požadavků. Chvíli počkejte a zkuste to znovu.</string>
+    <string name="error_no_internet">Nelze se připojit. Zkontrolujte připojení k internetu.</string>
+    <string name="error_payload_too_large">Přiložený soubor je příliš velký</string>
+    <string name="error_server">Jejda, na serveru došlo k chybě</string>
+    <string name="error_service_unavailable">Služba je nedostupná, zkuste to později</string>
+    <string name="error_serialization">Data se nepodařilo načíst</string>
+    <string name="error_message_send_failed">Zprávu se nepodařilo odeslat</string>
+    <string name="currency_picker_title">Měna</string>
+    <string name="currency_picker_search">Hledat podle kódu nebo názvu</string>
+    <string name="currency_picker_suggested">Navrhované</string>
+    <string name="currency_picker_all">Všechny měny</string>
+    <string name="currency_picker_no_match">Výrazu „%1$s“ neodpovídá žádná měna</string>
+    <string name="currency_picker_close">Zavřít</string>
+    <string name="currency_field_cd">Měna: %1$s. Změnit</string>
+</resources>

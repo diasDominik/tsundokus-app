@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_disk_full">Ups, lageret er fyldt!</string>
+    <string name="error_not_found">Det, du ledte efter, blev ikke fundet</string>
+    <string name="error_unknown">Der opstod en ukendt fejl</string>
+    <string name="error_bad_request">Ugyldig anmodning</string>
+    <string name="error_request_timeout">Anmodningen tog for lang tid</string>
+    <string name="error_unauthorized">Ugyldige loginoplysninger</string>
+    <string name="error_forbidden">Du har ikke tilladelse til det</string>
+    <string name="error_conflict">Der opstod en konflikt</string>
+    <string name="error_too_many_requests">For mange anmodninger. Vent lidt, og prøv igen.</string>
+    <string name="error_no_internet">Ingen forbindelse. Tjek din internetforbindelse.</string>
+    <string name="error_payload_too_large">Den vedhæftede fil er for stor</string>
+    <string name="error_server">Ups, der gik noget galt på serveren</string>
+    <string name="error_service_unavailable">Tjenesten er ikke tilgængelig, prøv igen senere</string>
+    <string name="error_serialization">Dataene kunne ikke læses</string>
+    <string name="error_message_send_failed">Beskeden kunne ikke sendes</string>
+    <string name="currency_picker_title">Valuta</string>
+    <string name="currency_picker_search">Søg efter kode eller navn</string>
+    <string name="currency_picker_suggested">Forslag</string>
+    <string name="currency_picker_all">Alle valutaer</string>
+    <string name="currency_picker_no_match">Ingen valuta matcher “%1$s”</string>
+    <string name="currency_picker_close">Luk</string>
+    <string name="currency_field_cd">Valuta: %1$s. Skift</string>
+</resources>
