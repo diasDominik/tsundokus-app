@@ -53,6 +53,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -367,6 +368,8 @@ fun App() {
                         topLevelTabs.forEach { tab ->
                             val selected = activeTab == tab
                             NavigationSuiteItem(
+                                // The store screenshot test (androidApp androidTest) finds tabs by this.
+                                modifier = Modifier.testTag("tab:$tab"),
                                 selected = selected,
                                 onClick = { openTab(tab) },
                                 icon = {
