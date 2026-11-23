@@ -1,0 +1,3 @@
+• Pasūtījāt grāmatu tiešsaistē? ISBN vairs nav jāieraksta: izvēlieties pasūtījuma apstiprinājuma ekrānuzņēmumu vai kopīgojiet to ar Tsundoku no pārlūka vai veikala lietotnes. Ja tajā ir vairākas grāmatas, izvēlieties vajadzīgo.
+• Skeneris tagad nolasa arī drukāto ISBN – titullapas otrajā pusē vai ekrānā, kurā redzams jūsu pasūtījums.
+• Pasūtījuma formā izvēloties citu grāmatu, iepriekšējās grāmatas dati tagad tiek aizstāti.

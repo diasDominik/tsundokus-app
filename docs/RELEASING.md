@@ -72,10 +72,10 @@ afterwards. Nothing else may use port 8080 on the device, such as an `adb revers
 server.
 ## Running fastlane locally
 
-Needs Ruby 3.4 (`.ruby-version`) and `bundle install` once. Without a local Ruby, Docker works too:
+Needs Ruby 4 (`.ruby-version`) and `bundle install` once. Without a local Ruby, Docker works too:
 
 ```sh
-docker run --rm -v "$PWD":/w -w /w ruby:3.4 \
+docker run --rm -v "$PWD":/w -w /w ruby:4.0 \
   sh -c 'bundle install --quiet && bundle exec fastlane android check_metadata'
 ```
 

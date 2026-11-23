@@ -1,0 +1,3 @@
+• Książka zamówiona w internecie? Nie musisz już wpisywać ISBN: wybierz zrzut ekranu z potwierdzeniem zamówienia albo udostępnij go do Tsundoku z przeglądarki lub aplikacji sklepu. Jeśli jest na nim kilka książek, wybierz właściwą.
+• Skaner odczytuje teraz także wydrukowany ISBN, na stronie redakcyjnej albo na ekranie z Twoim zamówieniem.
+• Wybranie innej książki w formularzu zamówienia zastępuje teraz dane uzupełnione dla poprzedniej.

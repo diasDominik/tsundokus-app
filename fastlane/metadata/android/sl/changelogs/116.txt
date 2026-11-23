@@ -1,0 +1,3 @@
+• Ste knjigo naročili na spletu? ISBN vam ni več treba vtipkati: izberite posnetek zaslona potrditve naročila ali ga delite s Tsundokujem iz brskalnika ali aplikacije trgovine. Če je na njem več knjig, izberite pravo.
+• Skener zdaj prebere tudi natisnjeni ISBN, na kolofonu ali na zaslonu, ki prikazuje vaše naročilo.
+• Izbira druge knjige v obrazcu naročila zdaj zamenja podatke, izpolnjene za prejšnjo.

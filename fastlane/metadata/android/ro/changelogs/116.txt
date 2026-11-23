@@ -1,0 +1,3 @@
+• Ai comandat o carte online? Nu mai trebuie să tastezi ISBN-ul: alege o captură de ecran a confirmării comenzii sau partajeaz-o cu Tsundoku din browser ori din aplicația magazinului. Dacă are mai multe cărți, alege-o pe cea dorită.
+• Scanerul citește acum și ISBN-ul tipărit, pe pagina de copyright sau pe un ecran care îți arată comanda.
+• Dacă alegi altă carte în formularul comenzii, datele completate pentru cea anterioară sunt acum înlocuite.

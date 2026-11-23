@@ -1,0 +1,3 @@
+• Užsisakėte knygą internetu? ISBN nebereikia vesti ranka: pasirinkite užsakymo patvirtinimo ekrano kopiją arba bendrinkite ją su Tsundoku iš naršyklės ar parduotuvės programėlės. Jei joje kelios knygos, pasirinkite reikiamą.
+• Skaitytuvas dabar nuskaito ir atspausdintą ISBN – leidinio metrikos puslapyje arba ekrane, kuriame rodomas jūsų užsakymas.
+• Užsakymo formoje pasirinkus kitą knygą, ankstesnės knygos duomenys dabar pakeičiami.
