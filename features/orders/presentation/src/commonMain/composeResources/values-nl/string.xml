@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Geen geldig ISBN. Controleer de cijfers</string>
     <string name="add_edit_order_isbn_error_taken">Je hebt al een bestelling met dit ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Barcode scannen</string>
+    <string name="add_edit_order_isbn_from_image_cd">ISBN uit een screenshot lezen</string>
     <string name="add_edit_order_isbn_looking_up">Boek opzoeken</string>
     <string name="add_edit_order_author_label">Auteur</string>
     <string name="add_edit_order_volume_label">Deel</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">De camera kon niet starten: %1$s</string>
     <string name="scanner_retry">Opnieuw proberen</string>
     <string name="scanner_dialog_title">Scan de ISBN-barcode</string>
+    <string name="scanner_text_dialog_title">Lees het gedrukte ISBN</string>
+    <string name="scanner_mode_barcode">Barcode</string>
+    <string name="scanner_mode_text">Gedrukt ISBN</string>
+    <string name="scanner_text_hint">Richt de camera op één ISBN: op de colofonpagina of op een scherm met je bestelling.</string>
+
+    <string name="isbn_from_image_reading">ISBN zoeken…</string>
+    <string name="isbn_from_image_choose_title">Welk boek?</string>
+    <string name="isbn_from_image_none_found">Geen ISBN gevonden in deze afbeelding. Probeer een screenshot waarop het ISBN te zien is.</string>
+    <string name="isbn_from_image_failed">Deze afbeelding kon niet worden gelezen.</string>
+    <string name="isbn_from_image_pick_another">Kies een andere</string>
+    <string name="isbn_shared_text_none_found">Er staat geen ISBN in wat er gedeeld is. Deel liever een screenshot van de bestelling, of typ het ISBN.</string>
     <string name="series_list_title">Series</string>
     <string name="series_list_search_placeholder">Zoek op serie, auteur, ISBN</string>
     <string name="series_list_sort">Sorteren · %1$s</string>

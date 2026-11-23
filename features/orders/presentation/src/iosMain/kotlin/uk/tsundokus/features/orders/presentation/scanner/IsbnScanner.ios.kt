@@ -32,6 +32,7 @@ actual fun isCameraScanningSupported(): Boolean = true
 
 @Composable
 internal actual fun PlatformIsbnCamera(
+    mode: IsbnCameraMode,
     accept: (isbn: String) -> Boolean,
     onIsbn: (isbn: String) -> Unit,
     onError: (message: String) -> Unit,
@@ -54,7 +55,15 @@ internal actual fun PlatformIsbnCamera(
 
     when (status) {
         AVAuthorizationStatusAuthorized -> {
-            KScanIsbnView(accept = accept, onIsbn = onIsbn, onError = onError, modifier = modifier)
+            when (mode) {
+                IsbnCameraMode.BARCODE -> {
+                    KScanIsbnView(accept = accept, onIsbn = onIsbn, onError = onError, modifier = modifier)
+                }
+
+                IsbnCameraMode.TEXT -> {
+                    TextIsbnCameraView(accept = accept, onIsbn = onIsbn, onError = onError, modifier = modifier)
+                }
+            }
         }
 
         // The system prompt is up; the black viewfinder behind it is enough.

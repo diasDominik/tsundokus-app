@@ -112,6 +112,7 @@ fun EntryProviderScope<NavKey>.ordersGraph(
         AddEditOrderRoot(
             navKey = route,
             args = AddEditOrderArgs(initialIsbn = route.isbn, prefill = route.prefill),
+            shared = route.shared,
             onSaved = onBack,
             onClose = onBack,
             snackbar = snackbar,

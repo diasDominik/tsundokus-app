@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Virheellinen ISBN. Tarkista numerot</string>
     <string name="add_edit_order_isbn_error_taken">Sinulla on jo tilaus tällä ISBN:llä</string>
     <string name="add_edit_order_isbn_scan_cd">Skannaa viivakoodi</string>
+    <string name="add_edit_order_isbn_from_image_cd">Lue ISBN kuvakaappauksesta</string>
     <string name="add_edit_order_isbn_looking_up">Haetaan kirjaa</string>
     <string name="add_edit_order_author_label">Tekijä</string>
     <string name="add_edit_order_volume_label">Osa</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Kameraa ei voitu käynnistää: %1$s</string>
     <string name="scanner_retry">Yritä uudelleen</string>
     <string name="scanner_dialog_title">Skannaa ISBN-viivakoodi</string>
+    <string name="scanner_text_dialog_title">Lue painettu ISBN</string>
+    <string name="scanner_mode_barcode">Viivakoodi</string>
+    <string name="scanner_mode_text">Painettu ISBN</string>
+    <string name="scanner_text_hint">Osoita kameralla yhtä ISBN-tunnusta: nimiösivun kääntöpuolella tai näytöllä, jolla tilauksesi näkyy.</string>
+
+    <string name="isbn_from_image_reading">Etsitään ISBN-tunnusta…</string>
+    <string name="isbn_from_image_choose_title">Mikä kirja?</string>
+    <string name="isbn_from_image_none_found">Kuvasta ei löytynyt ISBN-tunnusta. Kokeile kuvakaappausta, jossa ISBN näkyy.</string>
+    <string name="isbn_from_image_failed">Kuvaa ei voitu lukea.</string>
+    <string name="isbn_from_image_pick_another">Valitse toinen</string>
+    <string name="isbn_shared_text_none_found">Jaetussa sisällössä ei ole ISBN-tunnusta. Jaa sen sijaan kuvakaappaus tilauksesta tai kirjoita ISBN.</string>
     <string name="series_list_title">Sarjat</string>
     <string name="series_list_search_placeholder">Hae sarjaa, tekijää, ISBN:ää</string>
     <string name="series_list_sort">Järjestys · %1$s</string>

@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">ISBN ni veljaven. Preverite števke</string>
     <string name="add_edit_order_isbn_error_taken">Naročilo s to številko ISBN že imate</string>
     <string name="add_edit_order_isbn_scan_cd">Skeniraj črtno kodo</string>
+    <string name="add_edit_order_isbn_from_image_cd">Preberi ISBN s posnetka zaslona</string>
     <string name="add_edit_order_isbn_looking_up">Iščem knjigo</string>
     <string name="add_edit_order_author_label">Avtor</string>
     <string name="add_edit_order_volume_label">Zvezek</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Kamere ni bilo mogoče zagnati: %1$s</string>
     <string name="scanner_retry">Poskusi znova</string>
     <string name="scanner_dialog_title">Skenirajte črtno kodo ISBN</string>
+    <string name="scanner_text_dialog_title">Preberite natisnjeni ISBN</string>
+    <string name="scanner_mode_barcode">Črtna koda</string>
+    <string name="scanner_mode_text">Natisnjeni ISBN</string>
+    <string name="scanner_text_hint">Usmerite kamero v en ISBN: na kolofonu ali na zaslonu, ki prikazuje vaše naročilo.</string>
+
+    <string name="isbn_from_image_reading">Iščem ISBN …</string>
+    <string name="isbn_from_image_choose_title">Katera knjiga?</string>
+    <string name="isbn_from_image_none_found">Na tej sliki ni bilo najdene številke ISBN. Poskusite s posnetkom zaslona, na katerem se ISBN vidi.</string>
+    <string name="isbn_from_image_failed">Te slike ni bilo mogoče prebrati.</string>
+    <string name="isbn_from_image_pick_another">Izberi drugo</string>
+    <string name="isbn_shared_text_none_found">V deljeni vsebini ni številke ISBN. Raje delite posnetek zaslona naročila ali vnesite ISBN.</string>
     <string name="series_list_title">Serije</string>
     <string name="series_list_search_placeholder">Iščite serijo, avtorja, ISBN</string>
     <string name="series_list_sort">Razvrsti · %1$s</string>

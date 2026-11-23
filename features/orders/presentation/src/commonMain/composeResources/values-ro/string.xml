@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">ISBN nevalid. Verifică cifrele</string>
     <string name="add_edit_order_isbn_error_taken">Ai deja o comandă cu acest ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Scanează codul de bare</string>
+    <string name="add_edit_order_isbn_from_image_cd">Citește ISBN-ul dintr-o captură de ecran</string>
     <string name="add_edit_order_isbn_looking_up">Caut cartea</string>
     <string name="add_edit_order_author_label">Autor</string>
     <string name="add_edit_order_volume_label">Volum</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Camera nu a putut porni: %1$s</string>
     <string name="scanner_retry">Încearcă din nou</string>
     <string name="scanner_dialog_title">Scanează codul de bare ISBN</string>
+    <string name="scanner_text_dialog_title">Citește ISBN-ul tipărit</string>
+    <string name="scanner_mode_barcode">Cod de bare</string>
+    <string name="scanner_mode_text">ISBN tipărit</string>
+    <string name="scanner_text_hint">Îndreaptă camera spre un singur ISBN: pe pagina de copyright sau pe un ecran care îți arată comanda.</string>
+
+    <string name="isbn_from_image_reading">Caut ISBN-ul…</string>
+    <string name="isbn_from_image_choose_title">Care carte?</string>
+    <string name="isbn_from_image_none_found">Nu am găsit niciun ISBN în această imagine. Încearcă o captură de ecran în care se vede ISBN-ul.</string>
+    <string name="isbn_from_image_failed">Imaginea nu a putut fi citită.</string>
+    <string name="isbn_from_image_pick_another">Alege alta</string>
+    <string name="isbn_shared_text_none_found">Nu există niciun ISBN în ce s-a partajat. Partajează mai bine o captură de ecran a comenzii sau scrie ISBN-ul.</string>
     <string name="series_list_title">Serii</string>
     <string name="series_list_search_placeholder">Caută serie, autor, ISBN</string>
     <string name="series_list_sort">Sortare · %1$s</string>

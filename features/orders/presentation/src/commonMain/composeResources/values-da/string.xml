@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Ugyldigt ISBN. Tjek cifrene</string>
     <string name="add_edit_order_isbn_error_taken">Du har allerede en bestilling med dette ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Scan stregkode</string>
+    <string name="add_edit_order_isbn_from_image_cd">Læs ISBN fra et skærmbillede</string>
     <string name="add_edit_order_isbn_looking_up">Slår bogen op</string>
     <string name="add_edit_order_author_label">Forfatter</string>
     <string name="add_edit_order_volume_label">Bind</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Kameraet kunne ikke starte: %1$s</string>
     <string name="scanner_retry">Prøv igen</string>
     <string name="scanner_dialog_title">Scan ISBN-stregkoden</string>
+    <string name="scanner_text_dialog_title">Læs det trykte ISBN</string>
+    <string name="scanner_mode_barcode">Stregkode</string>
+    <string name="scanner_mode_text">Trykt ISBN</string>
+    <string name="scanner_text_hint">Peg kameraet mod ét ISBN: på kolofonsiden eller på en skærm, der viser din bestilling.</string>
+
+    <string name="isbn_from_image_reading">Leder efter ISBN…</string>
+    <string name="isbn_from_image_choose_title">Hvilken bog?</string>
+    <string name="isbn_from_image_none_found">Der blev ikke fundet noget ISBN i dette billede. Prøv et skærmbillede, hvor ISBN'et er synligt.</string>
+    <string name="isbn_from_image_failed">Billedet kunne ikke læses.</string>
+    <string name="isbn_from_image_pick_another">Vælg et andet</string>
+    <string name="isbn_shared_text_none_found">Der er intet ISBN i det delte. Del i stedet et skærmbillede af bestillingen, eller skriv ISBN'et.</string>
     <string name="series_list_title">Serier</string>
     <string name="series_list_search_placeholder">Søg serie, forfatter, ISBN</string>
     <string name="series_list_sort">Sortér · %1$s</string>

@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Μη έγκυρο ISBN. Ελέγξτε τα ψηφία</string>
     <string name="add_edit_order_isbn_error_taken">Έχετε ήδη παραγγελία με αυτό το ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Σάρωση γραμμωτού κώδικα</string>
+    <string name="add_edit_order_isbn_from_image_cd">Ανάγνωση του ISBN από στιγμιότυπο οθόνης</string>
     <string name="add_edit_order_isbn_looking_up">Αναζήτηση βιβλίου</string>
     <string name="add_edit_order_author_label">Συγγραφέας</string>
     <string name="add_edit_order_volume_label">Τόμος</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Δεν ήταν δυνατή η εκκίνηση της κάμερας: %1$s</string>
     <string name="scanner_retry">Δοκιμάστε ξανά</string>
     <string name="scanner_dialog_title">Σαρώστε τον γραμμωτό κώδικα ISBN</string>
+    <string name="scanner_text_dialog_title">Διαβάστε το τυπωμένο ISBN</string>
+    <string name="scanner_mode_barcode">Γραμμωτός κώδικας</string>
+    <string name="scanner_mode_text">Τυπωμένο ISBN</string>
+    <string name="scanner_text_hint">Στρέψτε την κάμερα σε ένα ISBN: στη σελίδα πνευματικών δικαιωμάτων ή σε μια οθόνη που δείχνει την παραγγελία σας.</string>
+
+    <string name="isbn_from_image_reading">Αναζήτηση ISBN…</string>
+    <string name="isbn_from_image_choose_title">Ποιο βιβλίο;</string>
+    <string name="isbn_from_image_none_found">Δεν βρέθηκε ISBN σε αυτή την εικόνα. Δοκιμάστε ένα στιγμιότυπο οθόνης όπου φαίνεται το ISBN.</string>
+    <string name="isbn_from_image_failed">Δεν ήταν δυνατή η ανάγνωση αυτής της εικόνας.</string>
+    <string name="isbn_from_image_pick_another">Επιλογή άλλης</string>
+    <string name="isbn_shared_text_none_found">Δεν υπάρχει ISBN σε ό,τι κοινοποιήθηκε. Κοινοποιήστε καλύτερα ένα στιγμιότυπο οθόνης της παραγγελίας ή πληκτρολογήστε το ISBN.</string>
     <string name="series_list_title">Σειρές</string>
     <string name="series_list_search_placeholder">Σειρά, συγγραφέας, ISBN</string>
     <string name="series_list_sort">Ταξινόμηση · %1$s</string>

@@ -30,6 +30,14 @@
         android:usesCleartextTraffic="false"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
+        <!--
+          Has Google Play services fetch ML Kit's text recognition model when the app is installed,
+          rather than on the first screenshot read for an ISBN.
+        -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -63,6 +71,14 @@
 
                 <data android:pathPrefix="/api/auth/verify" />
                 <data android:pathPrefix="/api/auth/reset-password" />
+            </intent-filter>
+
+            <!-- A screenshot of an order, or text with an ISBN in it, shared to start a new order. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
     </application>

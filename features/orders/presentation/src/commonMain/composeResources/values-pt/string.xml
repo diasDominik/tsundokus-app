@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">ISBN inválido. Verifique os dígitos</string>
     <string name="add_edit_order_isbn_error_taken">Já tem uma encomenda com este ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Ler o código de barras</string>
+    <string name="add_edit_order_isbn_from_image_cd">Ler o ISBN de uma captura de ecrã</string>
     <string name="add_edit_order_isbn_looking_up">A procurar o livro</string>
     <string name="add_edit_order_author_label">Autor</string>
     <string name="add_edit_order_volume_label">Volume</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Não foi possível iniciar a câmara: %1$s</string>
     <string name="scanner_retry">Tentar novamente</string>
     <string name="scanner_dialog_title">Ler o código de barras ISBN</string>
+    <string name="scanner_text_dialog_title">Ler o ISBN impresso</string>
+    <string name="scanner_mode_barcode">Código de barras</string>
+    <string name="scanner_mode_text">ISBN impresso</string>
+    <string name="scanner_text_hint">Aponte a câmara para um só ISBN: na página de direitos de autor ou num ecrã que mostre a sua encomenda.</string>
+
+    <string name="isbn_from_image_reading">A procurar o ISBN…</string>
+    <string name="isbn_from_image_choose_title">Que livro?</string>
+    <string name="isbn_from_image_none_found">Não foi encontrado nenhum ISBN nesta imagem. Experimente uma captura de ecrã em que o ISBN esteja visível.</string>
+    <string name="isbn_from_image_failed">Não foi possível ler esta imagem.</string>
+    <string name="isbn_from_image_pick_another">Escolher outra</string>
+    <string name="isbn_shared_text_none_found">Não há nenhum ISBN no conteúdo partilhado. Partilhe antes uma captura de ecrã da encomenda ou escreva o ISBN.</string>
     <string name="series_list_title">Séries</string>
     <string name="series_list_search_placeholder">Pesquisar série, autor, ISBN</string>
     <string name="series_list_sort">Ordenar · %1$s</string>

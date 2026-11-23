@@ -149,6 +149,13 @@ class AddEditOrderViewModel(
      */
     private var pristine = _state.value
 
+    /**
+     * What the last book lookup wrote into the form, by field, and the currency that came with its
+     * price. Kept so a lookup for another ISBN can take the previous book's details back out again.
+     */
+    private var lookupFills: Map<LookedUpField, String> = emptyMap()
+    private var lookupCurrency: AppCurrency? = null
+
     init {
         // The suggestion pools come from the local cache, so they are there offline and refresh
         // themselves when a sync brings new orders in.
@@ -210,6 +217,11 @@ class AddEditOrderViewModel(
                     // A status the user picked themselves stands; only the one the form opened on gives way.
                     if (scanned.status == pristine.status) scanned.receivedOnScan() else scanned
                 }
+                lookUpBook(delayMillis = 0)
+            }
+
+            is AddEditOrderAction.OnIsbnRead -> {
+                updateForm { it.withIsbn(action.isbn) }
                 lookUpBook(delayMillis = 0)
             }
 
@@ -501,7 +513,7 @@ class AddEditOrderViewModel(
                 _state.update { it.copy(isLookingUpBook = true) }
                 val result = bookRepository.lookup(isbn)
                 _state.update { it.copy(isLookingUpBook = false) }
-                result.onSuccess { book -> book?.let(::fillFrom) }
+                result.onSuccess { book -> fillFrom(isbn, book) }
             }
     }
 
@@ -509,22 +521,56 @@ class AddEditOrderViewModel(
      * Fills only the blank fields: whatever the user typed — before or while the lookup ran — is the
      * better answer. What the book databases don't know, the user's orders of that series may. Goes
      * through [updateForm] so it counts as an edit like any other.
+     *
+     * What an earlier lookup filled in for another ISBN is taken out first, so a second pick doesn't
+     * leave the first book's title beside the new ISBN; a field the user has since changed stays. When
+     * nothing is known about [isbn], that is all that happens.
      */
-    private fun fillFrom(book: BookInfo) {
+    private fun fillFrom(
+        isbn: String,
+        book: BookInfo?,
+    ) {
         // The ISBN changed while this was on its way; its answer no longer applies.
-        if (Isbn.normalize(_state.value.isbn) != book.isbn) return
+        if (Isbn.normalize(_state.value.isbn) != isbn) return
         updateForm { current ->
+            val cleared = current.withoutLookupFills()
             val filled =
-                current.copy(
-                    title = current.title.ifBlank { book.title.orEmpty() },
-                    author = current.author.ifBlank { book.author.orEmpty() },
-                    publisher = current.publisher.ifBlank { book.publisher.orEmpty() },
-                    volume = current.volume.ifBlank { book.volume.orEmpty() },
-                    releaseDate = current.releaseDate.ifBlank { book.releaseDate.orEmpty() },
-                    coverIsbn = if (book.hasCover) book.isbn else current.coverIsbn,
-                )
-            filled.withSeriesDetails().clearingFilled()
+                if (book == null) {
+                    cleared
+                } else {
+                    cleared
+                        .copy(
+                            title = cleared.title.ifBlank { book.title.orEmpty() },
+                            author = cleared.author.ifBlank { book.author.orEmpty() },
+                            publisher = cleared.publisher.ifBlank { book.publisher.orEmpty() },
+                            volume = cleared.volume.ifBlank { book.volume.orEmpty() },
+                            releaseDate = cleared.releaseDate.ifBlank { book.releaseDate.orEmpty() },
+                            coverIsbn = if (book.hasCover) book.isbn else cleared.coverIsbn,
+                        ).withSeriesDetails()
+                        .clearingFilled()
+                }
+            // Recomputed in full should the update be retried, so this always matches what is kept.
+            lookupFills =
+                LookedUpField.entries
+                    .filter { it.read(filled) != it.read(cleared) }
+                    .associateWith { it.read(filled) }
+            lookupCurrency = filled.currency.takeIf { it != cleared.currency }
+            filled
         }
+    }
+
+    /** The form with what the last lookup wrote blanked again, wherever it still holds just that. */
+    private fun AddEditOrderState.withoutLookupFills(): AddEditOrderState {
+        var form = this
+        for ((field, value) in lookupFills) {
+            if (field.read(form) == value) form = field.write(form, "")
+        }
+        // The currency came with the price; with the price gone, it goes back to the form's own.
+        val currency = lookupCurrency
+        if (currency != null && form.currency == currency && form.price.isBlank()) {
+            form = form.copy(currency = pristine.currency)
+        }
+        return form
     }
 
     /** Adopts the current form as the new baseline: nothing here counts as unsaved any more. */
@@ -675,4 +721,18 @@ class AddEditOrderViewModel(
             createdAt = if (isEdit) originalCreatedAt else nowEpochMillis(),
         )
     }
+}
+
+/** The fields a book lookup fills in, from the book itself or from the user's orders of its series. */
+private enum class LookedUpField(
+    val read: (AddEditOrderState) -> String,
+    val write: (AddEditOrderState, String) -> AddEditOrderState,
+) {
+    TITLE({ it.title }, { form, value -> form.copy(title = value) }),
+    AUTHOR({ it.author }, { form, value -> form.copy(author = value) }),
+    PUBLISHER({ it.publisher }, { form, value -> form.copy(publisher = value) }),
+    VOLUME({ it.volume }, { form, value -> form.copy(volume = value) }),
+    RELEASE_DATE({ it.releaseDate }, { form, value -> form.copy(releaseDate = value) }),
+    STORE({ it.store }, { form, value -> form.copy(store = value) }),
+    PRICE({ it.price }, { form, value -> form.copy(price = value) }),
 }

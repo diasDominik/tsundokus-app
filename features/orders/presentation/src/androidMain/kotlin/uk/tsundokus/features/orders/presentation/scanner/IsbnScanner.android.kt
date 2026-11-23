@@ -37,6 +37,7 @@ actual fun isCameraScanningSupported(): Boolean = true
 
 @Composable
 internal actual fun PlatformIsbnCamera(
+    mode: IsbnCameraMode,
     accept: (isbn: String) -> Boolean,
     onIsbn: (isbn: String) -> Unit,
     onError: (message: String) -> Unit,
@@ -68,7 +69,15 @@ internal actual fun PlatformIsbnCamera(
 
     when {
         granted -> {
-            KScanIsbnView(accept = accept, onIsbn = onIsbn, onError = onError, modifier = modifier)
+            when (mode) {
+                IsbnCameraMode.BARCODE -> {
+                    KScanIsbnView(accept = accept, onIsbn = onIsbn, onError = onError, modifier = modifier)
+                }
+
+                IsbnCameraMode.TEXT -> {
+                    TextIsbnCameraView(accept = accept, onIsbn = onIsbn, onError = onError, modifier = modifier)
+                }
+            }
         }
 
         // After a refusal Android shows its prompt at most once more; past that, only the app's

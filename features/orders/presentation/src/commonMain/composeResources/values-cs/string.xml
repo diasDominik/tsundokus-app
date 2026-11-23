@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Neplatné ISBN. Zkontrolujte číslice</string>
     <string name="add_edit_order_isbn_error_taken">Objednávku s tímto ISBN už máte</string>
     <string name="add_edit_order_isbn_scan_cd">Naskenovat čárový kód</string>
+    <string name="add_edit_order_isbn_from_image_cd">Přečíst ISBN ze snímku obrazovky</string>
     <string name="add_edit_order_isbn_looking_up">Hledám knihu</string>
     <string name="add_edit_order_author_label">Autor</string>
     <string name="add_edit_order_volume_label">Svazek</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Fotoaparát se nepodařilo spustit: %1$s</string>
     <string name="scanner_retry">Zkusit znovu</string>
     <string name="scanner_dialog_title">Naskenujte čárový kód ISBN</string>
+    <string name="scanner_text_dialog_title">Přečtěte vytištěné ISBN</string>
+    <string name="scanner_mode_barcode">Čárový kód</string>
+    <string name="scanner_mode_text">Vytištěné ISBN</string>
+    <string name="scanner_text_hint">Namiřte fotoaparát na jedno ISBN: na tiráž, nebo na obrazovku s vaší objednávkou.</string>
+
+    <string name="isbn_from_image_reading">Hledám ISBN…</string>
+    <string name="isbn_from_image_choose_title">Která kniha?</string>
+    <string name="isbn_from_image_none_found">V tomto obrázku nebylo nalezeno žádné ISBN. Zkuste snímek obrazovky, na kterém je ISBN vidět.</string>
+    <string name="isbn_from_image_failed">Tento obrázek nelze přečíst.</string>
+    <string name="isbn_from_image_pick_another">Vybrat jiný</string>
+    <string name="isbn_shared_text_none_found">Ve sdíleném obsahu není žádné ISBN. Sdílejte raději snímek obrazovky objednávky, nebo ISBN napište.</string>
     <string name="series_list_title">Série</string>
     <string name="series_list_search_placeholder">Hledat sérii, autora, ISBN</string>
     <string name="series_list_sort">Řazení · %1$s</string>

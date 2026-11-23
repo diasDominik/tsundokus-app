@@ -28,22 +28,54 @@ import org.jetbrains.compose.resources.stringResource
 import tsundokuapp.features.orders.presentation.generated.resources.Res
 import tsundokuapp.features.orders.presentation.generated.resources.scanner_error
 import tsundokuapp.features.orders.presentation.generated.resources.scanner_retry
+import uk.tsundokus.features.orders.domain.models.Isbn
 
 /** Whether this platform can scan with a camera. Desktop cannot; it types the ISBN instead. */
 expect fun isCameraScanningSupported(): Boolean
 
+/** What the camera reads the ISBN from. */
+enum class IsbnCameraMode {
+    /** The EAN-13 barcode on the back of the book. */
+    BARCODE,
+
+    /** The ISBN printed as text: on the copyright page, or on a screen showing an order. */
+    TEXT,
+}
+
 /**
  * The platform's camera preview, reporting each ISBN it reads as ISBN-13 digits. Handles the camera
  * permission itself. Stops after the first ISBN [accept]s, like the KScan view underneath it;
- * [IsbnScanner] re-arms it. Never composed where [isCameraScanningSupported] is false.
+ * [IsbnScanner] re-arms it. Never composed where [isCameraScanningSupported] is false, nor in
+ * [IsbnCameraMode.TEXT] where [rememberImageTextReader] gives none.
  */
 @Composable
 internal expect fun PlatformIsbnCamera(
+    mode: IsbnCameraMode,
     accept: (isbn: String) -> Boolean,
     onIsbn: (isbn: String) -> Unit,
     onError: (message: String) -> Unit,
     modifier: Modifier,
 )
+
+/**
+ * Settles on an ISBN read live off camera frames in [IsbnCameraMode.TEXT]. A frame's ISBN is taken
+ * only once the next frame reads the same one: a misread digit that still passes the check digit is
+ * rarely misread the same way twice. Several ISBNs in view at once (an order page listing several
+ * books) settle nothing, so the camera is pointed at the one wanted.
+ */
+internal class IsbnTextSightings(
+    private val accept: (isbn: String) -> Boolean,
+) {
+    private var previous: String? = null
+
+    /** The ISBN this frame's [text] confirms, if any. */
+    fun onFrame(text: String): String? {
+        val seen = Isbn.findAll(text).filter(accept).singleOrNull()
+        val confirmed = seen?.takeIf { it == previous }
+        previous = seen
+        return confirmed
+    }
+}
 
 /**
  * A camera viewfinder that reads ISBN barcodes, one book after another. Only EAN-13 codes that are
@@ -60,6 +92,7 @@ fun IsbnScanner(
     onIsbn: (isbn: String) -> Unit,
     modifier: Modifier = Modifier,
     ignoreIsbn: String? = null,
+    mode: IsbnCameraMode = IsbnCameraMode.BARCODE,
 ) {
     // Keying the camera on this restarts it: the view underneath stops after its first read.
     var generation by remember { mutableIntStateOf(0) }
@@ -82,8 +115,9 @@ fun IsbnScanner(
                 },
             )
         } else {
-            key(generation) {
+            key(generation, mode) {
                 PlatformIsbnCamera(
+                    mode = mode,
                     accept = { isbn -> isbn != currentIgnore },
                     onIsbn = { isbn ->
                         generation++

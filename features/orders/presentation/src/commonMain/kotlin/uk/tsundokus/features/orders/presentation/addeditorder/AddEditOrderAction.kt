@@ -19,6 +19,12 @@ sealed interface AddEditOrderAction {
     /** Read from a scanned barcode: complete at once, so it is looked up without waiting. */
     data class OnIsbnScanned(val isbn: String) : AddEditOrderAction
 
+    /**
+     * Read off a screenshot or out of shared text: complete, so looked up at once like a scan, but it
+     * comes from an order page rather than the book itself, so the book is not taken to be in hand.
+     */
+    data class OnIsbnRead(val isbn: String) : AddEditOrderAction
+
     data class OnStoreChange(val value: String) : AddEditOrderAction
 
     data class OnPriceChange(val value: String) : AddEditOrderAction

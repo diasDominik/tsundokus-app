@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Nieprawidłowy ISBN. Sprawdź cyfry</string>
     <string name="add_edit_order_isbn_error_taken">Masz już zamówienie z tym ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Zeskanuj kod kreskowy</string>
+    <string name="add_edit_order_isbn_from_image_cd">Odczytaj ISBN ze zrzutu ekranu</string>
     <string name="add_edit_order_isbn_looking_up">Szukam książki</string>
     <string name="add_edit_order_author_label">Autor</string>
     <string name="add_edit_order_volume_label">Tom</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Nie udało się uruchomić aparatu: %1$s</string>
     <string name="scanner_retry">Spróbuj ponownie</string>
     <string name="scanner_dialog_title">Zeskanuj kod kreskowy ISBN</string>
+    <string name="scanner_text_dialog_title">Odczytaj wydrukowany ISBN</string>
+    <string name="scanner_mode_barcode">Kod kreskowy</string>
+    <string name="scanner_mode_text">Wydrukowany ISBN</string>
+    <string name="scanner_text_hint">Skieruj aparat na jeden ISBN: na stronie redakcyjnej albo na ekranie z Twoim zamówieniem.</string>
+
+    <string name="isbn_from_image_reading">Szukam ISBN…</string>
+    <string name="isbn_from_image_choose_title">Która książka?</string>
+    <string name="isbn_from_image_none_found">Na tym obrazie nie znaleziono ISBN. Spróbuj zrzutu ekranu, na którym widać ISBN.</string>
+    <string name="isbn_from_image_failed">Nie udało się odczytać tego obrazu.</string>
+    <string name="isbn_from_image_pick_another">Wybierz inny</string>
+    <string name="isbn_shared_text_none_found">W udostępnionej treści nie ma ISBN. Udostępnij zamiast tego zrzut ekranu zamówienia albo wpisz ISBN.</string>
     <string name="series_list_title">Serie</string>
     <string name="series_list_search_placeholder">Szukaj serii, autora, ISBN</string>
     <string name="series_list_sort">Sortuj · %1$s</string>

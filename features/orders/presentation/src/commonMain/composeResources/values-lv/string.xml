@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Nederīgs ISBN. Pārbaudiet ciparus</string>
     <string name="add_edit_order_isbn_error_taken">Jums jau ir pasūtījums ar šo ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Skenēt svītrkodu</string>
+    <string name="add_edit_order_isbn_from_image_cd">Nolasīt ISBN no ekrānuzņēmuma</string>
     <string name="add_edit_order_isbn_looking_up">Meklē grāmatu</string>
     <string name="add_edit_order_author_label">Autors</string>
     <string name="add_edit_order_volume_label">Sējums</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Kameru neizdevās palaist: %1$s</string>
     <string name="scanner_retry">Mēģināt vēlreiz</string>
     <string name="scanner_dialog_title">Skenējiet ISBN svītrkodu</string>
+    <string name="scanner_text_dialog_title">Nolasiet drukāto ISBN</string>
+    <string name="scanner_mode_barcode">Svītrkods</string>
+    <string name="scanner_mode_text">Drukātais ISBN</string>
+    <string name="scanner_text_hint">Pavērsiet kameru pret vienu ISBN: titullapas otrajā pusē vai ekrānā, kurā redzams jūsu pasūtījums.</string>
+
+    <string name="isbn_from_image_reading">Meklē ISBN…</string>
+    <string name="isbn_from_image_choose_title">Kura grāmata?</string>
+    <string name="isbn_from_image_none_found">Šajā attēlā ISBN netika atrasts. Mēģiniet ar ekrānuzņēmumu, kurā redzams ISBN.</string>
+    <string name="isbn_from_image_failed">Šo attēlu nevarēja nolasīt.</string>
+    <string name="isbn_from_image_pick_another">Izvēlēties citu</string>
+    <string name="isbn_shared_text_none_found">Kopīgotajā saturā nav ISBN. Tā vietā kopīgojiet pasūtījuma ekrānuzņēmumu vai ievadiet ISBN.</string>
     <string name="series_list_title">Sērijas</string>
     <string name="series_list_search_placeholder">Meklēt sēriju, autoru, ISBN</string>
     <string name="series_list_sort">Kārtot · %1$s</string>

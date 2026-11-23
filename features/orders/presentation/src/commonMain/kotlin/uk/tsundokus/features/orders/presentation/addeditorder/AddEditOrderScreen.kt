@@ -69,6 +69,7 @@ import tsundokuapp.features.orders.presentation.generated.resources.add_edit_ord
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_invalid
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_required
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_error_taken
+import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_from_image_cd
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_label
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_looking_up
 import tsundokuapp.features.orders.presentation.generated.resources.add_edit_order_isbn_scan_cd
@@ -117,8 +118,13 @@ import uk.tsundokus.features.orders.presentation.components.OrderDateField
 import uk.tsundokus.features.orders.presentation.components.OrderDeleteConfirmDialog
 import uk.tsundokus.features.orders.presentation.components.ReadStateSegmented
 import uk.tsundokus.features.orders.presentation.components.labelRes
+import uk.tsundokus.features.orders.presentation.navigation.SharedIsbnSource
+import uk.tsundokus.features.orders.presentation.scanner.IsbnReadingDialog
 import uk.tsundokus.features.orders.presentation.scanner.IsbnScannerDialog
+import uk.tsundokus.features.orders.presentation.scanner.ReadSharedIsbn
 import uk.tsundokus.features.orders.presentation.scanner.isCameraScanningSupported
+import uk.tsundokus.features.orders.presentation.scanner.rememberIsbnImagePicker
+import uk.tsundokus.features.orders.presentation.scanner.rememberIsbnReading
 
 @Composable
 fun AddEditOrderRoot(
@@ -127,6 +133,7 @@ fun AddEditOrderRoot(
     onSaved: () -> Unit,
     onClose: () -> Unit,
     snackbar: SnackbarController,
+    shared: SharedIsbnSource? = null,
     viewModel: AddEditOrderViewModel =
         koinViewModel(
             key = args.orderId ?: "add:${args.hashCode()}",
@@ -134,6 +141,10 @@ fun AddEditOrderRoot(
         ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    // An ISBN read off a screenshot or out of shared text; a choice is offered when there are several.
+    val isbnReading = rememberIsbnReading { isbn -> viewModel.onAction(AddEditOrderAction.OnIsbnRead(isbn)) }
+    val pickImage = rememberIsbnImagePicker(isbnReading)
+    ReadSharedIsbn(shared = shared, reading = isbnReading)
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -186,7 +197,9 @@ fun AddEditOrderRoot(
     AddEditOrderScreen(
         state = state,
         onAction = viewModel::onAction,
+        onPickImage = pickImage,
     )
+    IsbnReadingDialog(reading = isbnReading, onPickAnother = pickImage)
 
     if (confirmingDiscard) {
         TsundokuConfirmDialog(
@@ -210,6 +223,7 @@ private fun AddEditOrderScreen(
     state: AddEditOrderState,
     onAction: (AddEditOrderAction) -> Unit,
     modifier: Modifier = Modifier,
+    onPickImage: (() -> Unit)? = null,
 ) {
     // Capped and centred like the settings screens: on a desktop window these fields would
     // otherwise stretch the full width, putting a text input a thousand pixels wide on screen.
@@ -232,7 +246,7 @@ private fun AddEditOrderScreen(
                     .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            AddEditOrderForm(state = state, onAction = onAction)
+            AddEditOrderForm(state = state, onAction = onAction, onPickImage = onPickImage)
         }
     }
 }
@@ -244,6 +258,7 @@ private val FORM_MAX_WIDTH = 600.dp
 private fun ColumnScope.AddEditOrderForm(
     state: AddEditOrderState,
     onAction: (AddEditOrderAction) -> Unit,
+    onPickImage: (() -> Unit)?,
 ) {
     run {
         SectionLabel(Res.string.add_edit_order_section_status)
@@ -268,7 +283,7 @@ private fun ColumnScope.AddEditOrderForm(
             onAction = onAction,
         )
 
-        IsbnFormField(state = state, onAction = onAction)
+        IsbnFormField(state = state, onAction = onAction, onPickImage = onPickImage)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             SuggestingFormField(
@@ -567,13 +582,15 @@ private fun SuggestingFormField(
 }
 
 /**
- * The ISBN, typed or read off the barcode. The scan button only appears where there is a camera to
- * scan with; everywhere else the field is typed into (a USB barcode scanner types too).
+ * The ISBN, typed, read off the barcode, or read off a screenshot of the order. The scan and
+ * screenshot buttons only appear where the platform can do that; everywhere else the field is typed
+ * into (a USB barcode scanner types too).
  */
 @Composable
 private fun IsbnFormField(
     state: AddEditOrderState,
     onAction: (AddEditOrderAction) -> Unit,
+    onPickImage: (() -> Unit)?,
 ) {
     var scanning by remember { mutableStateOf(false) }
     val canScan = remember { isCameraScanningSupported() }
@@ -585,6 +602,7 @@ private fun IsbnFormField(
             onAction = onAction,
             canScan = canScan,
             onScan = { scanning = true },
+            onPickImage = onPickImage,
             modifier = Modifier.weight(1f),
         )
         // The looked-up book's cover, so it is plain at a glance that the right book was found.
@@ -598,6 +616,10 @@ private fun IsbnFormField(
                 onAction(AddEditOrderAction.OnIsbnScanned(isbn))
             },
             onDismiss = { scanning = false },
+            onIsbnRead = { isbn ->
+                scanning = false
+                onAction(AddEditOrderAction.OnIsbnRead(isbn))
+            },
         )
     }
 }
@@ -608,8 +630,10 @@ private fun IsbnTextField(
     onAction: (AddEditOrderAction) -> Unit,
     canScan: Boolean,
     onScan: () -> Unit,
+    onPickImage: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
+    val hasButton = canScan || onPickImage != null
     val lookingUpLabel = stringResource(Res.string.add_edit_order_isbn_looking_up)
     OutlinedTextField(
         value = state.isbn,
@@ -620,7 +644,7 @@ private fun IsbnTextField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
         trailingIcon =
-            if (canScan || state.isLookingUpBook) {
+            if (hasButton || state.isLookingUpBook) {
                 {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (state.isLookingUpBook) {
@@ -632,6 +656,17 @@ private fun IsbnTextField(
                                     },
                             )
                         }
+                        if (onPickImage != null) {
+                            IconButton(onClick = onPickImage) {
+                                Icon(
+                                    imageVector = TsundokuIcons.ImageSearch,
+                                    contentDescription =
+                                        stringResource(
+                                            Res.string.add_edit_order_isbn_from_image_cd,
+                                        ),
+                                )
+                            }
+                        }
                         if (canScan) {
                             IconButton(onClick = onScan) {
                                 Icon(
@@ -639,9 +674,8 @@ private fun IsbnTextField(
                                     contentDescription = stringResource(Res.string.add_edit_order_isbn_scan_cd),
                                 )
                             }
-                        } else {
-                            HorizontalSpacer(12.dp)
                         }
+                        if (!hasButton) HorizontalSpacer(12.dp)
                     }
                 }
             } else {
