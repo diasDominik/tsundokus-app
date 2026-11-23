@@ -1,0 +1,3 @@
+• Vous avez commandé un livre en ligne ? Plus besoin de taper l'ISBN : choisissez une capture d'écran de la confirmation de commande, ou partagez-la avec Tsundoku depuis le navigateur ou l'app de la boutique. S'il y a plusieurs livres, choisissez le bon.
+• Le scanner lit aussi l'ISBN imprimé, sur la page de copyright ou sur un écran affichant votre commande.
+• Choisir un autre livre dans le formulaire de commande remplace désormais les informations remplies pour le précédent.

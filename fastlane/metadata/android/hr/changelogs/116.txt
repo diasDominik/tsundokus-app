@@ -1,0 +1,3 @@
+• Naručili ste knjigu online? ISBN više ne morate upisivati: odaberite snimku zaslona potvrde narudžbe ili je podijelite s Tsundokuom iz preglednika ili aplikacije trgovine. Ako je na njoj više knjiga, odaberite pravu.
+• Skener sada čita i otisnuti ISBN, na stranici s podacima o izdanju ili na zaslonu koji prikazuje vašu narudžbu.
+• Odabir druge knjige u obrascu narudžbe sada zamjenjuje podatke ispunjene za prethodnu.

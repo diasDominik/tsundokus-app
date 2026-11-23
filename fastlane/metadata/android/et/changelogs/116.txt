@@ -1,0 +1,3 @@
+• Tellisid raamatu veebist? ISBN-i ei pea enam käsitsi sisestama: vali tellimuse kinnituse ekraanipilt või jaga seda brauserist või poe rakendusest Tsundokule. Kui sellel on mitu raamatut, vali õige.
+• Skanner loeb nüüd ka trükitud ISBN-i, tiitellehe pöördelt või ekraanilt, kus on näha sinu tellimus.
+• Kui valid tellimusvormis teise raamatu, asendatakse nüüd eelmise raamatu andmed.

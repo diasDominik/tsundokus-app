@@ -1,0 +1,3 @@
+• Objednali ste si knihu online? ISBN už nemusíte prepisovať: vyberte snímku obrazovky s potvrdením objednávky alebo ju zdieľajte do Tsundoku z prehliadača či aplikácie obchodu. Ak je na nej viac kníh, vyberte tú správnu.
+• Skener teraz prečíta aj vytlačené ISBN, na tiráži alebo na obrazovke s vašou objednávkou.
+• Keď vo formulári objednávky zvolíte inú knihu, údaje vyplnené pre predchádzajúcu sa teraz nahradia.

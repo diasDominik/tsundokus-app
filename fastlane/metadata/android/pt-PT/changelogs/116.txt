@@ -1,0 +1,3 @@
+• Encomendou um livro online? Já não precisa de escrever o ISBN: escolha uma captura de ecrã da confirmação da encomenda ou partilhe-a com o Tsundoku a partir do navegador ou da app da loja. Se tiver vários livros, escolha o que pretende.
+• O leitor lê agora também o ISBN impresso, na página de direitos de autor ou num ecrã que mostre a sua encomenda.
+• Escolher outro livro no formulário da encomenda substitui agora os dados preenchidos para o anterior.

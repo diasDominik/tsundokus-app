@@ -1,0 +1,3 @@
+• Ein Buch online bestellt? Die ISBN musst du nicht mehr abtippen: Wähle einen Screenshot der Bestellbestätigung oder teile ihn aus dem Browser oder der Shop-App mit Tsundoku. Stehen mehrere Bücher darauf, wählst du das richtige aus.
+• Der Scanner liest jetzt auch die gedruckte ISBN, auf der Impressumseite oder auf einem Bildschirm mit deiner Bestellung.
+• Wählst du im Bestellformular ein anderes Buch, werden die Angaben zum vorherigen jetzt ersetzt.
