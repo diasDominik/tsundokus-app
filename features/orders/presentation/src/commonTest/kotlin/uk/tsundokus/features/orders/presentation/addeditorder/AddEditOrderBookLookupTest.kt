@@ -35,6 +35,17 @@ import kotlin.test.assertTrue
 private const val ISBN = "9784088820453"
 private const val OTHER_ISBN = "9780439420891"
 
+private val otherBook =
+    BookInfo(
+        isbn = OTHER_ISBN,
+        title = "Harry Potter and the Chamber of Secrets",
+        author = "J. K. Rowling",
+        publisher = "Scholastic",
+        volume = null,
+        releaseDate = null,
+        hasCover = false,
+    )
+
 private val book =
     BookInfo(
         isbn = ISBN,
@@ -152,6 +163,74 @@ class AddEditOrderBookLookupTest {
 
             assertEquals("My own title", sut.state.value.title)
             assertEquals(book.author, sut.state.value.author)
+        }
+
+    @Test
+    fun `picking another ISBN replaces what the lookup filled in for the first`() =
+        runTest(dispatcher) {
+            val sut = viewModel(FakeBookRepository(mapOf(ISBN to book, OTHER_ISBN to otherBook)))
+            advanceUntilIdle()
+
+            sut.onAction(AddEditOrderAction.OnIsbnRead(ISBN))
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnIsbnRead(OTHER_ISBN))
+            advanceUntilIdle()
+
+            val state = sut.state.value
+            assertEquals(otherBook.title, state.title)
+            assertEquals(otherBook.author, state.author)
+            assertEquals(otherBook.publisher, state.publisher)
+            // The second book has no volume or release date: the first book's are gone, not kept.
+            assertEquals("", state.volume)
+            assertEquals("", state.releaseDate)
+        }
+
+    @Test
+    fun `what the user changed after a lookup survives the next one`() =
+        runTest(dispatcher) {
+            val sut = viewModel(FakeBookRepository(mapOf(ISBN to book, OTHER_ISBN to otherBook)))
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnIsbnRead(ISBN))
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnTitleChange("My own title"))
+
+            sut.onAction(AddEditOrderAction.OnIsbnRead(OTHER_ISBN))
+            advanceUntilIdle()
+
+            assertEquals("My own title", sut.state.value.title)
+            assertEquals(otherBook.author, sut.state.value.author)
+        }
+
+    @Test
+    fun `an ISBN nothing is known about clears the previous book's details`() =
+        runTest(dispatcher) {
+            val sut = viewModel(FakeBookRepository(mapOf(ISBN to book)))
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnIsbnRead(ISBN))
+            advanceUntilIdle()
+
+            sut.onAction(AddEditOrderAction.OnIsbnRead(OTHER_ISBN))
+            advanceUntilIdle()
+
+            assertEquals("", sut.state.value.title)
+            assertEquals("", sut.state.value.author)
+        }
+
+    @Test
+    fun `a failed lookup leaves the previous book's details alone`() =
+        runTest(dispatcher) {
+            val books = FakeBookRepository(mapOf(ISBN to book))
+            val sut = viewModel(books)
+            advanceUntilIdle()
+            sut.onAction(AddEditOrderAction.OnIsbnRead(ISBN))
+            advanceUntilIdle()
+
+            // Offline says nothing about the new ISBN, so there is no reason to empty the form.
+            books.failing = true
+            sut.onAction(AddEditOrderAction.OnIsbnRead(OTHER_ISBN))
+            advanceUntilIdle()
+
+            assertEquals(book.title, sut.state.value.title)
         }
 
     @Test

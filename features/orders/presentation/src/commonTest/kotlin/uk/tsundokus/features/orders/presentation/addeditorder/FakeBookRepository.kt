@@ -6,10 +6,10 @@ import uk.tsundokus.core.domain.util.Result
 import uk.tsundokus.features.orders.domain.book.BookInfo
 import uk.tsundokus.features.orders.domain.book.BookRepository
 
-/** Answers from [books]; with [gate] set, every lookup waits for it, to test what happens meanwhile. */
+/** Answers from [books], or fails while [failing]; with [gate] set, every lookup waits for it, to test what happens meanwhile. */
 internal class FakeBookRepository(
     private val books: Map<String, BookInfo> = emptyMap(),
-    private val failing: Boolean = false,
+    var failing: Boolean = false,
     var gate: CompletableDeferred<Unit>? = null,
 ) : BookRepository {
     val lookedUp = mutableListOf<String>()
