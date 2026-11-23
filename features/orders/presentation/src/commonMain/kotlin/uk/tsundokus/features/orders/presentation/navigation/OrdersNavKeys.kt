@@ -84,17 +84,30 @@ data class OrderDetail(val orderId: String) : LoggableNavKey(), LoggedIn, Screen
 
 /**
  * A new order. [isbn] is set when it was started from a scanned barcode nothing matched, [prefill]
- * when it continues a series.
+ * when it continues a series, [shared] when a screenshot or text was shared into the app to start it.
  */
 @Serializable
 data class AddOrder(
     val isbn: String = "",
     val prefill: OrderPrefill? = null,
+    val shared: SharedIsbnSource? = null,
 ) : LoggableNavKey(),
     LoggedIn,
     ScreenWithTopBar {
     override val topBarTitle: UiText get() = UiText.Resource(Res.string.nav_add_order)
     override val topBarAction: TopBarAction get() = TopBarAction.Close
+}
+
+/** What another app shared into Tsundoku to start an order with: the ISBN is read out of it. */
+@Serializable
+sealed interface SharedIsbnSource {
+    /** Selected text, or a shop page's link, which often carries the ISBN (or Amazon's ISBN-10). */
+    @Serializable
+    data class Text(val text: String) : SharedIsbnSource
+
+    /** A screenshot or photo, by the URI the sharing app granted access to. */
+    @Serializable
+    data class Image(val uri: String) : SharedIsbnSource
 }
 
 @Serializable

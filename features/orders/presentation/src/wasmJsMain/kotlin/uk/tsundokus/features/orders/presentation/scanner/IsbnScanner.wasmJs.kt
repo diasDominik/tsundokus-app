@@ -15,6 +15,7 @@ actual fun isCameraScanningSupported(): Boolean = true
  */
 @Composable
 internal actual fun PlatformIsbnCamera(
+    mode: IsbnCameraMode,
     accept: (isbn: String) -> Boolean,
     onIsbn: (isbn: String) -> Unit,
     onError: (message: String) -> Unit,

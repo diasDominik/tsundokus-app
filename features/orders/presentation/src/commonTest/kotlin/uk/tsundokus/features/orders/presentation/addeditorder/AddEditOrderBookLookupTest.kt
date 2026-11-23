@@ -315,6 +315,22 @@ class AddEditOrderBookLookupTest {
         }
 
     @Test
+    fun `an ISBN read off a screenshot is looked up at once and leaves the status alone`() =
+        runTest(dispatcher) {
+            val books = FakeBookRepository(mapOf(ISBN to book))
+            val sut = viewModel(books)
+            advanceUntilIdle()
+
+            sut.onAction(AddEditOrderAction.OnIsbnRead(ISBN))
+            runCurrent()
+
+            assertEquals(listOf(ISBN), books.lookedUp)
+            advanceUntilIdle()
+            assertEquals(book.title, sut.state.value.title)
+            assertEquals(OrderStatus.ORDERED, sut.state.value.status)
+        }
+
+    @Test
     fun `a typed ISBN leaves the status alone`() =
         runTest(dispatcher) {
             val sut = viewModel()

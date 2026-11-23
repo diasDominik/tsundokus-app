@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Невалиден ISBN. Проверете цифрите</string>
     <string name="add_edit_order_isbn_error_taken">Вече имате поръчка с този ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Сканиране на баркода</string>
+    <string name="add_edit_order_isbn_from_image_cd">Разчитане на ISBN от екранна снимка</string>
     <string name="add_edit_order_isbn_looking_up">Търсене на книгата</string>
     <string name="add_edit_order_author_label">Автор</string>
     <string name="add_edit_order_volume_label">Том</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Камерата не можа да стартира: %1$s</string>
     <string name="scanner_retry">Нов опит</string>
     <string name="scanner_dialog_title">Сканирайте ISBN баркода</string>
+    <string name="scanner_text_dialog_title">Разчетете отпечатания ISBN</string>
+    <string name="scanner_mode_barcode">Баркод</string>
+    <string name="scanner_mode_text">Отпечатан ISBN</string>
+    <string name="scanner_text_hint">Насочете камерата към един ISBN: на страницата с авторските права или на екран, който показва поръчката ви.</string>
+
+    <string name="isbn_from_image_reading">Търсене на ISBN…</string>
+    <string name="isbn_from_image_choose_title">Коя книга?</string>
+    <string name="isbn_from_image_none_found">В това изображение не е намерен ISBN. Опитайте с екранна снимка, на която ISBN се вижда.</string>
+    <string name="isbn_from_image_failed">Това изображение не може да бъде прочетено.</string>
+    <string name="isbn_from_image_pick_another">Избор на друго</string>
+    <string name="isbn_shared_text_none_found">В споделеното няма ISBN. Вместо това споделете екранна снимка на поръчката или въведете ISBN.</string>
     <string name="series_list_title">Поредици</string>
     <string name="series_list_search_placeholder">Поредица, автор, ISBN</string>
     <string name="series_list_sort">Сортиране · %1$s</string>

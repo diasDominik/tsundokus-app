@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Érvénytelen ISBN. Ellenőrizd a számjegyeket</string>
     <string name="add_edit_order_isbn_error_taken">Már van rendelésed ezzel az ISBN-nel</string>
     <string name="add_edit_order_isbn_scan_cd">Vonalkód beolvasása</string>
+    <string name="add_edit_order_isbn_from_image_cd">ISBN beolvasása képernyőképről</string>
     <string name="add_edit_order_isbn_looking_up">Könyv keresése</string>
     <string name="add_edit_order_author_label">Szerző</string>
     <string name="add_edit_order_volume_label">Kötet</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Nem sikerült elindítani a kamerát: %1$s</string>
     <string name="scanner_retry">Újra</string>
     <string name="scanner_dialog_title">ISBN-vonalkód beolvasása</string>
+    <string name="scanner_text_dialog_title">Nyomtatott ISBN beolvasása</string>
+    <string name="scanner_mode_barcode">Vonalkód</string>
+    <string name="scanner_mode_text">Nyomtatott ISBN</string>
+    <string name="scanner_text_hint">Irányítsd a kamerát egyetlen ISBN-re: a copyrightoldalon vagy egy képernyőn, amely a rendelésedet mutatja.</string>
+
+    <string name="isbn_from_image_reading">ISBN keresése…</string>
+    <string name="isbn_from_image_choose_title">Melyik könyv?</string>
+    <string name="isbn_from_image_none_found">Ezen a képen nem található ISBN. Próbálj egy olyan képernyőképet, amelyen látszik az ISBN.</string>
+    <string name="isbn_from_image_failed">Ezt a képet nem sikerült beolvasni.</string>
+    <string name="isbn_from_image_pick_another">Másik választása</string>
+    <string name="isbn_shared_text_none_found">A megosztott tartalomban nincs ISBN. Ossz meg inkább egy képernyőképet a rendelésről, vagy írd be az ISBN-t.</string>
     <string name="series_list_title">Sorozatok</string>
     <string name="series_list_search_placeholder">Sorozat, szerző, ISBN keresése</string>
     <string name="series_list_sort">Rendezés · %1$s</string>

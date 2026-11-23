@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Ogiltigt ISBN. Kontrollera siffrorna</string>
     <string name="add_edit_order_isbn_error_taken">Du har redan en beställning med det här ISBN:et</string>
     <string name="add_edit_order_isbn_scan_cd">Skanna streckkod</string>
+    <string name="add_edit_order_isbn_from_image_cd">Läs ISBN från en skärmbild</string>
     <string name="add_edit_order_isbn_looking_up">Letar upp boken</string>
     <string name="add_edit_order_author_label">Författare</string>
     <string name="add_edit_order_volume_label">Volym</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Kameran kunde inte starta: %1$s</string>
     <string name="scanner_retry">Försök igen</string>
     <string name="scanner_dialog_title">Skanna ISBN-streckkoden</string>
+    <string name="scanner_text_dialog_title">Läs det tryckta ISBN-numret</string>
+    <string name="scanner_mode_barcode">Streckkod</string>
+    <string name="scanner_mode_text">Tryckt ISBN</string>
+    <string name="scanner_text_hint">Rikta kameran mot ett ISBN: på tryckortssidan eller på en skärm som visar din beställning.</string>
+
+    <string name="isbn_from_image_reading">Letar efter ISBN…</string>
+    <string name="isbn_from_image_choose_title">Vilken bok?</string>
+    <string name="isbn_from_image_none_found">Inget ISBN hittades i den här bilden. Prova en skärmbild där ISBN-numret syns.</string>
+    <string name="isbn_from_image_failed">Bilden kunde inte läsas.</string>
+    <string name="isbn_from_image_pick_another">Välj en annan</string>
+    <string name="isbn_shared_text_none_found">Det finns inget ISBN i det som delades. Dela i stället en skärmbild av beställningen, eller skriv in ISBN-numret.</string>
     <string name="series_list_title">Serier</string>
     <string name="series_list_search_placeholder">Sök serie, författare, ISBN</string>
     <string name="series_list_sort">Sortera · %1$s</string>

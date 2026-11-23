@@ -213,6 +213,11 @@ class AddEditOrderViewModel(
                 lookUpBook(delayMillis = 0)
             }
 
+            is AddEditOrderAction.OnIsbnRead -> {
+                updateForm { it.withIsbn(action.isbn) }
+                lookUpBook(delayMillis = 0)
+            }
+
             is AddEditOrderAction.OnStoreChange -> {
                 updateForm { it.copy(store = action.value).clearing(OrderFormField.STORE) }
                 offerSuggestions(OrderFormField.STORE, action.value)

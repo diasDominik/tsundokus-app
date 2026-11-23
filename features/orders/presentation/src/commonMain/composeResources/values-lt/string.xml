@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Netinkamas ISBN. Patikrinkite skaitmenis</string>
     <string name="add_edit_order_isbn_error_taken">Jau turite užsakymą su šiuo ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Nuskaityti brūkšninį kodą</string>
+    <string name="add_edit_order_isbn_from_image_cd">Nuskaityti ISBN iš ekrano kopijos</string>
     <string name="add_edit_order_isbn_looking_up">Ieškoma knygos</string>
     <string name="add_edit_order_author_label">Autorius</string>
     <string name="add_edit_order_volume_label">Tomas</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Nepavyko paleisti kameros: %1$s</string>
     <string name="scanner_retry">Bandyti dar kartą</string>
     <string name="scanner_dialog_title">Nuskaitykite ISBN brūkšninį kodą</string>
+    <string name="scanner_text_dialog_title">Nuskaitykite atspausdintą ISBN</string>
+    <string name="scanner_mode_barcode">Brūkšninis kodas</string>
+    <string name="scanner_mode_text">Atspausdintas ISBN</string>
+    <string name="scanner_text_hint">Nukreipkite kamerą į vieną ISBN: leidinio metrikos puslapyje arba ekrane, kuriame rodomas jūsų užsakymas.</string>
+
+    <string name="isbn_from_image_reading">Ieškoma ISBN…</string>
+    <string name="isbn_from_image_choose_title">Kuri knyga?</string>
+    <string name="isbn_from_image_none_found">Šiame paveikslėlyje ISBN nerasta. Pabandykite ekrano kopiją, kurioje matyti ISBN.</string>
+    <string name="isbn_from_image_failed">Šio paveikslėlio nepavyko nuskaityti.</string>
+    <string name="isbn_from_image_pick_another">Pasirinkti kitą</string>
+    <string name="isbn_shared_text_none_found">Bendrintame turinyje nėra ISBN. Geriau pasidalykite užsakymo ekrano kopija arba įveskite ISBN.</string>
     <string name="series_list_title">Serijos</string>
     <string name="series_list_search_placeholder">Serija, autorius, ISBN</string>
     <string name="series_list_sort">Rikiuoti · %1$s</string>

@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Keine gültige ISBN. Prüfe die Ziffern</string>
     <string name="add_edit_order_isbn_error_taken">Du hast schon eine Bestellung mit dieser ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Barcode scannen</string>
+    <string name="add_edit_order_isbn_from_image_cd">ISBN aus einem Screenshot lesen</string>
     <string name="add_edit_order_isbn_looking_up">Buch wird gesucht</string>
     <string name="add_edit_order_author_label">Autor</string>
     <string name="add_edit_order_volume_label">Band</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Die Kamera konnte nicht starten: %1$s</string>
     <string name="scanner_retry">Erneut versuchen</string>
     <string name="scanner_dialog_title">ISBN-Barcode scannen</string>
+    <string name="scanner_text_dialog_title">Gedruckte ISBN lesen</string>
+    <string name="scanner_mode_barcode">Barcode</string>
+    <string name="scanner_mode_text">Gedruckte ISBN</string>
+    <string name="scanner_text_hint">Halte die Kamera auf eine ISBN: auf der Impressumseite oder auf einem Bildschirm mit deiner Bestellung.</string>
+
+    <string name="isbn_from_image_reading">ISBN wird gesucht…</string>
+    <string name="isbn_from_image_choose_title">Welches Buch?</string>
+    <string name="isbn_from_image_none_found">In diesem Bild wurde keine ISBN gefunden. Versuch es mit einem Screenshot, auf dem die ISBN zu sehen ist.</string>
+    <string name="isbn_from_image_failed">Dieses Bild konnte nicht gelesen werden.</string>
+    <string name="isbn_from_image_pick_another">Anderes wählen</string>
+    <string name="isbn_shared_text_none_found">Im Geteilten steht keine ISBN. Teile stattdessen einen Screenshot der Bestellung oder tippe die ISBN ein.</string>
     <string name="series_list_title">Reihen</string>
     <string name="series_list_search_placeholder">Reihe, Autor, ISBN suchen</string>
     <string name="series_list_sort">Sortierung · %1$s</string>

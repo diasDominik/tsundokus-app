@@ -35,6 +35,7 @@
     <string name="add_edit_order_isbn_error_invalid">Vigane ISBN. Kontrolli numbreid</string>
     <string name="add_edit_order_isbn_error_taken">Sul on selle ISBN-iga tellimus juba olemas</string>
     <string name="add_edit_order_isbn_scan_cd">Skanni vöötkood</string>
+    <string name="add_edit_order_isbn_from_image_cd">Loe ISBN ekraanipildilt</string>
     <string name="add_edit_order_isbn_looking_up">Otsin raamatut</string>
     <string name="add_edit_order_author_label">Autor</string>
     <string name="add_edit_order_volume_label">Köide</string>
@@ -170,6 +171,17 @@
     <string name="scanner_error">Kaamerat ei õnnestunud käivitada: %1$s</string>
     <string name="scanner_retry">Proovi uuesti</string>
     <string name="scanner_dialog_title">Skanni ISBN-vöötkood</string>
+    <string name="scanner_text_dialog_title">Loe trükitud ISBN</string>
+    <string name="scanner_mode_barcode">Vöötkood</string>
+    <string name="scanner_mode_text">Trükitud ISBN</string>
+    <string name="scanner_text_hint">Suuna kaamera ühele ISBN-ile: tiitellehe pöördel või ekraanil, kus on näha sinu tellimus.</string>
+
+    <string name="isbn_from_image_reading">Otsin ISBN-i…</string>
+    <string name="isbn_from_image_choose_title">Milline raamat?</string>
+    <string name="isbn_from_image_none_found">Sellelt pildilt ei leitud ISBN-i. Proovi ekraanipilti, kus ISBN on näha.</string>
+    <string name="isbn_from_image_failed">Seda pilti ei õnnestunud lugeda.</string>
+    <string name="isbn_from_image_pick_another">Vali teine</string>
+    <string name="isbn_shared_text_none_found">Jagatus pole ISBN-i. Jaga selle asemel tellimuse ekraanipilti või sisesta ISBN käsitsi.</string>
     <string name="series_list_title">Sarjad</string>
     <string name="series_list_search_placeholder">Otsi sarja, autorit, ISBN-i</string>
     <string name="series_list_sort">Järjesta · %1$s</string>

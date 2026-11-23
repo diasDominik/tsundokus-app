@@ -73,6 +73,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import uk.tsundokus.composeapp.deeplink.DeepLinkHandler
 import uk.tsundokus.composeapp.deeplink.buildDeepLinkMatchers
 import uk.tsundokus.composeapp.deeplink.matchOrNull
+import uk.tsundokus.composeapp.share.ShareHandler
 import uk.tsundokus.composeapp.di.TsundokuKoinApp
 import uk.tsundokus.composeapp.navigation.PlatformBackHandler
 import uk.tsundokus.composeapp.navigation.rememberScreenTopBarNavEntryDecorator
@@ -102,6 +103,7 @@ import uk.tsundokus.features.orders.presentation.navigation.ReportDelay
 import uk.tsundokus.features.orders.presentation.navigation.ScanToReceive
 import uk.tsundokus.features.orders.presentation.navigation.SeriesDetail
 import uk.tsundokus.features.orders.presentation.navigation.SeriesList
+import uk.tsundokus.features.orders.presentation.navigation.SharedIsbnSource
 import uk.tsundokus.features.orders.presentation.navigation.Stats
 import uk.tsundokus.features.orders.presentation.navigation.ordersGraph
 import uk.tsundokus.features.orders.presentation.navigation.ordersSerializersModule
@@ -260,33 +262,47 @@ fun App() {
             // Both targets are auth-graph screens, so rebuild a homogeneous auth stack ([SignIn, key]) —
             // this keeps the auth NavDisplay free of logged-in keys it can't render, and works whether
             // or not a session exists (verification can happen either way).
+            fun openFromOutside(navKey: NavKey) {
+                when {
+                    // An order (a tapped reminder) or a new one (a share), signed in: open it over the
+                    // Orders tab.
+                    navKey is LoggedIn && mainViewModel.isLoggedIn.value -> {
+                        backStack.clear()
+                        backStack.add(Orders)
+                        backStack.add(navKey)
+                    }
+
+                    // Signed out: sign in first; the screen opens once that succeeds.
+                    navKey is LoggedIn -> {
+                        mainViewModel.setPendingPostAuthNavKey(navKey)
+                        backStack.clear()
+                        backStack.add(SignIn)
+                    }
+
+                    else -> {
+                        backStack.clear()
+                        backStack.add(SignIn)
+                        backStack.add(navKey)
+                    }
+                }
+            }
+
             DisposableEffect(Unit) {
                 DeepLinkHandler.listener = listener@{ uri ->
-                    val navKey = deepLinkMatchers.matchOrNull(uri) ?: return@listener
-                    when {
-                        // An order (a tapped reminder), signed in: open it over the Orders tab.
-                        navKey is LoggedIn && mainViewModel.isLoggedIn.value -> {
-                            backStack.clear()
-                            backStack.add(Orders)
-                            backStack.add(navKey)
+                    openFromOutside(deepLinkMatchers.matchOrNull(uri) ?: return@listener)
+                }
+                // A screenshot or text shared from another app starts a new order with its ISBN.
+                ShareHandler.listener = { shared ->
+                    val source =
+                        when (shared) {
+                            is ShareHandler.Shared.Text -> SharedIsbnSource.Text(shared.text)
+                            is ShareHandler.Shared.Image -> SharedIsbnSource.Image(shared.uri)
                         }
-
-                        // Signed out: sign in first; the order opens once that succeeds.
-                        navKey is LoggedIn -> {
-                            mainViewModel.setPendingPostAuthNavKey(navKey)
-                            backStack.clear()
-                            backStack.add(SignIn)
-                        }
-
-                        else -> {
-                            backStack.clear()
-                            backStack.add(SignIn)
-                            backStack.add(navKey)
-                        }
-                    }
+                    openFromOutside(AddOrder(shared = source))
                 }
                 onDispose {
                     DeepLinkHandler.listener = null
+                    ShareHandler.listener = null
                 }
             }
 

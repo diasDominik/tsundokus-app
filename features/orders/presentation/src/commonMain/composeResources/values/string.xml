@@ -42,6 +42,7 @@
     <string name="add_edit_order_isbn_error_invalid">Not a valid ISBN. Check the digits</string>
     <string name="add_edit_order_isbn_error_taken">You already have an order with this ISBN</string>
     <string name="add_edit_order_isbn_scan_cd">Scan the barcode</string>
+    <string name="add_edit_order_isbn_from_image_cd">Read the ISBN from a screenshot</string>
     <string name="add_edit_order_isbn_looking_up">Looking up the book</string>
     <string name="add_edit_order_author_label">Author</string>
     <string name="add_edit_order_volume_label">Volume</string>
@@ -194,6 +195,17 @@
     <string name="scanner_error">The camera could not start: %1$s</string>
     <string name="scanner_retry">Try again</string>
     <string name="scanner_dialog_title">Scan the ISBN barcode</string>
+    <string name="scanner_text_dialog_title">Read the printed ISBN</string>
+    <string name="scanner_mode_barcode">Barcode</string>
+    <string name="scanner_mode_text">Printed ISBN</string>
+    <string name="scanner_text_hint">Point the camera at one ISBN: on the copyright page, or on a screen showing your order.</string>
+
+    <string name="isbn_from_image_reading">Looking for the ISBN…</string>
+    <string name="isbn_from_image_choose_title">Which book?</string>
+    <string name="isbn_from_image_none_found">No ISBN found in this image. Try a screenshot where the ISBN is in view.</string>
+    <string name="isbn_from_image_failed">This image could not be read.</string>
+    <string name="isbn_from_image_pick_another">Pick another</string>
+    <string name="isbn_shared_text_none_found">No ISBN in what was shared. Share a screenshot of the order instead, or type the ISBN.</string>
 
     <string name="series_list_title">Series</string>
     <string name="series_list_search_placeholder">Search series, author, ISBN</string>

@@ -42,6 +42,13 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.work.runtime)
                 implementation(libs.kscan)
+                // Reading the ISBN off a screenshot. The model comes with Google Play services rather
+                // than in the app, which would grow it by 11 MB per ABI.
+                implementation(libs.mlkit.text.recognition)
+                // Reading the printed ISBN live off the camera.
+                implementation(libs.androidx.camera.camera2)
+                implementation(libs.androidx.camera.lifecycle)
+                implementation(libs.androidx.camera.view)
                 // Home-screen widgets.
                 implementation(libs.glance.appwidget)
                 implementation(libs.glance.material3)
