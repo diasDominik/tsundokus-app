@@ -9,6 +9,10 @@
 # The store listing and the release notes live in fastlane/metadata/android/<locale>/:
 #   title.txt, short_description.txt, full_description.txt   store listing
 #   changelogs/<versionCode>.txt                              release notes for that version
+#   images/<kind>Screenshots/                                 screenshots, see SCREENSHOT_RULES
+
+require "fileutils"
+require "tmpdir"
 
 default_platform(:android)
 
@@ -65,16 +69,77 @@ def lfs_pointer?(path)
   File.binread(path, 24).to_s.start_with?("version https://git-lfs")
 end
 
-# Play's rules for screenshots: PNG or JPEG, each side 320-3840 px, the long side at most twice the
-# short one. Only PNG is produced here, so only PNG is accepted; its size is in the header.
-def screenshot_problem(path)
-  header = File.binread(path, 24)
-  return "not a PNG" unless header&.start_with?("\x89PNG".b)
+# Play's rules per kind of screenshot (Play Console help, "Add preview assets"), as count, the
+# range each side has to be in (px) and the aspect ratios allowed.
+# - Phone: up to 2:1.
+# - Tablets, which Play also shows on Chromebooks: 16:9 or 9:16, at least 4 of them and 1080 px,
+#   which an app needs to be recommended on large screens.
+# - Foldables: one each of 1:1 and 4:3 unfolded and 10:16 folded (`required`). The Play API has no
+#   foldable screenshots, so supply skips this folder; they are uploaded in Play Console by hand.
+SCREENSHOT_RULES = {
+  "phoneScreenshots" => { count: 2..8, sides: 320..3840, max_ratio: 2 },
+  "sevenInchScreenshots" => { count: 4..8, sides: 1080..7680, ratios: [[16, 9], [9, 16]] },
+  "tenInchScreenshots" => { count: 4..8, sides: 1080..7680, ratios: [[16, 9], [9, 16]] },
+  "foldableScreenshots" => {
+    count: 3..8,
+    sides: 960..3840,
+    ratios: [[1, 1], [4, 3], [3, 4], [16, 10], [10, 16], [16, 9], [9, 16]],
+    required: [[1, 1], [4, 3], [10, 16]],
+  },
+}.freeze
 
-  width, height = header[16, 8].unpack("NN")
+# The screen sizes the store screenshots are taken at (`fastlane screenshots`): the emulator's
+# display is set to `size` px at `density`, which gives the window width in dp the app lays out
+# for. `shots` maps captures of the test (StoreScreenshots) to the file names kept; without it all
+# captures are kept under their own names.
+SCREENSHOT_SETS = {
+  "phone" => [
+    # 411dp wide, 2:1 (Play's limit for phones).
+    { dir: "phoneScreenshots", size: "1080x2160", density: 420 },
+  ],
+  "tablet" => [
+    # 720dp portrait: the navigation rail and one pane.
+    { dir: "sevenInchScreenshots", size: "1440x2560", density: 320 },
+    # 1280dp landscape, as on a Chromebook: list and detail side by side.
+    {
+      dir: "tenInchScreenshots", size: "2560x1440", density: 320,
+      shots: { "1_orders" => "1_orders", "3_series" => "2_series", "4_reading" => "3_reading", "5_stats" => "4_stats" },
+    },
+  ],
+  "foldable" => [
+    # Unfolded, 4:3 landscape at 914dp: two panes.
+    {
+      dir: "foldableScreenshots", size: "2400x1800", density: 420,
+      shots: { "1_orders" => "1_unfolded_orders", "5_stats" => "4_unfolded_stats" },
+    },
+    # Unfolded, 1:1 at 701dp: the rail and one pane.
+    { dir: "foldableScreenshots", size: "1840x1840", density: 420, shots: { "3_series" => "2_unfolded_series" } },
+    # Folded outer screen, 10:16 at 411dp.
+    { dir: "foldableScreenshots", size: "1080x1728", density: 420, shots: { "2_order_detail" => "3_folded_order" } },
+  ],
+}.freeze
+
+# Only PNG is produced here, so only PNG is accepted; its size is in the header.
+def png_size(path)
+  header = File.binread(path, 24)
+  header[16, 8].unpack("NN") if header&.start_with?("\x89PNG".b)
+end
+
+def ratio?(width, height, ratio)
+  width * ratio[1] == height * ratio[0]
+end
+
+def screenshot_problem(path, rules)
+  width, height = png_size(path)
+  return "not a PNG" unless width
+
   short, long = [width, height].minmax
-  return "#{width}x#{height}, each side must be 320 to 3840 px" unless short >= 320 && long <= 3840
-  return "#{width}x#{height}, the long side may be at most twice the short one" if long > 2 * short
+  sides = rules[:sides]
+  return "#{width}x#{height}, each side must be #{sides.min} to #{sides.max} px" unless sides.cover?(short) && sides.cover?(long)
+  return "#{width}x#{height}, the long side may be at most #{rules[:max_ratio]} times the short one" if rules[:max_ratio] && long > rules[:max_ratio] * short
+  if rules[:ratios] && rules[:ratios].none? { |ratio| ratio?(width, height, ratio) }
+    return "#{width}x#{height}, must be #{rules[:ratios].map { |ratio| ratio.join(":") }.join(", ")}"
+  end
 
   nil
 end
@@ -110,15 +175,28 @@ platform :android do
         errors << "#{locale}/#{file} must be a single line without a final newline" if SINGLE_LINE.include?(file) && text.include?("\n")
       end
 
-      screenshots = Dir[File.join(METADATA, locale, "images", "phoneScreenshots", "*")].sort
-      unless screenshots.empty? || screenshots.size.between?(2, 8)
-        errors << "#{locale} has #{screenshots.size} phone screenshots, Play takes 2 to 8"
-      end
-      screenshots.each do |path|
-        next pointers += 1 if lfs_pointer?(path)
+      SCREENSHOT_RULES.each do |kind, rules|
+        screenshots = Dir[File.join(METADATA, locale, "images", kind, "*")].sort
+        next if screenshots.empty?
 
-        problem = screenshot_problem(path)
-        errors << "#{locale}/images/phoneScreenshots/#{File.basename(path)}: #{problem}" if problem
+        unless rules[:count].cover?(screenshots.size)
+          errors << "#{locale}/images/#{kind} has #{screenshots.size} screenshots, Play takes #{rules[:count].min} to #{rules[:count].max}"
+        end
+        sizes = []
+        screenshots.each do |path|
+          next pointers += 1 if lfs_pointer?(path)
+
+          problem = screenshot_problem(path, rules)
+          errors << "#{locale}/images/#{kind}/#{File.basename(path)}: #{problem}" if problem
+          sizes << png_size(path)
+        end
+        next if sizes.size < screenshots.size # Some are still in LFS.
+
+        (rules[:required] || []).each do |ratio|
+          next if sizes.any? { |width, height| ratio?(width, height, ratio) }
+
+          errors << "#{locale}/images/#{kind} needs a #{ratio.join(":")} screenshot"
+        end
       end
 
       Dir[File.join(METADATA, locale, "changelogs", "*.txt")].sort.each do |path|
@@ -213,7 +291,7 @@ platform :android do
     )
   end
 
-  desc "Uploads the store listing in every language: title, descriptions and phone screenshots"
+  desc "Uploads the store listing in every language: title, descriptions, phone and tablet screenshots"
   desc "screenshots_only:true leaves the texts on Play as they are"
   lane :listing do |options|
     check_metadata(images: true)
@@ -238,11 +316,17 @@ platform :android do
     )
   end
 
-  desc "Takes the store screenshots in every store language on a running emulator or device"
-  desc "(Android 13+). The app runs against a fake server inside the test (StoreScreenshots), so"
-  desc "nothing may listen on the device's port 8080. skip_build:true reuses the APKs already built;"
-  desc "serial:<adb serial> picks the device when several are connected"
+  desc "Takes the store screenshots in every store language on the connected emulator or device"
+  desc "(Android 13 or newer), which it switches to each screen size in SCREENSHOT_SETS in turn"
+  desc "devices:phone,tablet,foldable picks the sets (default: all); skip_build:true reuses the APKs;"
+  desc "serial:<adb serial> picks the device; locales:en-US,de-DE limits the languages"
   lane :screenshots do |options|
+    devices = (options[:devices] || SCREENSHOT_SETS.keys.join(",")).to_s.split(",").map(&:strip)
+    unknown = devices - SCREENSHOT_SETS.keys
+    UI.user_error!("Unknown devices #{unknown.join(", ")}; known: #{SCREENSHOT_SETS.keys.join(", ")}") unless unknown.empty?
+    languages = options[:locales] ? options[:locales].to_s.split(",").map(&:strip) : locales
+    UI.user_error!("Unknown locales #{(languages - locales).join(", ")}") unless (languages - locales).empty?
+
     unless options[:skip_build]
       # Debug builds talk to BASE_URL_HTTP; the test's fake server listens on the device's
       # localhost and accepts any API key.
@@ -254,40 +338,74 @@ platform :android do
     adb_prefix = options[:serial] ? "adb -s #{options[:serial].shellescape}" : "adb"
     adb = ->(command, errors: true) { sh("#{adb_prefix} #{command}", error_callback: (->(_) {} unless errors)) }
 
-    # Play takes screenshots up to an aspect ratio of 2:1.
-    adb.call("shell wm size 1080x2160")
-    adb.call("shell wm density 420")
     # A forwarded port (adb reverse) would take 8080 from the fake server.
     adb.call("reverse --remove tcp:8080", errors: false)
     # Start signed out, without another account's orders.
     adb.call("shell pm clear #{PACKAGE}", errors: false)
-    # A tidy status bar: SystemUI demo mode.
+    # A tidy status bar: SystemUI demo mode. Entered again after each change of screen size: a new
+    # density rebuilds the status bar, which then shows a real network icon next to the demo one.
     adb.call("shell settings put global sysui_demo_allowed 1")
-    [
-      "-e command enter",
-      "-e command clock -e hhmm 1000",
-      "-e command battery -e level 100 -e plugged false",
-      "-e command network -e wifi show -e level 4",
-      "-e command network -e mobile hide",
-      "-e command notifications -e visible false",
-    ].each { |extras| adb.call("shell am broadcast -a com.android.systemui.demo #{extras}") }
+    demo_mode = lambda do
+      adb.call("shell am broadcast -a com.android.systemui.demo -e command exit")
+      [
+        "-e command enter",
+        "-e command clock -e hhmm 1000",
+        "-e command battery -e level 100 -e plugged false",
+        # Full Wi-Fi without the "no internet" mark, and no mobile network or SIM icons.
+        "-e command network -e wifi show -e level 4 -e fully true",
+        "-e command network -e mobile hide -e fully true",
+        "-e command network -e sims 0",
+        "-e command network -e nosim hide",
+        "-e command notifications -e visible false",
+        ].each { |extras| adb.call("shell am broadcast -a com.android.systemui.demo #{extras}") }
+    end
 
     begin
-      capture_android_screenshots(
-        locales: locales,
-        output_directory: METADATA,
-        clear_previous_screenshots: true,
-        use_timestamp_suffix: false,
-        app_package_name: PACKAGE,
-        tests_package_name: "#{PACKAGE}.test",
-        app_apk_path: File.join(REPO, "androidApp/build/outputs/apk/debug/androidApp-debug.apk"),
-        tests_apk_path: File.join(REPO, "androidApp/build/outputs/apk/androidTest/debug/androidApp-debug-androidTest.apk"),
-        use_tests_in_classes: ["uk.tsundokus.androidapp.screenshots.StoreScreenshots"],
-        test_instrumentation_runner: "androidx.test.runner.AndroidJUnitRunner",
-        specific_device: options[:serial],
-        exit_on_test_failure: true,
-        skip_open_summary: true,
-      )
+      devices.each do |device|
+        sets = SCREENSHOT_SETS.fetch(device)
+        # Several sets can fill one folder, so each folder is emptied once, up front.
+        sets.map { |set| set[:dir] }.uniq.each do |dir|
+          languages.each { |locale| FileUtils.rm_rf(File.join(METADATA, locale, "images", dir)) }
+        end
+
+        sets.each do |set|
+          UI.header("#{device}: #{set[:dir]} at #{set[:size]}, density #{set[:density]}")
+          adb.call("shell wm size #{set[:size]}")
+          adb.call("shell wm density #{set[:density]}")
+          sleep(2) # Let SystemUI settle at the new size before demo mode goes on again.
+          demo_mode.call
+          # screengrab only knows Play's folder names; it captures into a scratch folder and the
+          # captures are copied from there under the set's folder and names.
+          Dir.mktmpdir("screengrab") do |scratch|
+            capture_android_screenshots(
+              locales: languages,
+              output_directory: scratch,
+              device_type: "phone",
+              clear_previous_screenshots: false,
+              use_timestamp_suffix: false,
+              launch_arguments: (["shots #{set[:shots].keys.join("+")}"] if set[:shots]),
+              app_package_name: PACKAGE,
+              tests_package_name: "#{PACKAGE}.test",
+              app_apk_path: File.join(REPO, "androidApp/build/outputs/apk/debug/androidApp-debug.apk"),
+              tests_apk_path: File.join(REPO, "androidApp/build/outputs/apk/androidTest/debug/androidApp-debug-androidTest.apk"),
+              use_tests_in_classes: ["uk.tsundokus.androidapp.screenshots.StoreScreenshots"],
+              test_instrumentation_runner: "androidx.test.runner.AndroidJUnitRunner",
+              specific_device: options[:serial],
+              exit_on_test_failure: true,
+              skip_open_summary: true,
+            )
+            languages.each do |locale|
+              target = File.join(METADATA, locale, "images", set[:dir])
+              FileUtils.mkdir_p(target)
+              Dir[File.join(scratch, locale, "images", "phoneScreenshots", "*.png")].each do |path|
+                name = File.basename(path, ".png")
+                name = set[:shots][name] if set[:shots]
+                FileUtils.cp(path, File.join(target, "#{name}.png")) if name
+              end
+            end
+          end
+        end
+      end
     ensure
       adb.call("shell am broadcast -a com.android.systemui.demo -e command exit", errors: false)
       adb.call("shell wm size reset", errors: false)

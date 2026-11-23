@@ -97,6 +97,9 @@ internal class DemoLibrary(
     /** The order the detail screenshot opens: a delay has a timeline worth showing. */
     val featured: Order = orders.single { it.status == DELAYED }
 
+    /** The series opened on large screens: it has volumes still missing. */
+    val seriesWithGaps: String = paperLantern.title
+
     fun order(isbn: String): Order? = orders.firstOrNull { it.isbn == isbn }
 
     fun syncResponse(): JSONObject =

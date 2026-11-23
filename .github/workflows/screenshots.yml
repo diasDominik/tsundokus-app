@@ -7,6 +7,11 @@ name: Store screenshots
 # The app runs against a fake server inside the test, so no secrets are needed.
 on:
   workflow_dispatch:
+    inputs:
+      devices:
+        description: "Screen sizes, comma-separated: phone, tablet, foldable"
+        type: string
+        default: "phone,tablet,foldable"
 
 concurrency:
   group: store-screenshots
@@ -21,7 +26,7 @@ jobs:
   screenshots:
     name: Take screenshots
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 150
     permissions:
       contents: write
     steps:
@@ -63,13 +68,13 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: bundle exec fastlane android screenshots skip_build:true
+          script: bundle exec fastlane android screenshots skip_build:true "devices:${{ inputs.devices }}"
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v7
         with:
           name: store-screenshots
-          path: fastlane/metadata/android/*/images/phoneScreenshots/
+          path: fastlane/metadata/android/*/images/
           if-no-files-found: error
           retention-days: 14
 

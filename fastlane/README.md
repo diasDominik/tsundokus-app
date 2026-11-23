@@ -63,7 +63,7 @@ Changes the share of users the production rollout reaches, e.g. rollout:0.5; rol
 [bundle exec] fastlane android listing
 ```
 
-Uploads the store listing in every language: title, descriptions and phone screenshots
+Uploads the store listing in every language: title, descriptions, phone and tablet screenshots
 
 screenshots_only:true leaves the texts on Play as they are
 
@@ -73,13 +73,13 @@ screenshots_only:true leaves the texts on Play as they are
 [bundle exec] fastlane android screenshots
 ```
 
-Takes the store screenshots in every store language on a running emulator or device
+Takes the store screenshots in every store language on the connected emulator or device
 
-(Android 13+). The app runs against a fake server inside the test (StoreScreenshots), so
+(Android 13 or newer), which it switches to each screen size in SCREENSHOT_SETS in turn
 
-nothing may listen on the device's port 8080. skip_build:true reuses the APKs already built;
+devices:phone,tablet,foldable picks the sets (default: all); skip_build:true reuses the APKs;
 
-serial:<adb serial> picks the device when several are connected
+serial:<adb serial> picks the device; locales:en-US,de-DE limits the languages
 
 ### android fetch_listing
 
