@@ -31,7 +31,7 @@ kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.13.0"
 kscan = "0.10.0"
 # The CameraX KScan is built against; the live text reader drives it directly.
-camerax = "1.6.2"
+camerax = "1.7.0"
 mlkit-text-recognition = "19.0.2"
 turbine = "1.2.1"
 kotlinxCoroutinesSwing = "1.11.0"
