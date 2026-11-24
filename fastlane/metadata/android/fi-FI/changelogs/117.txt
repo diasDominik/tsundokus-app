@@ -1,0 +1,3 @@
+• Tilasitko kirjan verkosta? ISBN-tunnusta ei tarvitse enää kirjoittaa: valitse kuvakaappaus tilausvahvistuksesta tai jaa se Tsundokuun selaimesta tai kaupan sovelluksesta. Jos siinä on useita kirjoja, valitse oikea.
+• Skanneri lukee nyt myös painetun ISBN-tunnuksen nimiösivun kääntöpuolelta tai näytöltä, jolla tilauksesi näkyy.
+• Kun valitset tilauslomakkeelle toisen kirjan, edellisen kirjan tiedot korvataan nyt.

@@ -1,0 +1,3 @@
+• Könyvet rendeltél online? Az ISBN-t már nem kell begépelned: válassz egy képernyőképet a rendelés visszaigazolásáról, vagy oszd meg a Tsundokuval a böngészőből vagy a bolt alkalmazásából. Ha több könyv szerepel rajta, válaszd ki a megfelelőt.
+• A szkenner most már a nyomtatott ISBN-t is beolvassa a copyrightoldalon vagy a rendelésedet mutató képernyőn.
+• Ha a rendelési űrlapon másik könyvet választasz, az előző adatai most lecserélődnek.

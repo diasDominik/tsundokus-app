@@ -1,0 +1,3 @@
+• Een boek online besteld? Het ISBN hoef je niet meer over te typen: kies een screenshot van de orderbevestiging, of deel het vanuit je browser of de app van de winkel met Tsundoku. Staan er meerdere boeken op, dan kies je het juiste.
+• De scanner leest nu ook het gedrukte ISBN, op de colofonpagina of op een scherm met je bestelling.
+• Kies je in het bestelformulier een ander boek, dan worden de gegevens van het vorige nu vervangen.

@@ -1,0 +1,3 @@
+• ¿Has pedido un libro por internet? Ya no tienes que teclear el ISBN: elige una captura de la confirmación del pedido o compártela con Tsundoku desde el navegador o la app de la tienda. Si aparecen varios libros, elige el que quieras.
+• El escáner ahora también lee el ISBN impreso, en la página de créditos o en una pantalla que muestre tu pedido.
+• Al elegir otro libro en el formulario del pedido, ahora se sustituyen los datos rellenados para el anterior.
