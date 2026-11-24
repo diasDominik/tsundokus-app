@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ML Kit finds its parts through registrars named in the manifest and creates them by reflection.
+# R8's full mode strips their constructors, so ML Kit starts without them and text recognition
+# crashes in TextRecognition.getClient().
+-keep class * implements com.google.firebase.components.ComponentRegistrar {
+    public <init>();
+}
