@@ -1,0 +1,3 @@
+• Hai ordinato un libro online? Non serve più digitare l'ISBN: scegli uno screenshot della conferma d'ordine o condividilo con Tsundoku dal browser o dall'app del negozio. Se contiene più libri, scegli quello giusto.
+• Lo scanner ora legge anche l'ISBN stampato, sulla pagina del copyright o su uno schermo che mostra il tuo ordine.
+• Scegliendo un altro libro nel modulo d'ordine, ora i dati compilati per il precedente vengono sostituiti.

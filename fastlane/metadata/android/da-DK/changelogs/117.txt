@@ -1,0 +1,3 @@
+• Har du bestilt en bog online? Du behøver ikke længere at skrive ISBN'et: vælg et skærmbillede af ordrebekræftelsen, eller del det til Tsundoku fra browseren eller butikkens app. Står der flere bøger, vælger du den rigtige.
+• Scanneren kan nu også læse det trykte ISBN, på kolofonsiden eller på en skærm, der viser din bestilling.
+• Vælger du en anden bog i bestillingsformularen, erstattes oplysningerne om den forrige nu.
